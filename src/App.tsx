@@ -104,7 +104,6 @@ function App() {
       dispatch(changeCellSize({width: 25, height: 25}))
     } else if (currentSize > grid.cellStyleWidth * grid.width && grid.cellStyleWidth < 50) {
       dispatch(changeCellSize({width: 50, height: 50}))
-
     }
   }
 

@@ -1,10 +1,15 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {RootState} from "../../types"
 
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Cell, CellStatus} from "../../types";
 
+import produce from "immer";
+import { useSelector } from "react-redux";
+import { store } from "../store";
 
+import { ThunkAction, ThunkDispatch} from "@reduxjs/toolkit";
+import { Action } from "@reduxjs/toolkit";
 //Default Cell value
 const dfCell: Cell = {
     data: 0,
@@ -43,7 +48,7 @@ type ChangeHeightPayload = {
 type ChangeCellPayload = {
     row: number,
     col: number,
-    data: 0,
+    data: number,
     status: CellStatus
 }
 
@@ -51,6 +56,14 @@ type ChangeCellSizePayload = {
     width: number,
     height: number
 }
+
+type FloodFillPayload = {
+    startRow: number,
+    startCol: number,
+    oldColor: number,
+    newColor: number
+}
+
 
 
 const gridSlice = createSlice({
@@ -132,11 +145,20 @@ const gridSlice = createSlice({
             const {width, height} = action.payload;
             state.cellStyleWidth = width;
             state.cellStyleHeight = height;
+        },
+        floodFillGrid: (state, action: PayloadAction<FloodFillPayload>) => {
+            const {startRow, startCol, oldColor, newColor} = action.payload;
+            if (state.cells[startRow][startCol].data === newColor) {
+                return;
+            }
+            return state;      
         }
 
     }
 
 }) 
+
+
 
 export const grid = gridSlice.reducer 
 
@@ -151,3 +173,20 @@ export const {
 
 export const gridSelector = (state: RootState) => state.grid;
 export const gridCellsSelector = (state: RootState, row: number, col: number) => state.grid.cells[row][col];
+
+type AppThunk = ThunkAction<void, RootState, unknown, Action<string>>
+
+
+
+export const floodFill = (): AppThunk => {
+    return (
+        dispatch: ThunkDispatch<RootState, unknown, Action<string>>, 
+        getState: () => RootState
+    ) => {
+        const dfs = (row: number, col: number, oldColor: number, newColor: number) => {
+            if (row < 0 || col < 0 || row >= grid.height || col >= grid.width) {
+                let grid = getState().grid;
+            }
+        }   
+    }
+}

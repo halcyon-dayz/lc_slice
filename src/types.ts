@@ -5,7 +5,7 @@ import { ThunkAction } from "@reduxjs/toolkit";
 export type CellStatus = "NO_DATA" | "PROCESSING" | "EXPLORED" | "LOCKED" | "UNEXPLORED" | "START" | "END"
 
 export type Cell = {
-    data: any
+    data: number
     status: CellStatus
 }
 
@@ -27,7 +27,8 @@ export type GridStructureDisplay = {
 export type RootState = {
     questionNumber: number
     questionText: string
-    grid: GridStructureDisplay
+    grid: GridStructureDisplay,
+
 }
 
 export type AppThunk<ReturnType = void> = ThunkAction<

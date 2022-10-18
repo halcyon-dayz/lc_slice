@@ -13,6 +13,10 @@ type NodeProps = {
     styleWidth: number
 }
 
+const onlyNumbers = (str: string) => {
+    return /^[0-9.,]+$/.test(str);
+}
+
 export const Node = ({rowIdx, colIdx, styleWidth}: NodeProps) => {
     //TODO: Select individual cells
     const [stateIndex, setStateIndex] = useState<number>(0);
@@ -26,6 +30,18 @@ export const Node = ({rowIdx, colIdx, styleWidth}: NodeProps) => {
         }
     }
 
+    const onEditData = (e: React.FormEvent) => {
+        const value = e.currentTarget.textContent
+        if (value === null) {
+            return;
+        }
+        if (!onlyNumbers(value)) {
+            return;
+        }
+        const num = parseInt(value);
+        dispatch(changeCell({row: rowIdx, col: colIdx, data: num, status: cell.status}))
+    }
+
     return (
         <div 
             className={
@@ -33,6 +49,8 @@ export const Node = ({rowIdx, colIdx, styleWidth}: NodeProps) => {
             } 
             onClick={onClickNode} 
             onContextMenu={onClickNode}
+            contentEditable='true'
+            onInput={onEditData}
         >
             {cell.data}
         </div>
