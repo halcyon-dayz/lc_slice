@@ -1,17 +1,17 @@
 import React, {useState} from "react"
-import {GridStructureDisplay} from "../../types"
+import {GridDS} from "../../utils/types"
 import {Node} from "../Node"
 
 
 type GridProps = {
-    grid: GridStructureDisplay
+    grid: GridDS
 }
 
 export const Grid = ({grid}: GridProps) => {
     return (
         <div className="grid" style={{marginBottom: "50px"}}>
             {grid.cells.map((row, rowIdx) => (
-                <div>
+                <div key={`Cell_${rowIdx}`}>
                     {row.map((node, nodeIdx) => (
                         <Node 
                             key={`Cell_${rowIdx}_${nodeIdx}`}

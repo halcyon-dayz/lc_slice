@@ -4,13 +4,22 @@ import { ThunkAction } from "@reduxjs/toolkit";
 
 export type CellStatus = "NO_DATA" | "PROCESSING" | "EXPLORED" | "LOCKED" | "UNEXPLORED" | "START" | "END"
 
+export type DataStructureType = "GRID" | "ARRAY"
+
 export type Cell = {
     data: number
     status: CellStatus
 }
 
+interface TreeNode<TValue = unknown, TKey = unknown> {
+    left?: TreeNode<TValue>
+    right?: TreeNode<TValue>
+    value: TValue
+    key?: TKey
+}
 
-export type GridStructureDisplay = {
+
+export type GridDS = {
     type: "GRID";
     label: string
     cells: Cell[][]
@@ -24,11 +33,26 @@ export type GridStructureDisplay = {
     endNodeCol?: number
 }
 
+
+export type ArrDS = {
+    type: "ARRAY"
+    label: string,
+    data: Cell[]
+    width: number
+}
+
+
+export type DataStructures = {
+    grids: GridDS[],
+    arrays: ArrDS[],
+    totalStructs: number
+}
+
 export type RootState = {
     questionNumber: number
     questionText: string
-    grid: GridStructureDisplay,
-
+    grid: GridDS,
+    dataStructures: DataStructures
 }
 
 export type AppThunk<ReturnType = void> = ThunkAction<

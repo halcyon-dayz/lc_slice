@@ -1,14 +1,11 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import {RootState} from "../../types"
+import {createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../../utils/types";
 
 import { PayloadAction } from "@reduxjs/toolkit";
-import { Cell, CellStatus} from "../../types";
+import { Cell, CellStatus} from "../../utils/types";
 
-import produce from "immer";
-import { useSelector } from "react-redux";
-import { store } from "../store";
 
-import { ThunkAction, ThunkDispatch} from "@reduxjs/toolkit";
+import { ThunkAction} from "@reduxjs/toolkit";
 import { Action } from "@reduxjs/toolkit";
 //Default Cell value
 const dfCell: Cell = {
@@ -119,13 +116,13 @@ const gridSlice = createSlice({
         },
         changeCell: (state, action: PayloadAction<ChangeCellPayload>) => {
             const {row, col, data, status} = action.payload;
-            if (row > state.height || col > state.width || row < 0|| col < 0) {
+            if (row >= state.height || col >= state.width || row < 0 || col < 0) {
                 return;
             }
-            if ((state.startNodeRow !== undefined && status === "START") || (state.endNodeRow !== undefined && status === "END")) {
+            /* if ((state.startNodeRow !== undefined && status === "START") || (state.endNodeRow !== undefined && status === "END")) {
                 console.log("no")
                 return;
-            } 
+            } */
             state.cells[row][col] = {data: data, status: status}
             if (status === "START") {
                 state.startNodeRow = row;
@@ -147,7 +144,7 @@ const gridSlice = createSlice({
             state.cellStyleHeight = height;
         },
         floodFillGrid: (state, action: PayloadAction<FloodFillPayload>) => {
-            const {startRow, startCol, oldColor, newColor} = action.payload;
+            const {startRow, startCol, newColor} = action.payload;
             if (state.cells[startRow][startCol].data === newColor) {
                 return;
             }
@@ -174,19 +171,82 @@ export const {
 export const gridSelector = (state: RootState) => state.grid;
 export const gridCellsSelector = (state: RootState, row: number, col: number) => state.grid.cells[row][col];
 
-type AppThunk = ThunkAction<void, RootState, unknown, Action<string>>
-
+type AppThunk = ThunkAction<void, any, unknown, Action<string>>
 
 
 export const floodFill = (): AppThunk => {
     return (
-        dispatch: ThunkDispatch<RootState, unknown, Action<string>>, 
-        getState: () => RootState
+        dispatch, 
+        getState
     ) => {
         const dfs = (row: number, col: number, oldColor: number, newColor: number) => {
-            if (row < 0 || col < 0 || row >= grid.height || col >= grid.width) {
-                let grid = getState().grid;
+            let grid = getState().grid;
+            if (row < 0 || col < 0 || row >= grid.height || col >= grid.width || grid.cells[row][col].data !== oldColor) {
+                return;
             }
-        }   
+            dispatch(changeCell({row: row, col: col, data: newColor, status: "EXPLORED"}));
+            dfs(row + 1, col, oldColor, newColor);
+            dfs(row - 1, col, oldColor, newColor);
+            dfs(row, col + 1, oldColor, newColor);
+            dfs(row, col - 1, oldColor, newColor);
+        }
+        dfs(0, 0, 1, 2);
     }
 }
+
+/* export const floodFillBFS = (): AppThunk => {
+    return (
+        dispatch,
+        getState
+    ) => {
+        const bfs = (row: number, col: number, oldColor: number, newColor: number) => {
+
+        }
+        
+
+    }
+} */
+
+
+/* export const saveProject = createAsyncThunk(
+    "SAVE_PROJECT",
+    async (
+      { projectName, thumbnail }: SaveProjectArg,
+      { getState }
+    ) => {
+      try {
+        const response = await newProject(
+          projectName,
+          (getState() as RootState)?.strokes,
+          thumbnail
+        )
+        console.log(response)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  )
+
+  export const newProject = (
+  name: string,
+  strokes: Stroke[],
+  image: string
+) =>
+  fetch("http://localhost:4000/projects/new", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name,
+      strokes,
+      image
+    })
+  }).then((res) => res.json())
+
+export const getProject = (projectId: string) => {
+  return fetch(`http://localhost:4000/projects/${projectId}`).then(
+    (res) => res.json()
+  )
+} */

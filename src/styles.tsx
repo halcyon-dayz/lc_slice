@@ -117,6 +117,7 @@ export type ImageProps = {
 }
 
 export type NavItemProps = {
+    key?: number
     text: string
     href?: string
     imageProps?: ImageProps
@@ -125,13 +126,13 @@ export type NavItemProps = {
 export const NavItem = ({
     text,
     href,
-    imageProps
+    imageProps, 
 }: NavItemProps) => {
 
     return (<NavItemContainer>
         <a href={href ? href : "/"}>
             {imageProps ? imageProps.imageURLs.map((url) => (
-                <img 
+                <img key={url}
                     style={{
                         "height": imageProps.height ? `${imageProps.height}px` : "1px",
                         "width" : imageProps.width ? `${imageProps.width}px` : "1px",

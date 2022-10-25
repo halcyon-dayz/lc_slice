@@ -1,18 +1,41 @@
-import React, { useEffect, useState} from "react";
-import { gridCellsSelector, gridSelector } from "../../features/grid/gridSlice";
-import { GridStructureDisplay, RootState} from "../../types";
+import React from "react";
+import { gridSelector } from "../../features/grid/gridSlice";
 import {useSelector} from "react-redux"
 import {Grid} from "../Grid"
+import { PointedArray } from "../PointedArray";
+import {ArrDS} from "../../utils/types";
 
 export const PathFindingVisualizer = () => {
     const grid = useSelector(gridSelector);
 
-    useEffect(() => {
-        console.log("started");
-    }, [])
 
 
     return (
-        <Grid grid={grid}></Grid>
+        <div>
+            
+            <PointedArray 
+                cells={[
+                    {data: 1, status: "NO_DATA"},
+                    {data: 2, status: "NO_DATA"},
+                    {data: 2, status: "NO_DATA"},
+                    {data: 2, status: "NO_DATA"},
+                    {data: 2, status: "NO_DATA"},
+                    {data: 2, status: "NO_DATA"},
+                    {data: 2, status: "NO_DATA"},
+                    {data: 2, status: "NO_DATA"},
+                ]}
+                pointerLocations={[0, 0]}
+            />
+       
+            <Grid grid={grid}></Grid>
+        </div>
     )  
 }
+
+/*{arrays.map((arr, idx) => (
+                <PointedArray 
+                    key={`Array_${idx}`}
+                    cells={(arr as ArrDS).data}
+                    pointerLocations={[0, 1]}
+                />
+            ))} */
