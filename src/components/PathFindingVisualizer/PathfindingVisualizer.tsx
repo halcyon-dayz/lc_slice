@@ -7,6 +7,7 @@ import {ArrDS} from "../../utils/types";
 
 export const PathFindingVisualizer = () => {
     const grid = useSelector(gridSelector);
+    
 
     return (
         <div>

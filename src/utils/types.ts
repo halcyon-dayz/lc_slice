@@ -51,8 +51,9 @@ export type DataStructures = {
 export type RootState = {
     questionNumber: number
     questionText: string
-    grid: GridDS,
-    dataStructures: DataStructures
+    grids: GridDS[],
+    arrays: ArrDS[],
+    totalStructs: number
 }
 
 export type AppThunk<ReturnType = void> = ThunkAction<

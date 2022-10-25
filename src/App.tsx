@@ -7,11 +7,8 @@ import {
   NavBar, 
   NavBarLeft, 
   NavItem,
-  ImageProps,
   NavItemProps,
   Main,
-  Content,
-  ProblemContainer
 } from './styles';
 
 import {Container, Section, Bar} from "react-simple-resizer"
@@ -19,8 +16,7 @@ import { PathFindingVisualizer } from './components/PathFindingVisualizer/Pathfi
 import styles from "./App.module.css"
 import { Controls } from './components/Controls';
 import { useDispatch, useSelector } from 'react-redux';
-import { gridSelector, changeCellSize, changeCell} from './features/grid/gridSlice';
-import { GridDS, RootState } from './utils/types';
+import {changeCellSize, changeCell} from './features/grid/gridSlice';
 
 
 const NavItemLeftList: NavItemProps[] = [
