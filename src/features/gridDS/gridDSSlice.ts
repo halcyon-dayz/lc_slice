@@ -9,7 +9,6 @@ import {
     ChangeGridCellSizePayload,
     ClearGridCellsPayload,
     ChangeGridLabelPayload,
-
 } from "./payloads";
 
 
@@ -28,7 +27,7 @@ const initialState: RootState["dataStructures"]["grids"] = [{
     cellStyleHeight: 50,
 }]
 
-const gridSlice = createSlice({
+const gridDSSlice = createSlice({
     name: "grid",
     initialState, 
     reducers: {
@@ -180,19 +179,20 @@ const gridSlice = createSlice({
 
 
 
-export const grid = gridSlice.reducer 
+export const gridDS = gridDSSlice.reducer 
 
 export const {
-    changeGridWidth,
     changeGridCell,
     changeGridCellSize,
     changeGridHeight,
     changeGridLabel,
+    changeGridWidth,
     clearGridCells,
-} = gridSlice.actions
+} = gridDSSlice.actions
 
-export const gridSelector = (state: RootState) => state.grid;
-export const gridCellsSelector = (state: RootState, row: number, col: number) => state.grid.cells[row][col];
+export const selectAllGridDS = (
+    state: RootState
+) => state.dataStructures.grids;
 
 type AppThunk = ThunkAction<void, any, unknown, Action<string>>
 
@@ -215,60 +215,3 @@ export const floodFill = (gridIndex: number): AppThunk => {
         dfs(0, 0, 1, 2);
     }
 }
-
-/* export const floodFillBFS = (): AppThunk => {
-    return (
-        dispatch,
-        getState
-    ) => {
-        const bfs = (row: number, col: number, oldColor: number, newColor: number) => {
-
-        }
-        
-
-    }
-} */
-
-
-/* export const saveProject = createAsyncThunk(
-    "SAVE_PROJECT",
-    async (
-      { projectName, thumbnail }: SaveProjectArg,
-      { getState }
-    ) => {
-      try {
-        const response = await newProject(
-          projectName,
-          (getState() as RootState)?.strokes,
-          thumbnail
-        )
-        console.log(response)
-      } catch (err) {
-        console.log(err)
-      }
-    }
-  )
-
-  export const newProject = (
-  name: string,
-  strokes: Stroke[],
-  image: string
-) =>
-  fetch("http://localhost:4000/projects/new", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      name,
-      strokes,
-      image
-    })
-  }).then((res) => res.json())
-
-export const getProject = (projectId: string) => {
-  return fetch(`http://localhost:4000/projects/${projectId}`).then(
-    (res) => res.json()
-  )
-} */

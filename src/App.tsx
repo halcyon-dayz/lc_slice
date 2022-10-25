@@ -20,6 +20,7 @@ import styles from "./App.module.css"
 import { Controls } from './components/Controls';
 import { useDispatch, useSelector } from 'react-redux';
 import { gridSelector, changeCellSize, changeCell} from './features/grid/gridSlice';
+import { GridDS, RootState } from './utils/types';
 
 
 const NavItemLeftList: NavItemProps[] = [
@@ -78,7 +79,8 @@ function App() {
 
   const [height, setHeight] = useState<number>(window.innerHeight - 44);
 
-  const grid = useSelector(gridSelector);
+  const grid = useSelector((state) => state);
+  console.log(grid);
   const dispatch = useDispatch();
 
   useEffect(() => {

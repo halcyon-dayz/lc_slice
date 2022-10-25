@@ -169,7 +169,6 @@ export const {
 } = gridSlice.actions
 
 export const gridSelector = (state: RootState) => state.grid;
-export const gridCellsSelector = (state: RootState, row: number, col: number) => state.grid.cells[row][col];
 
 type AppThunk = ThunkAction<void, any, unknown, Action<string>>
 

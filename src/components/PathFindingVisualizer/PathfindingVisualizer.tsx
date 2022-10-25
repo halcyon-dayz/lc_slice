@@ -8,8 +8,6 @@ import {ArrDS} from "../../utils/types";
 export const PathFindingVisualizer = () => {
     const grid = useSelector(gridSelector);
 
-
-
     return (
         <div>
             
@@ -31,11 +29,3 @@ export const PathFindingVisualizer = () => {
         </div>
     )  
 }
-
-/*{arrays.map((arr, idx) => (
-                <PointedArray 
-                    key={`Array_${idx}`}
-                    cells={(arr as ArrDS).data}
-                    pointerLocations={[0, 1]}
-                />
-            ))} */

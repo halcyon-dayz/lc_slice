@@ -1,7 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { changeCell, changeCellSize, changeHeight, changeLabel, changeWidth, clearCells, grid } from "./grid/gridSlice";
+//import { changeCell, changeCellSize, changeHeight, changeLabel, changeWidth, clearCells, grid } from "./grid/gridSlice";
 
-import { addArray, addGrid, dataStructuresReducer } from "./dataStructure/dataStructureSlice";
+import {dataStructuresReducer } from "./dataStructure/dataStructureSlice";
+import { gridDS } from "./gridDS/gridDSSlice";
 
 //Custom Middleware uses the Middleware type and passes generic arguments 
 //for dispatch and state
@@ -15,22 +16,11 @@ import { addArray, addGrid, dataStructuresReducer } from "./dataStructure/dataSt
 
 export const store = configureStore({
     reducer: {
-        grid,
-        dataStructuresReducer
+        gridDS,
     },
     devTools: true, 
 })
 
-export type ValidActions = 
-    typeof changeWidth |
-    typeof changeHeight|
-    typeof changeWidth |
-    typeof clearCells |
-    typeof changeLabel | 
-    typeof changeCellSize |
-    typeof changeCell |
-    typeof addArray | 
-    typeof addGrid
 
 
 //Types the specific dispatch we expect from our store
