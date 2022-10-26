@@ -79,7 +79,7 @@ function App() {
   console.log(grid);
   const dispatch = useDispatch();
 
-  useEffect(() => {
+  /*useEffect(() => {
     window.addEventListener('resize', () => {
       setHeight(window.innerHeight - 44);
     });
@@ -103,7 +103,7 @@ function App() {
     } else if (currentSize > grid.cellStyleWidth * grid.width && grid.cellStyleWidth < 50) {
       dispatch(changeCellSize({width: 50, height: 50}))
     }
-  }
+  } */
 
   return (
     <div className="App">

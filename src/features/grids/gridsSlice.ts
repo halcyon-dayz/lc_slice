@@ -9,8 +9,17 @@ import {
     ChangeGridCellSizePayload,
     ClearGridCellsPayload,
     ChangeGridLabelPayload,
-} from "./payloads";
+} from "./gridPayloads";
 
+import {
+    addGrid,
+    AddGridPayload,
+    deleteGrid,
+    DeleteGridPayload,
+    deleteGridAt,
+    DeleteGridAtPayload,
+    deleteAllGrids,
+} from "../sharedActions"
 
 import { ThunkAction} from "@reduxjs/toolkit";
 import { Action } from "@reduxjs/toolkit";
@@ -27,8 +36,8 @@ const initialState: RootState["grids"] = [{
     cellStyleHeight: 50,
 }]
 
-const gridDSSlice = createSlice({
-    name: "grid",
+const gridsSlice = createSlice({
+    name: "grids",
     initialState, 
     reducers: {
         /**
@@ -171,15 +180,73 @@ const gridDSSlice = createSlice({
             const {width, height, gridIndex} = action.payload;
             state[gridIndex].cellStyleWidth = width;
             state[gridIndex].cellStyleHeight = height;
-        },
-
+        }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(addGrid, (
+           state, 
+           action: PayloadAction<AddGridPayload>
+       ) => {
+           const {num} = action.payload;
+           let prevLength = state.length;
+           for (let i = 0; i < num; i++) {
+               prevLength += 1;
+               state.push({
+                   type: "GRID",
+                   label: `Grid ${prevLength}`,
+                   cells: defaultGrid,
+                   cellStyleHeight: 50,
+                   cellStyleWidth: 50,
+                   width: defaultGrid[0].length,
+                   height: defaultGrid.length
+               })
+           }
+       }).addCase(deleteAllGrids, (
+           state
+       ) => {
+           state = [];
+       }).addCase(deleteGrid, (
+           state, 
+           action: PayloadAction<DeleteGridPayload>
+       ) => {
+           const {num} = action.payload;
+           if (num <= 0) {
+               return;
+           }
+           if (num >= state.length) {
+               state = [];
+           }
+           for (let i = 0; i < num; i++) {
+               state.pop();
+           }
+       }).addCase(deleteGridAt, (
+           state, 
+           action: PayloadAction<DeleteGridAtPayload>
+       ) => {
+           const {idx} = action.payload;
+           if (idx >= state.length || idx < state.length * - 1) {
+               return;
+           }
+           if (idx === state.length - 1 || idx === -1) {
+               state = [...state.slice(0, state.length - 1)]
+               return;
+           }
+           if (idx >= 0) {
+               state = [...state.slice(0, idx), ...state.slice(idx + 1)]
+               return;
+           }
+           if (idx < 0) {
+               const offset = state.length - (idx * - 1);
+               state = [...state.slice(0, offset), ...state.slice(offset + 1)]
+           }
+       })
     }
 
 }) 
 
 
 
-export const gridDS = gridDSSlice.reducer 
+export const gridsReducer = gridsSlice.reducer 
 
 export const {
     changeGridCell,
@@ -188,11 +255,11 @@ export const {
     changeGridLabel,
     changeGridWidth,
     clearGridCells,
-} = gridDSSlice.actions
+} = gridsSlice.actions
 
-export const selectAllGridDS = (
+export const selectGrids = (
     state: RootState
-) => state.dataStructures.grids;
+) => state.grids;
 
 type AppThunk = ThunkAction<void, any, unknown, Action<string>>
 
