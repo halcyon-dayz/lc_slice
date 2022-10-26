@@ -1,7 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 //import { changeCell, changeCellSize, changeHeight, changeLabel, changeWidth, clearCells, grid } from "./grid/gridSlice";
 
-import { totalStructsReducer } from "./totalStructs/totalStructsSlice";
+import { 
+    totalStructsReducer 
+} from "./totalStructs/totalStructsSlice";
+import {
+    arraysReducer
+} from "./arrays/arraysSlice"
+import {
+    gridsReducer
+} from "./grids/gridsSlice"
 
 //Custom Middleware uses the Middleware type and passes generic arguments 
 //for dispatch and state
@@ -15,13 +23,13 @@ import { totalStructsReducer } from "./totalStructs/totalStructsSlice";
 
 export const store = configureStore({
     reducer: {
-        totalStructsReducer
+        arraysReducer,
+        gridsReducer,
+        totalStructsReducer,
     },
     devTools: true, 
 })
 
-
-
 //Types the specific dispatch we expect from our store
 export type AppDispatch = typeof store.dispatch;
-export type AppGetState = typeof store.getState
+//export type AppGetState = typeof store.getState

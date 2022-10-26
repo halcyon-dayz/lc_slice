@@ -1,14 +1,11 @@
 import React from "react";
-import { gridSelector } from "../../features/grid/gridSlice";
+import { selectAllGrids } from "../../features/grids/gridsSlice";
 import {useSelector} from "react-redux"
 import {Grid} from "../Grid"
 import { PointedArray } from "../PointedArray";
-import {ArrDS} from "../../utils/types";
 
 export const PathFindingVisualizer = () => {
-    const grid = useSelector(gridSelector);
-    
-
+    const grid = useSelector(selectAllGrids);
     return (
         <div>
             
@@ -26,7 +23,7 @@ export const PathFindingVisualizer = () => {
                 pointerLocations={[0, 0]}
             />
        
-            <Grid grid={grid}></Grid>
+            <Grid grid={grid[0]}></Grid>
         </div>
     )  
 }

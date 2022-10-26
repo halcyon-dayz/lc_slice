@@ -12,11 +12,11 @@ import {
 } from './styles';
 
 import {Container, Section, Bar} from "react-simple-resizer"
-import { PathFindingVisualizer } from './components/PathFindingVisualizer/PathfindingVisualizer';
+import { PathFindingVisualizer } from './components/PathFindingVisualizer';
 import styles from "./App.module.css"
 import { Controls } from './components/Controls';
 import { useDispatch, useSelector } from 'react-redux';
-import {changeCellSize, changeCell} from './features/grid/gridSlice';
+import { selectAllGrids } from './features/grids/gridsSlice';
 
 
 const NavItemLeftList: NavItemProps[] = [
@@ -75,7 +75,7 @@ function App() {
 
   const [height, setHeight] = useState<number>(window.innerHeight - 44);
 
-  const grid = useSelector((state) => state);
+  const grids = useSelector(selectAllGrids);
   console.log(grid);
   const dispatch = useDispatch();
 

@@ -257,7 +257,7 @@ export const {
     clearGridCells,
 } = gridsSlice.actions
 
-export const selectGrids = (
+export const selectAllGrids = (
     state: RootState
 ) => state.grids;
 
@@ -291,8 +291,6 @@ export const floodFill = (gridIndex: number): AppThunk => {
         const bfs = (row: number, col: number, oldColor: number, newColor: number) => {
 
         }
-        
-
     }
 } */
 
