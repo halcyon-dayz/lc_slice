@@ -28,6 +28,7 @@ import {defaultGrid} from "../../utils/defaultData";
 
 const initialState: RootState["grids"] = [{
     type: "GRID",
+    indexInList: 0,
     width: 5,
     height: 5,
     cells: defaultGrid,
@@ -193,6 +194,7 @@ const gridsSlice = createSlice({
                prevLength += 1;
                state.push({
                    type: "GRID",
+                   indexInList: prevLength - 1,
                    label: `Grid ${prevLength}`,
                    cells: defaultGrid,
                    cellStyleHeight: 50,
@@ -214,37 +216,31 @@ const gridsSlice = createSlice({
                return;
            }
            if (num >= state.length) {
-               state = [];
+                state = [];
            }
            for (let i = 0; i < num; i++) {
-               state.pop();
+                state.pop();
            }
        }).addCase(deleteGridAt, (
            state, 
            action: PayloadAction<DeleteGridAtPayload>
        ) => {
            const {idx} = action.payload;
-           if (idx >= state.length || idx < state.length * - 1) {
+           if (idx >= state.length || idx < (state.length * - 1)) {
                return;
            }
-           if (idx === state.length - 1 || idx === -1) {
+           const effectiveIndex = idx >= 0 ? idx : state.length - (idx * -1);
+           if (effectiveIndex === state.length - 1) {
                state = [...state.slice(0, state.length - 1)]
                return;
-           }
-           if (idx >= 0) {
-               state = [...state.slice(0, idx), ...state.slice(idx + 1)]
-               return;
-           }
-           if (idx < 0) {
-               const offset = state.length - (idx * - 1);
-               state = [...state.slice(0, offset), ...state.slice(offset + 1)]
+           } else {
+               state[effectiveIndex + 1].indexInList -= 1;
+               state = [...state.slice(0, effectiveIndex), ...state.slice(effectiveIndex + 1)];
+               return;    
            }
        })
     }
-
 }) 
-
-
 
 export const gridsReducer = gridsSlice.reducer 
 

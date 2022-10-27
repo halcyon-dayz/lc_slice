@@ -23,7 +23,9 @@ export const PointedArray = ({pointerLocations, cells}: PointedArrayProps) => {
                     marginLeft: "10px",
                     position: "relative",
                     left: `${100 / cells.length * pointer}%`
-                }}>
+                }}
+                    key={`Array_Pointer_${idx}`}
+                >
                     {`p${idx + 1}`}
                 </div>
             ))}

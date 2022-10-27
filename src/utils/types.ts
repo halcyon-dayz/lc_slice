@@ -20,10 +20,11 @@ interface TreeNode<TValue = unknown, TKey = unknown> {
 
 
 export type GridDS = {
-    type: "GRID";
-    label: string
-    cells: Cell[][]
-    width: number
+    type: "GRID",
+    indexInList: number,
+    label: string,
+    cells: Cell[][],
+    width: number,
     height: number,
     cellStyleWidth: number,
     cellStyleHeight: number,

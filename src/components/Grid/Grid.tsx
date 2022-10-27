@@ -1,23 +1,29 @@
 import React, {useState} from "react"
+import { useAppSelector } from "../../features/hooks"
 import {GridDS} from "../../utils/types"
 import {Node} from "../Node"
 
 
 type GridProps = {
-    grid: GridDS
+    gridIndex: number
+
 }
 
-export const Grid = ({grid}: GridProps) => {
+export const Grid = ({gridIndex}: GridProps) => {
+
+    const grid = useAppSelector(state => state.grids[gridIndex]);
+
     return (
         <div className="grid" style={{marginBottom: "50px"}}>
             {grid.cells.map((row, rowIdx) => (
-                <div key={`Cell_${rowIdx}`}>
+                <div key={`Grid_${gridIndex}_Row_${rowIdx}`}>
                     {row.map((node, nodeIdx) => (
                         <Node 
-                            key={`Cell_${rowIdx}_${nodeIdx}`}
+                            gridIndex={gridIndex}
+                            key={`Grid_${gridIndex}_Cell_${rowIdx}_${nodeIdx}`}
                             rowIdx={rowIdx}
                             colIdx={nodeIdx}
-                            styleWidth={grid.cellStyleWidth}
+                            styleWidth={50}
                         />
                     ))}
                 </div>

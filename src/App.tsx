@@ -16,7 +16,7 @@ import { PathFindingVisualizer } from './components/PathFindingVisualizer';
 import styles from "./App.module.css"
 import { Controls } from './components/Controls';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectAllGrids } from './features/grids/gridsSlice';
+import { changeGridCell, changeGridCellSize, selectAllGrids } from './features/grids/gridsSlice';
 
 
 const NavItemLeftList: NavItemProps[] = [
@@ -75,33 +75,31 @@ function App() {
 
   const [height, setHeight] = useState<number>(window.innerHeight - 44);
 
-  const grids = useSelector(selectAllGrids);
-  console.log(grid);
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
 
-  /*useEffect(() => {
+  useEffect(() => {
     window.addEventListener('resize', () => {
       setHeight(window.innerHeight - 44);
     });
   }, []);
 
 
-  useEffect(() => {
-    if (grid.startNodeRow === undefined) {
+  /*useEffect(() => {
+    if (grids[0].startNodeRow === undefined) {
       return;
     }
-    const endRow = grid.height - 1;
-    const endCol = grid.width - 1;
-    dispatch(changeCell({row: endRow, col: endCol, data: grid.cells[endRow][endCol].data, status: "END"}))
+    const endRow = grids[0].height - 1;
+    const endCol = grids[0].width - 1;
+    dispatch(changeGridCell({gridIndex: 0, row: endRow, col: endCol, data: grids[0].cells[endRow][endCol].data, status: "END"}))
 
-  }, [grid.startNodeRow, grid.width, grid.height])
+  }, [grids[0].startNodeRow, grids[0].width, grids[0].height]) */
 
 
-  const onRightSizeChange = (currentSize: number) => {
-    if (currentSize < grid.cellStyleWidth * grid.width) {
-      dispatch(changeCellSize({width: 25, height: 25}))
-    } else if (currentSize > grid.cellStyleWidth * grid.width && grid.cellStyleWidth < 50) {
-      dispatch(changeCellSize({width: 50, height: 50}))
+  /*const onRightSizeChange = (currentSize: number) => {
+    if (currentSize < grids[0].cellStyleWidth * grids[0].width) {
+      dispatch(changeGridCellSize({gridIndex: 0, width: 25, height: 25}))
+    } else if (currentSize > grids[0].cellStyleWidth * grids[0].width && grids[0].cellStyleWidth < 50) {
+      dispatch(changeGridCellSize({gridIndex: 0, width: 50, height: 50}))
     }
   } */
 
@@ -121,11 +119,9 @@ function App() {
           alignItems: "center",
           justifyContent: "center"
           }} minSize={100}
-            onSizeChanged={onRightSizeChange}>
+        >
           <PathFindingVisualizer />
         </Section>
-
-
         </Container>
       </Main>    
     </div>

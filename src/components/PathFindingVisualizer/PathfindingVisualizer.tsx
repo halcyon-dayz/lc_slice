@@ -3,9 +3,12 @@ import { selectAllGrids } from "../../features/grids/gridsSlice";
 import {useSelector} from "react-redux"
 import {Grid} from "../Grid"
 import { PointedArray } from "../PointedArray";
+import { useAppSelector } from "../../features/hooks";
+import { RootState } from "../../utils/types";
 
 export const PathFindingVisualizer = () => {
-    const grid = useSelector(selectAllGrids);
+    const gridsLength = useAppSelector((state: RootState) => state.grids.length);
+    console.log(gridsLength);
     return (
         <div>
             
@@ -23,7 +26,12 @@ export const PathFindingVisualizer = () => {
                 pointerLocations={[0, 0]}
             />
        
-            <Grid grid={grid[0]}></Grid>
+            {[...Array(gridsLength)].map((grid) => (
+                <Grid 
+                    key={`Grid_${grid}`}
+                    gridIndex={grid}
+                />
+            ))}
         </div>
     )  
 }

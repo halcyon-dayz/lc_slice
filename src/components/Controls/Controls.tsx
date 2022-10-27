@@ -1,44 +1,52 @@
 import { ControlsContainer } from "./styles"
-import React from "react"
+import React, {useState} from "react"
 import { useSelector} from "react-redux";
-import { changeHeight, changeWidth, gridSelector } from "../../features/grid/gridSlice";
-import { floodFill } from "../../features/grid/gridSlice";
+import { changeGridHeight, changeGridWidth, selectAllGrids } from "../../features/grids/gridsSlice";
+import { floodFill } from "../../features/grids/gridsSlice";
 import { useAppDispatch } from "../../features/hooks";
-
-const delay = (time: number) => {
-    return new Promise(resolve => setTimeout(resolve, time));
-}
 
 
 
 export const Controls = () => {
+    const [inputGrid, setInputGrid] = useState<number>(0);
 
-    const grid = useSelector(gridSelector);
+    const grids = useSelector(selectAllGrids);
     const dispatch = useAppDispatch();
 
+    const onChangeSelectedGrid = (e: React.FormEvent<HTMLInputElement>) => {
+        const numVal = parseInt(e.currentTarget.value);
+        setInputGrid(numVal);
+    }
+
     const clickIncreaseRows = () => {
-        dispatch(changeWidth({newWidth: grid.width + 1}))
+        dispatch(changeGridWidth({gridIndex: inputGrid, newWidth: grids[inputGrid].width + 1}))
     }
 
     const clickDecreaseRows = () => {
-        if (grid.width - 1 >= 2) {
-            dispatch(changeWidth({newWidth: grid.width - 1}))
+        if (grids[inputGrid].width - 1 >= 2) {
+            dispatch(changeGridWidth({
+                gridIndex: inputGrid, 
+                newWidth: grids[inputGrid].width - 1
+            }))
         }
     }
 
     const clickIncreaseColumns = () => {
-        dispatch(changeHeight({newHeight: grid.height + 1}))
+        dispatch(changeGridHeight({
+            gridIndex: inputGrid, 
+            newHeight: grids[inputGrid].height + 1
+        }))
     }
 
     const clickDecreaseColumns = () => {
-        if (grid.height - 1 >= 2) {
-            dispatch(changeHeight({newHeight: grid.height - 1}))
+        if (grids[inputGrid].height - 1 >= 2) {
+            dispatch(changeGridHeight({gridIndex: inputGrid, newHeight: grids[inputGrid].height - 1}))
         }  
     } 
 
     const clickFloodFill = () => {
         console.log("Flood Fill clicked");
-        dispatch(floodFill());
+        dispatch(floodFill(inputGrid));
     }
 
     return (
@@ -55,5 +63,16 @@ export const Controls = () => {
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
             <button onClick={clickFloodFill}>Flood Fill From Start</button>
         </div>
+        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
+            Selected Grid: 
+            <input 
+                type="number" 
+                value={inputGrid}
+                min={0} 
+                max={grids.length - 1}
+                onChange={onChangeSelectedGrid}
+                ></input>
+        </div>
+
     </ControlsContainer>);
 }

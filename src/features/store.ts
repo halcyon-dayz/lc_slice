@@ -23,9 +23,9 @@ import {
 
 export const store = configureStore({
     reducer: {
-        arraysReducer,
-        gridsReducer,
-        totalStructsReducer,
+        arrays: arraysReducer,
+        grids: gridsReducer,
+        totalStructs: totalStructsReducer
     },
     devTools: true, 
 })
