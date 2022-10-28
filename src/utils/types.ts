@@ -2,7 +2,8 @@ import { AnyAction } from "@reduxjs/toolkit";
 import { ThunkAction } from "@reduxjs/toolkit";
 
 
-export type CellStatus = "NO_DATA" | "PROCESSING" | "EXPLORED" | "LOCKED" | "UNEXPLORED" | "START" | "END"
+export type CellStatus = "NO_DATA" | "PROCESSING" | "EXPLORED" | "LOCKED" | "UNEXPLORED" | "START" | "END" |
+"WATER" | "ISLAND" | "DEEP_OCEAN"
 
 export type DataStructureType = "GRID" | "ARRAY"
 

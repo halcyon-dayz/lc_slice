@@ -27,6 +27,8 @@ export type ChangeGridCellPayload = {
     status: CellStatus
 }
 
+export type ChangeGridCellStatusPayload = Omit<ChangeGridCellPayload, "data">
+
 export type ChangeGridCellSizePayload = {
     gridIndex: number,
     width: number,

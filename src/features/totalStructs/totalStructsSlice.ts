@@ -15,7 +15,7 @@ import {
     deleteGrid
 } from "../sharedActions";
 
-const initialState: RootState["totalStructs"] = 0;
+const initialState: RootState["totalStructs"] = 1;
 
 const totalStructsSlice = createSlice({
     name: "dataStructure",

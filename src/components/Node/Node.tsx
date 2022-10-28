@@ -46,10 +46,15 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth}: NodeProps) => {
             className={
                 cell.status === 'START' ? "node_start" : 
                 cell.status === "END" ? "node_end" : 
+                cell.status === "EXPLORED" ? "node_explored" :
+                cell.status === "WATER" ? "node_water" :
+                cell.status === "ISLAND" ? "node_island" :
+                cell.status === "DEEP_OCEAN" ? "node_deep_ocean" :
                 "node"
             } 
-            contentEditable='true'
+            contentEditable={true}
             onInput={onEditData}
+            suppressContentEditableWarning={true}
         >
             {cell.data}
         </div>

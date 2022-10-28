@@ -9,6 +9,7 @@ import {
     ChangeGridCellSizePayload,
     ClearGridCellsPayload,
     ChangeGridLabelPayload,
+    ChangeGridCellStatusPayload
 } from "./gridPayloads";
 
 import {
@@ -166,6 +167,28 @@ const gridsSlice = createSlice({
          * Replace the data in each cell with default data and status values.
          * @param {RootState} state 
          *  The current state of the Redux store
+         * @param {PayloadAction<ChangeGridCellPayload>} action  
+         *  Redux PayloadAction containing the params below.
+         * @param {number} action.payload.gridIndex 
+         *  The grid in the grid list to be operated on.
+         * @param {number} [action.payload.row] 
+         *  Row in the grid to operate on.
+         * @param {number} [action.payload.col] 
+         *  Column in the grid to operate on.
+         * @param {status} [action.payload.status]
+         *  Status to apply to the selected cell.
+         */
+        changeGridCellStatus: (state, action: PayloadAction<ChangeGridCellStatusPayload>) => {
+            const {gridIndex, row, col, status} = action.payload;
+            if (row >= state[gridIndex].height || col >= state[gridIndex].width || row < 0 || col < 0) {
+                return;
+            }
+            state[gridIndex].cells[row][col].status = status;
+        },
+        /**
+         * Replace the data in each cell with default data and status values.
+         * @param {RootState} state 
+         *  The current state of the Redux store
          * @param {PayloadAction<ChangeGridLabelPayload>} action  
          *  Redux PayloadAction containing the params below.
          * @param {number} action.payload.gridIndex
@@ -251,6 +274,7 @@ export const {
     changeGridLabel,
     changeGridWidth,
     clearGridCells,
+    changeGridCellStatus
 } = gridsSlice.actions
 
 export const selectAllGrids = (
@@ -265,7 +289,7 @@ export const floodFill = (gridIndex: number): AppThunk => {
         getState
     ) => {
         const dfs = (row: number, col: number, oldColor: number, newColor: number) => {
-            let grid = getState().dataStructures.grids[gridIndex]
+            let grid = getState().grids[gridIndex]
             if (row < 0 || col < 0 || row >= grid.height || col >= grid.width || grid.cells[row][col].data !== oldColor) {
                 return;
             }

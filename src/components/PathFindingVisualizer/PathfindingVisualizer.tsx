@@ -8,28 +8,13 @@ import { RootState } from "../../utils/types";
 
 export const PathFindingVisualizer = () => {
     const gridsLength = useAppSelector((state: RootState) => state.grids.length);
-    console.log(gridsLength);
     return (
         <div>
-            
-            <PointedArray 
-                cells={[
-                    {data: 1, status: "NO_DATA"},
-                    {data: 2, status: "NO_DATA"},
-                    {data: 2, status: "NO_DATA"},
-                    {data: 2, status: "NO_DATA"},
-                    {data: 2, status: "NO_DATA"},
-                    {data: 2, status: "NO_DATA"},
-                    {data: 2, status: "NO_DATA"},
-                    {data: 2, status: "NO_DATA"},
-                ]}
-                pointerLocations={[0, 0]}
-            />
        
-            {[...Array(gridsLength)].map((grid) => (
+            {[...Array(gridsLength)].map((grid, idx) => (
                 <Grid 
                     key={`Grid_${grid}`}
-                    gridIndex={grid}
+                    gridIndex={idx}
                 />
             ))}
         </div>
