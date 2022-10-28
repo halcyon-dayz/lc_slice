@@ -109,7 +109,7 @@ function App() {
       <HeaderLayout leftList={NavItemLeftList}/>
       <Main>
         <Container style={{position: "relative", height: `${height}px`}}>
-        <Section style={{ background: 'rgb(240, 240, 240)' }} minSize={100}>
+        <Section style={{ overflow: "scroll", background: 'rgb(240, 240, 240)' }} minSize={100}>
           <Controls />
         </Section>
         <Bar size={10} style={{ background: '#738228', cursor: 'col-resize' }} />

@@ -123,7 +123,7 @@ export const Controls = () => {
     }
 
     const step200 = () => {
-        
+
     }
 
 
@@ -157,6 +157,11 @@ export const Controls = () => {
             <button>Step Num Islands</button>
             <button>Complete Num Islands</button>
         </div>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tempus quam pellentesque nec nam aliquam sem et. Odio eu feugiat pretium nibh ipsum consequat nisl vel. Integer malesuada nunc vel risus commodo viverra maecenas accumsan. Sit amet est placerat in egestas erat. Aliquet nec ullamcorper sit amet risus nullam eget. Cum sociis natoque penatibus et magnis dis parturient. In mollis nunc sed id. Risus pretium quam vulputate dignissim suspendisse in est ante in. Commodo quis imperdiet massa tincidunt nunc pulvinar. Lacus luctus accumsan tortor posuere ac ut consequat. Ullamcorper eget nulla facilisi etiam dignissim diam quis enim lobortis. Nec dui nunc mattis enim ut tellus. Dolor morbi non arcu risus quis. Quam pellentesque nec nam aliquam sem et tortor consequat. Arcu odio ut sem nulla pharetra diam sit. Aliquam sem et tortor consequat id porta nibh venenatis. Elit ullamcorper dignissim cras tincidunt lobortis feugiat.
+
+Adipiscing elit pellentesque habitant morbi. Viverra aliquet eget sit amet. Feugiat vivamus at augue eget arcu dictum varius duis at. Non quam lacus suspendisse faucibus interdum posuere. Pharetra vel turpis nunc eget lorem dolor sed. Libero enim sed faucibus turpis in. Sollicitudin nibh sit amet commodo nulla facilisi nullam vehicula. Fusce id velit ut tortor pretium viverra suspendisse potenti nullam. Duis convallis convallis tellus id interdum. Etiam erat velit scelerisque in dictum non. Urna condimentum mattis pellentesque id.
+
+Tincidunt tortor aliquam nulla facilisi cras fermentum odio eu. Eget velit aliquet sagittis id consectetur purus ut. Consectetur adipiscing elit ut aliquam purus sit amet luctus. Praesent tristique magna sit amet purus gravida quis. Aliquet nec ullamcorper sit amet risus nullam eget. Neque convallis a cras semper auctor. Ut morbi tincidunt augue interdum velit euismod in. At tempor commodo ullamcorper a lacus vestibulum sed arcu. Feugiat scelerisque varius morbi enim nunc faucibus. Malesuada bibendum arcu vitae elementum curabitur vitae. Diam sit amet nisl suscipit adipiscing bibendum est.</p>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
             Selected Grid: 
             <input 
