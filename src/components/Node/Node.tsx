@@ -13,7 +13,8 @@ type NodeProps = {
 }
 
 const onlyNumbers = (str: string) => {
-    return /^[0-9.,]+$/.test(str);
+    return /^-?\d*\.{0,1}\d+$/.test(str);
+    //return /^[0-9.,]+$/.test(str);
 }
 
 export const Node = ({gridIndex, rowIdx, colIdx, styleWidth}: NodeProps) => {
@@ -50,6 +51,7 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth}: NodeProps) => {
                 cell.status === "WATER" ? "node_water" :
                 cell.status === "ISLAND" ? "node_island" :
                 cell.status === "DEEP_OCEAN" ? "node_deep_ocean" :
+                cell.status === "MONKEY_ISLAND" ? "node_monkey_island" :
                 "node"
             } 
             contentEditable={true}

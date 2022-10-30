@@ -6,7 +6,9 @@ import {
     changeGridHeight, 
     changeGridWidth, 
     selectAllGrids,
-    changeGridCellStatus} from "../../features/grids/gridsSlice";
+    changeGridCellStatus,
+    clearGridRow,
+} from "../../features/grids/gridsSlice";
 import { floodFill } from "../../features/grids/gridsSlice";
 import { useAppDispatch } from "../../features/hooks";
 
@@ -17,6 +19,8 @@ export const Controls = () => {
     const [prevCells, setPrevCells] = useState<[number, number][]>([]);
     const [currentCell, setCurrentCell] = useState<[number, number]>([0, 0])
     const [animationOn, setAnimationOn] = useState<boolean>(false);
+    const [clearValue, setClearValue] = useState<number>(0);
+    const [selectedRow, setSelectedRow] = useState<number>(0);
 
     const grids = useSelector(selectAllGrids);
     const dispatch = useAppDispatch();
@@ -24,6 +28,16 @@ export const Controls = () => {
     const onChangeSelectedGrid = (e: React.FormEvent<HTMLInputElement>) => {
         const numVal = parseInt(e.currentTarget.value);
         setInputGrid(numVal);
+    }
+
+    const onChangeClearValue = (e: React.FormEvent<HTMLInputElement>) => {
+        const numVal = parseInt(e.currentTarget.value);
+        setClearValue(numVal);
+    }
+
+    const onChangeSelectedRow = (e: React.FormEvent<HTMLInputElement>) => {
+        const numVal = parseInt(e.currentTarget.value);
+        setSelectedRow(numVal);
     }
 
     const clickIncreaseRows = () => {
@@ -97,7 +111,23 @@ export const Controls = () => {
     }
 
 
+    const setUpMonkeyIsland = () => {
+        setCurrentCell([0, 0]);
+        for (let i = 0; i < grids[inputGrid].cells.length; i++) {
+            for (let j = 0; j < grids[inputGrid].cells[0].length; j++) {
+                dispatch(changeGridCell({
+                    gridIndex: inputGrid,
+                    row: i,
+                    col: j,
+                    data: 2,
+                    status: "MONKEY_ISLAND"
+                }))
+            }
+        }
+    }
+
     const setUp200 = () => {
+        setCurrentCell([0, 0]);
         for (let i = 0; i < grids[inputGrid].cells.length; i++) {
             for (let j = 0; j < grids[inputGrid].cells[0].length; j++) {
                 if (grids[inputGrid].cells[i][j].data === 1) {
@@ -118,12 +148,82 @@ export const Controls = () => {
                     }))
                     continue;
                 }
+                if (grids[inputGrid].cells[i][j].data === -1) {
+                    dispatch(changeGridCellStatus({
+                        gridIndex: inputGrid,
+                        row: i,
+                        col: j,
+                        status: "DEEP_OCEAN"
+                    }))
+                    continue;
+                } 
+                if (grids[inputGrid].cells[i][j].data === 2) {
+                    dispatch(changeGridCellStatus({
+                        gridIndex: inputGrid,
+                        row: i,
+                        col: j,
+                        status: "MONKEY_ISLAND"
+                    }))
+                    continue;
+                }
             }
         }
     }
 
     const step200 = () => {
+        const row = currentCell[0];
+        const col = currentCell[0];
+        if (grids[inputGrid].cells[row][col].status === "ISLAND"){
+            dispatch(changeGridCell({
+                gridIndex: inputGrid, 
+                data: 2, 
+                row: currentCell[0], 
+                col: currentCell[1], 
+                status: "DEEP_OCEAN",
+            }))
+            if (row + 1 < grids[inputGrid].cells.length && grids[inputGrid].cells[row + 1][col].status === "ISLAND") {
+                console.log("Going down")
+                console.log(grids[inputGrid].cells.length)
+                setPrevCells([...prevCells, currentCell]);
+                setCurrentCell([row + 1, col]);
+                return;
+            } 
+            if (row - 1 >= 0 && grids[inputGrid].cells[row - 1][col].status === "UNEXPLORED") {
+                setPrevCells([...prevCells, currentCell]);
+                setCurrentCell([row - 1, col]);
+                return;
+            } 
+            if (col + 1 < grids[inputGrid].cells[0].length && grids[inputGrid].cells[row][col + 1].status === "UNEXPLORED") {
+                setPrevCells([...prevCells, currentCell]);
+                setCurrentCell([row, col + 1]);
+                return;
+            } 
+            if (col - 1 >= 0 && grids[inputGrid].cells[row][col - 1].status === "UNEXPLORED") {
+                setPrevCells([...prevCells, currentCell]);
+                setCurrentCell([row, col - 1]);
+                return;
+            } 
+        }
+        if (prevCells.length !== 0) {
+            const backCell = prevCells[prevCells.length - 1];
+            setPrevCells([...prevCells.slice(0, prevCells.length - 1)]);
+            setCurrentCell(backCell);
+            return;
+        }
+        if (col > grids[inputGrid].cells[0].length) {
 
+        }
+        setCurrentCell([row + 1, 0]);
+
+    }
+
+    const clearSelectedRow = () => {
+        dispatch(clearGridRow({
+            gridIndex: inputGrid,
+            row: selectedRow,
+            data: clearValue,
+            status: "ISLAND"
+        }))
     }
 
 
@@ -154,14 +254,22 @@ export const Controls = () => {
         </div>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
             <button onClick={setUp200}>Set up Num Islands</button>
-            <button>Step Num Islands</button>
+            <button onClick={step200}>Step Num Islands</button>
             <button>Complete Num Islands</button>
         </div>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tempus quam pellentesque nec nam aliquam sem et. Odio eu feugiat pretium nibh ipsum consequat nisl vel. Integer malesuada nunc vel risus commodo viverra maecenas accumsan. Sit amet est placerat in egestas erat. Aliquet nec ullamcorper sit amet risus nullam eget. Cum sociis natoque penatibus et magnis dis parturient. In mollis nunc sed id. Risus pretium quam vulputate dignissim suspendisse in est ante in. Commodo quis imperdiet massa tincidunt nunc pulvinar. Lacus luctus accumsan tortor posuere ac ut consequat. Ullamcorper eget nulla facilisi etiam dignissim diam quis enim lobortis. Nec dui nunc mattis enim ut tellus. Dolor morbi non arcu risus quis. Quam pellentesque nec nam aliquam sem et tortor consequat. Arcu odio ut sem nulla pharetra diam sit. Aliquam sem et tortor consequat id porta nibh venenatis. Elit ullamcorper dignissim cras tincidunt lobortis feugiat.
+        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
+            <button onClick={setUpMonkeyIsland}>Money Islandize</button>
+            <button onClick={clearSelectedRow}>Clear Selected Row</button>
+        </div>
+        <p>
+            Sunday: Decision to Leave 11:30 am Regency Irvine
+            Monday: Tar 3:40pm or 7:15 pm Summit Sierra
+            Tuesday: Triangle of Sadness 3:50PM 7:10pm  10:25pm Summit Sierra
+            Wednesday Terrifier 2 7:50pm Summit Sierra
+            Thursday Godzilla Against Mechagodzilla 7:15pm Summit Sierra
+            Friday One Piece Red Galaxy Theaters
 
-Adipiscing elit pellentesque habitant morbi. Viverra aliquet eget sit amet. Feugiat vivamus at augue eget arcu dictum varius duis at. Non quam lacus suspendisse faucibus interdum posuere. Pharetra vel turpis nunc eget lorem dolor sed. Libero enim sed faucibus turpis in. Sollicitudin nibh sit amet commodo nulla facilisi nullam vehicula. Fusce id velit ut tortor pretium viverra suspendisse potenti nullam. Duis convallis convallis tellus id interdum. Etiam erat velit scelerisque in dictum non. Urna condimentum mattis pellentesque id.
-
-Tincidunt tortor aliquam nulla facilisi cras fermentum odio eu. Eget velit aliquet sagittis id consectetur purus ut. Consectetur adipiscing elit ut aliquam purus sit amet luctus. Praesent tristique magna sit amet purus gravida quis. Aliquet nec ullamcorper sit amet risus nullam eget. Neque convallis a cras semper auctor. Ut morbi tincidunt augue interdum velit euismod in. At tempor commodo ullamcorper a lacus vestibulum sed arcu. Feugiat scelerisque varius morbi enim nunc faucibus. Malesuada bibendum arcu vitae elementum curabitur vitae. Diam sit amet nisl suscipit adipiscing bibendum est.</p>
+        </p>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
             Selected Grid: 
             <input 
@@ -170,6 +278,21 @@ Tincidunt tortor aliquam nulla facilisi cras fermentum odio eu. Eget velit aliqu
                 min={0} 
                 max={grids.length - 1}
                 onChange={onChangeSelectedGrid}
+                ></input>
+
+            Clear Value: <input 
+                type="number" 
+                value={clearValue}
+                min={0} 
+                max={3}
+                onChange={onChangeClearValue}
+                ></input>
+            Selected Row: <input 
+                type="number" 
+                value={selectedRow}
+                min={0} 
+                max={grids[inputGrid].cells.length - 1}
+                onChange={onChangeSelectedRow}
                 ></input>
         </div>
 

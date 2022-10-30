@@ -9,7 +9,8 @@ import {
     ChangeGridCellSizePayload,
     ClearGridCellsPayload,
     ChangeGridLabelPayload,
-    ChangeGridCellStatusPayload
+    ChangeGridCellStatusPayload,
+    ClearGridRowPayload
 } from "./gridPayloads";
 
 import {
@@ -163,6 +164,15 @@ const gridsSlice = createSlice({
                 state[gridIndex].endNodeCol = col; 
             }
         },
+        clearGridRow: (state, action: PayloadAction<ClearGridRowPayload>) => {
+            const {gridIndex, row, data, status} = action.payload;
+            for (let i = 0; i < state[gridIndex].cells[0].length; i++) {
+                state[gridIndex].cells[row][i] = {
+                    data: data,
+                    status: status,
+                }
+            }
+        },
         /**
          * Replace the data in each cell with default data and status values.
          * @param {RootState} state 
@@ -274,7 +284,8 @@ export const {
     changeGridLabel,
     changeGridWidth,
     clearGridCells,
-    changeGridCellStatus
+    changeGridCellStatus,
+    clearGridRow
 } = gridsSlice.actions
 
 export const selectAllGrids = (

@@ -45,3 +45,10 @@ export type ChangeGridLabelPayload = {
     gridIndex: number,
     label: string
 }
+
+export type ClearGridRowPayload = {
+    gridIndex: number,
+    row: number, 
+    data: number, 
+    status: CellStatus
+}
