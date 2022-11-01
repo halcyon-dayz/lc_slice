@@ -293,6 +293,21 @@ export const Controls = () => {
             data: sum,
             status: "UNEXPLORED",
         }));
+        //Clear status of prev cells so they no longer render as under evaluation
+        for (let i = 0; i < prevCells.length; i++) {
+            const prevRow = prevCells[i][0];
+            const prevCol = prevCells[i][1];
+            if (prevRow < 0 || prevCol < 0 || prevRow === undefined || prevCol === undefined) {
+                continue;
+            }
+            dispatch(changeGridCell({
+                gridIndex: inputGrid,
+                row: prevCells[i][0], 
+                col: prevCells[i][1],
+                data: grids[inputGrid].cells[prevRow][prevCol].data,
+                status: "UNEXPLORED",
+            }));  
+        }
         //set current cell to next cell in the grid
         const [nextRow, nextCol] = ARRAY_2D_GET_NEXT_INDEX(grids[inputGrid].cells, row, col);
         dispatch(changeGridCell({
@@ -303,6 +318,19 @@ export const Controls = () => {
             status: "CURRENT",
         }));
         setCurrentCell([nextRow, nextCol]);
+        //Set prev cells to evaluated cells
+        dispatch(changeGridCellStatus({
+            gridIndex: inputGrid,
+            row: nextRow - 1,
+            col: nextCol,
+            status: "PREV_EVALUATE"
+        }));
+        dispatch(changeGridCellStatus({
+            gridIndex: inputGrid,
+            row: nextRow,
+            col: nextCol - 1,
+            status: "PREV_EVALUATE"
+        }));
         setPrevCells([[nextRow - 1, nextCol], [nextRow, nextCol - 1]])
     }
 

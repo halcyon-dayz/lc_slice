@@ -53,6 +53,7 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth}: NodeProps) => {
                 cell.status === "DEEP_OCEAN" ? "node_deep_ocean" :
                 cell.status === "MONKEY_ISLAND" ? "node_monkey_island" :
                 cell.status === "CURRENT" ? "node_current" :
+                cell.status === "PREV_EVALUATE" ? "node_prev_evaluate" :
                 "node"
             } 
             contentEditable={true}

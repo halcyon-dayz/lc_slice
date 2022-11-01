@@ -149,6 +149,9 @@ const gridsSlice = createSlice({
             if (row >= state[gridIndex].height || col >= state[gridIndex].width || row < 0 || col < 0) {
                 return;
             }
+            if (data === null || data === undefined) {
+                return;
+            }
             /* if ((state.startNodeRow !== undefined && status === "START") || (state.endNodeRow !== undefined && status === "END")) {
                 console.log("no")
                 return;

@@ -5,7 +5,7 @@ import { LC_QUESTIONS } from "./questionEnum";
 
 
 export type CellStatus = "NO_DATA" | "PROCESSING" | "EXPLORED" | "LOCKED" | "UNEXPLORED" | "START" | "END" |
-"WATER" | "ISLAND" | "DEEP_OCEAN" | "MONKEY_ISLAND" | "CURRENT"
+"WATER" | "ISLAND" | "DEEP_OCEAN" | "MONKEY_ISLAND" | "CURRENT" | "PREV_EVALUATE"
 
 export type DataStructureType = "GRID" | "ARRAY"
 
