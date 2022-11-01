@@ -102,6 +102,17 @@
     align-items: center;
     padding: 0px;
     background-color: orange;
+}
+
+.node_current {
+    width: 50px;
+    height: 50px;
+    outline: 1px solid yellow;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    background-color: yellow;
 
 }
 

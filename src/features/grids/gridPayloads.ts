@@ -1,12 +1,6 @@
 import { CellStatus } from "../../utils/types"
 
 
-/** 
- * @typedef {object} ChangeGridWidthPayload
- * @property {number} newWidth New width of the grid, prompting addition or deletion of new columns.
- * @property {number} gridIndex Index of grid in grid list to operate on.
- * @property {number} [defaultValue] Value to fill new cells with.
- */
 export type ChangeGridWidthPayload = {
     newWidth: number,
     gridIndex: number,

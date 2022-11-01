@@ -23,7 +23,7 @@ const ARRAY_2D_INDEX_IS_VALID = <T,>(arr: T[][], row: number, col: number): bool
     return true;
 }
 
-const ARRAY_2D_GET_NEXT_INDEX = <T,>(arr: T[][], col: number, row: number): [number, number] => {
+const ARRAY_2D_GET_NEXT_INDEX = <T,>(arr: T[][], row: number, col: number): [number, number] => {
     if (!ARRAY_2D_INDEX_IS_VALID(arr, row, col)) {
         return [-1, -1];
     }
@@ -44,7 +44,6 @@ export const Controls = () => {
 
     const grids = useSelector(selectAllGrids);
     const dispatch = useAppDispatch();
-    grids[inputGrid].cells.map
 
     const onChangeSelectedGrid = (e: React.FormEvent<HTMLInputElement>) => {
         const numVal = parseInt(e.currentTarget.value);
@@ -253,36 +252,58 @@ export const Controls = () => {
     }
 
     const onClickFindPathsToCells = () => {
+        //Store current row and column values
         const row = currentCell[0];
-        const col = currentCell[0];
+        const col = currentCell[1];
+        //Default value for first cell;
         if (row === 0 && col === 0) {
+            console.log("Run default cell")
+            console.log(row);
+            console.log(col);
             dispatch(changeGridCell({
                 gridIndex: inputGrid,
-                row: row,
-                col: col,
+                row: 0,
+                col: 0,
                 data: 1,
                 status: "UNEXPLORED"
             }))
+            dispatch(changeGridCellStatus({
+                gridIndex: inputGrid,
+                row: 0, 
+                col: 1,
+                status: "CURRENT",
+            }));
             setCurrentCell([0, 1]);
             setPrevCells([[0, 0], [-1, 1]]);
+            return;
         }
         let sum = 0;
         for (let i = 0; i < prevCells.length; i++) {
             let prevCellRow = prevCells[i][0];
             let prevCellCol = prevCells[i][1];
-            if (prevCellRow < 0 || prevCellCol < 0) {
+            if (prevCellRow < 0 || prevCellCol < 0 || prevCellRow === undefined || prevCellCol === undefined) {
                 continue;
             }
             sum += grids[inputGrid].cells[prevCellRow][prevCellCol].data;
         }
-        dispatch(changeGridCellData({
+        dispatch(changeGridCell({
             gridIndex: inputGrid,
             row: row, 
             col: col,
-            data: sum
+            data: sum,
+            status: "UNEXPLORED",
         }));
         //set current cell to next cell in the grid
-        setPrevCells()
+        const [nextRow, nextCol] = ARRAY_2D_GET_NEXT_INDEX(grids[inputGrid].cells, row, col);
+        dispatch(changeGridCell({
+            gridIndex: inputGrid,
+            row: nextRow, 
+            col: nextCol,
+            data: 0,
+            status: "CURRENT",
+        }));
+        setCurrentCell([nextRow, nextCol]);
+        setPrevCells([[nextRow - 1, nextCol], [nextRow, nextCol - 1]])
     }
 
 
@@ -319,7 +340,7 @@ export const Controls = () => {
         </div>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
             <button onClick={onClearCells}>Mone</button>
-            <button onClick={}>Paths to Cells</button>
+            <button onClick={onClickFindPathsToCells}>Paths to Cells</button>
         </div>
         <p>
             Sunday: Decision to Leave 11:30 am Regency Irvine
