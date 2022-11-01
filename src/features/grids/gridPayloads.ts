@@ -52,3 +52,5 @@ export type ClearGridRowPayload = {
     data: number, 
     status: CellStatus
 }
+
+export type ChangeGridCellDataPayload = Omit<ChangeGridCellPayload, "status">

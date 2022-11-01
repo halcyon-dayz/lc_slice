@@ -8,10 +8,30 @@ import {
     selectAllGrids,
     changeGridCellStatus,
     clearGridRow,
+    clearGridCells,
+    changeGridCellData,
 } from "../../features/grids/gridsSlice";
 import { floodFill } from "../../features/grids/gridsSlice";
 import { useAppDispatch } from "../../features/hooks";
+import { arrayBuffer } from "stream/consumers";
 
+
+const ARRAY_2D_INDEX_IS_VALID = <T,>(arr: T[][], row: number, col: number): boolean => {
+    if (row < 0 || col < 0 || row >= arr.length || col >= arr[0].length) {
+        return false
+    }
+    return true;
+}
+
+const ARRAY_2D_GET_NEXT_INDEX = <T,>(arr: T[][], col: number, row: number): [number, number] => {
+    if (!ARRAY_2D_INDEX_IS_VALID(arr, row, col)) {
+        return [-1, -1];
+    }
+    if (col === arr[0].length - 1 && ARRAY_2D_INDEX_IS_VALID(arr, row + 1, 0)) {
+        return [row + 1, 0];
+    }
+    return [row, col + 1];
+}
 
 
 export const Controls = () => {
@@ -24,6 +44,7 @@ export const Controls = () => {
 
     const grids = useSelector(selectAllGrids);
     const dispatch = useAppDispatch();
+    grids[inputGrid].cells.map
 
     const onChangeSelectedGrid = (e: React.FormEvent<HTMLInputElement>) => {
         const numVal = parseInt(e.currentTarget.value);
@@ -211,9 +232,9 @@ export const Controls = () => {
             return;
         }
         if (col > grids[inputGrid].cells[0].length) {
-
+            setCurrentCell([row + 1, 0]);
         }
-        setCurrentCell([row + 1, 0]);
+        setCurrentCell([row, col + 1]);
 
     }
 
@@ -226,6 +247,44 @@ export const Controls = () => {
         }))
     }
 
+    const onClearCells = () => {
+        setAnimationOn(false);
+        dispatch(clearGridCells({gridIndex: inputGrid, defaultValue: 0}));
+    }
+
+    const onClickFindPathsToCells = () => {
+        const row = currentCell[0];
+        const col = currentCell[0];
+        if (row === 0 && col === 0) {
+            dispatch(changeGridCell({
+                gridIndex: inputGrid,
+                row: row,
+                col: col,
+                data: 1,
+                status: "UNEXPLORED"
+            }))
+            setCurrentCell([0, 1]);
+            setPrevCells([[0, 0], [-1, 1]]);
+        }
+        let sum = 0;
+        for (let i = 0; i < prevCells.length; i++) {
+            let prevCellRow = prevCells[i][0];
+            let prevCellCol = prevCells[i][1];
+            if (prevCellRow < 0 || prevCellCol < 0) {
+                continue;
+            }
+            sum += grids[inputGrid].cells[prevCellRow][prevCellCol].data;
+        }
+        dispatch(changeGridCellData({
+            gridIndex: inputGrid,
+            row: row, 
+            col: col,
+            data: sum
+        }));
+        //set current cell to next cell in the grid
+        setPrevCells()
+    }
+
 
     useEffect(() => {
         if (animationOn) {
@@ -235,16 +294,13 @@ export const Controls = () => {
 
     return (
     <ControlsContainer>
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
-            <button onClick={() => clickDecreaseRows()}>Decrease Rows</button>
-            <button onClick={() => clickIncreaseRows()}>Increase Rows</button>
+        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
+            <button onClick={() => clickDecreaseRows()}>Remove Width</button>
+            <button onClick={() => clickIncreaseRows()}>Add Width</button>
+            <button onClick={() => clickDecreaseColumns()}>Remove Height</button>
+            <button onClick={() => clickIncreaseColumns()}>Add Height</button>
         </div>
-        <br></br>
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
-            <button onClick={() => clickDecreaseColumns()}>Decrease Columns</button>
-            <button onClick={() => clickIncreaseColumns()}>Increase Columns</button>
-        </div>
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
+        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
             <button onClick={clickFloodFill}>Flood Fill From Start</button>
             <button onClick={clickStepDFS}>StepDFS Right</button>
             <button onClick={() => {
@@ -252,14 +308,18 @@ export const Controls = () => {
                 clickStepDFS();
             }}>DFS Complete</button>
         </div>
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
+        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
             <button onClick={setUp200}>Set up Num Islands</button>
             <button onClick={step200}>Step Num Islands</button>
             <button>Complete Num Islands</button>
         </div>
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
+        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
             <button onClick={setUpMonkeyIsland}>Money Islandize</button>
             <button onClick={clearSelectedRow}>Clear Selected Row</button>
+        </div>
+        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
+            <button onClick={onClearCells}>Mone</button>
+            <button onClick={}>Paths to Cells</button>
         </div>
         <p>
             Sunday: Decision to Leave 11:30 am Regency Irvine
