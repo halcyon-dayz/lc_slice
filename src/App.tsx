@@ -124,7 +124,8 @@ function App() {
           display: "flex", 
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
+          overflow: "scroll"
           }} minSize={100}
         >
           <div ref={testRefOne} style={{position: "relative", width: "100%", backgroundColor: "blue", height: "20px"}}></div>
