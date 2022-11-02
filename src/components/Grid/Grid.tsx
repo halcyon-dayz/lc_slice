@@ -11,7 +11,7 @@ type GridProps = {
 
 export const Grid = ({gridIndex}: GridProps) => {
 
-    const grid = useAppSelector(state => state.grids[0]);
+    const grid = useAppSelector(state => state.grids[gridIndex]);
     console.log(grid.cells);
 
     return (

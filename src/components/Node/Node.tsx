@@ -20,7 +20,8 @@ const onlyNumbers = (str: string) => {
 export const Node = ({gridIndex, rowIdx, colIdx, styleWidth}: NodeProps) => {
     //TODO: Select individual cells
     const [stateIndex, setStateIndex] = useState<number>(0);
-    const cell = useSelector((state: RootState) => state.grids[gridIndex].cells[rowIdx][colIdx])
+    const cellData = useSelector((state: RootState) => state.grids[gridIndex].cells[rowIdx][colIdx].data);
+    const cellStatus = useSelector((state: RootState) => state.grids[gridIndex].cells[rowIdx][colIdx].status);
     const dispatch = useDispatch();
 
     //TODO: Change example dispatch
@@ -39,28 +40,28 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth}: NodeProps) => {
             return;
         }
         const num = parseInt(value);
-        dispatch(changeGridCell({gridIndex: 0, row: rowIdx, col: colIdx, data: num, status: cell.status}))
+        dispatch(changeGridCell({gridIndex: 0, row: rowIdx, col: colIdx, data: num, status: cellStatus}))
     }
 
     return (
         <div
             className={
-                cell.status === 'START' ? "node_start" : 
-                cell.status === "END" ? "node_end" : 
-                cell.status === "EXPLORED" ? "node_explored" :
-                cell.status === "WATER" ? "node_water" :
-                cell.status === "ISLAND" ? "node_island" :
-                cell.status === "DEEP_OCEAN" ? "node_deep_ocean" :
-                cell.status === "MONKEY_ISLAND" ? "node_monkey_island" :
-                cell.status === "CURRENT" ? "node_current" :
-                cell.status === "PREV_EVALUATE" ? "node_prev_evaluate" :
+                cellStatus === 'START' ? "node_start" : 
+                cellStatus === "END" ? "node_end" : 
+                cellStatus === "EXPLORED" ? "node_explored" :
+                cellStatus === "WATER" ? "node_water" :
+                cellStatus === "ISLAND" ? "node_island" :
+                cellStatus === "DEEP_OCEAN" ? "node_deep_ocean" :
+                cellStatus === "MONKEY_ISLAND" ? "node_monkey_island" :
+                cellStatus === "CURRENT" ? "node_current" :
+                cellStatus === "PREV_EVALUATE" ? "node_prev_evaluate" :
                 "node"
             } 
             contentEditable={true}
             onInput={onEditData}
             suppressContentEditableWarning={true}
         >
-            {cell.data}
+            {cellData}
         </div>
     )
 }

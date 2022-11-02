@@ -24,7 +24,7 @@ const totalStructsSlice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(addArray, (state, action: PayloadAction<AddArrayPayload>) => {
             const {num} = action.payload;
-            state += num;
+            return state + num;
         }).addCase(deleteArray, (state, action: PayloadAction<DeleteArrayPayload>) => {
             const {num} = action.payload;
             if (num >= state) {
@@ -34,14 +34,13 @@ const totalStructsSlice = createSlice({
             state -= num;
         }).addCase(addGrid, (state, action: PayloadAction<AddGridPayload>) => {
             const {num} = action.payload;
-            state += num;
+            return state + num;
         }).addCase(deleteGrid, (state, action: PayloadAction<DeleteGridPayload>) => {
             const {num} = action.payload;
             if (num >= state) {
-                state = 0;
-                return;
+                return 0;
             }
-            state -= num;
+            return state -= num;
         })
     }
 }) 

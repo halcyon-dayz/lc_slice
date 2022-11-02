@@ -118,12 +118,12 @@
 .node_prev_evaluate {
     width: 50px;
     height: 50px;
-    outline: 1px solid purple;
+    outline: 1px solid lightsalmon;
     display: inline-flex;
     justify-content: center;
     align-items: center;
     padding: 0px;
-    background-color: purple;
+    background-color: lightsalmon;
 }
 
 @keyframes exploredAnimation {

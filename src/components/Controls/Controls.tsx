@@ -14,6 +14,7 @@ import {
 import { floodFill } from "../../features/grids/gridsSlice";
 import { useAppDispatch } from "../../features/hooks";
 import { arrayBuffer } from "stream/consumers";
+import { addGrid, deleteAllGrids } from "../../features/sharedActions";
 
 
 const ARRAY_2D_INDEX_IS_VALID = <T,>(arr: T[][], row: number, col: number): boolean => {
@@ -61,6 +62,7 @@ export const Controls = () => {
     }
 
     const clickIncreaseRows = () => {
+        console.log("yo")
         dispatch(changeGridWidth({gridIndex: inputGrid, newWidth: grids[inputGrid].width + 1}))
     }
 
@@ -334,6 +336,10 @@ export const Controls = () => {
         setPrevCells([[nextRow - 1, nextCol], [nextRow, nextCol - 1]])
     }
 
+    const onClickAddGrid = () => {
+        dispatch(addGrid({num: 1}));
+    }
+
 
     useEffect(() => {
         if (animationOn) {
@@ -369,6 +375,7 @@ export const Controls = () => {
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
             <button onClick={onClearCells}>Mone</button>
             <button onClick={onClickFindPathsToCells}>Paths to Cells</button>
+            <button onClick={onClickAddGrid}>Add Grid</button>
         </div>
         <p>
             Sunday: Decision to Leave 11:30 am Regency Irvine

@@ -23,7 +23,7 @@ interface TreeNode<TValue = unknown, TKey = unknown> {
 
 
 export type GridDS = {
-    type: "GRID",
+    type: string,
     indexInList: number,
     label: string,
     cells: Cell[][],
@@ -39,7 +39,7 @@ export type GridDS = {
 
 
 export type ArrDS = {
-    type: "ARRAY"
+    type: string,
     label: string,
     data: Cell[]
     width: number

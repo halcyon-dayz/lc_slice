@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState, useRef} from 'react';
 import './App.css';
 import { 
   Header, 
@@ -13,10 +13,8 @@ import {
 
 import {Container, Section, Bar} from "react-simple-resizer"
 import { PathFindingVisualizer } from './components/PathFindingVisualizer';
-import styles from "./App.module.css"
 import { Controls } from './components/Controls';
-import { useDispatch, useSelector } from 'react-redux';
-import { changeGridCell, changeGridCellSize, selectAllGrids } from './features/grids/gridsSlice';
+import { dragRefWith } from './utils/dragUtils';
 
 
 const NavItemLeftList: NavItemProps[] = [
@@ -75,6 +73,8 @@ function App() {
 
   const [height, setHeight] = useState<number>(window.innerHeight - 44);
 
+  const testRefOne = useRef<HTMLDivElement>(null);
+
   //const dispatch = useDispatch();
 
   useEffect(() => {
@@ -82,6 +82,8 @@ function App() {
       setHeight(window.innerHeight - 44);
     });
   }, []);
+
+
 
 
 
@@ -104,6 +106,10 @@ function App() {
     }
   } */
 
+  useEffect(() => {
+    dragRefWith(testRefOne, testRefOne);
+  }, [])
+
   return (
     <div className="App">
       <HeaderLayout leftList={NavItemLeftList}/>
@@ -121,6 +127,7 @@ function App() {
           justifyContent: "center"
           }} minSize={100}
         >
+          <div ref={testRefOne} style={{position: "relative", width: "100%", backgroundColor: "blue", height: "20px"}}></div>
           <PathFindingVisualizer />
         </Section>
         </Container>
