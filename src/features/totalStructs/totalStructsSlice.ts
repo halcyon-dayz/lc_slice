@@ -12,7 +12,9 @@ import {
     AddGridPayload, 
     addGrid,
     DeleteGridPayload,
-    deleteGrid
+    deleteGrid,
+    copyGrid,
+    CopyGridPayload
 } from "../sharedActions";
 
 const initialState: RootState["totalStructs"] = 1;
@@ -41,6 +43,8 @@ const totalStructsSlice = createSlice({
                 return 0;
             }
             return state -= num;
+        }).addCase(copyGrid, (state, action: PayloadAction<CopyGridPayload>) => {
+            return state + 1;
         })
     }
 }) 

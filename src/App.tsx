@@ -11,7 +11,7 @@ import {
   Main,
 } from './styles';
 
-import {Container, Section, Bar} from "react-simple-resizer"
+import {Container, Section, Bar, BarActionType} from "react-simple-resizer"
 import { PathFindingVisualizer } from './components/PathFindingVisualizer';
 import { Controls } from './components/Controls';
 import { dragRefWith } from './utils/dragUtils';
@@ -69,13 +69,18 @@ const HeaderLayout = ({leftList}: HeaderLayoutProps) => {
   </Layout>);
 }
 
+type Coordinate = {
+  x: number,
+  y: number
+}
+
 function App() {
 
   const [height, setHeight] = useState<number>(window.innerHeight - 44);
+  const [barActivated, setBarActivated] = useState<boolean>(false);
 
   const testRefOne = useRef<HTMLDivElement>(null);
 
-  //const dispatch = useDispatch();
 
   useEffect(() => {
     window.addEventListener('resize', () => {
@@ -83,32 +88,6 @@ function App() {
     });
   }, []);
 
-
-
-
-
-  /*useEffect(() => {
-    if (grids[0].startNodeRow === undefined) {
-      return;
-    }
-    const endRow = grids[0].height - 1;
-    const endCol = grids[0].width - 1;
-    dispatch(changeGridCell({gridIndex: 0, row: endRow, col: endCol, data: grids[0].cells[endRow][endCol].data, status: "END"}))
-
-  }, [grids[0].startNodeRow, grids[0].width, grids[0].height]) */
-
-
-  /*const onRightSizeChange = (currentSize: number) => {
-    if (currentSize < grids[0].cellStyleWidth * grids[0].width) {
-      dispatch(changeGridCellSize({gridIndex: 0, width: 25, height: 25}))
-    } else if (currentSize > grids[0].cellStyleWidth * grids[0].width && grids[0].cellStyleWidth < 50) {
-      dispatch(changeGridCellSize({gridIndex: 0, width: 50, height: 50}))
-    }
-  } */
-
-  useEffect(() => {
-    dragRefWith(testRefOne, testRefOne);
-  }, [])
 
   return (
     <div className="App">
@@ -128,10 +107,48 @@ function App() {
           overflow: "scroll"
           }} minSize={100}
         >
-          <div ref={testRefOne} style={{position: "relative", width: "100%", backgroundColor: "blue", height: "20px"}}></div>
           <PathFindingVisualizer />
         </Section>
         </Container>
+        {/**Container
+        <div 
+          style={{
+            boxSizing: "border-box",
+            height: "995.99px",
+            position: "relative",
+            display: "flex",
+            textAlign: "center",
+
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              minWidth: "100px",
+              overflowY: "scroll",
+              backgroundColor: "rgb(240, 240, 240)",
+              flexGrow: 0.5
+            }}
+          >
+          </div>
+          <div 
+            style={{
+              backgroundColor: "rgb(115, 130, 40)",
+              width: "10px",
+              cursor: "col-resize"
+            }}
+          />
+          <div
+            style={{
+              display: "flex",
+              minWidth: "100px",
+              overflowY: "scroll",
+              backgroundColor: "rgb(240, 240, 240)",
+              flexGrow: 0.5
+            }}
+          >
+          </div>
+          </div> */}
       </Main>    
     </div>
   );

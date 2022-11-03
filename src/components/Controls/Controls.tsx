@@ -11,10 +11,11 @@ import {
     clearGridCells,
     changeGridCellData,
 } from "../../features/grids/gridsSlice";
-import { floodFill } from "../../features/grids/gridsSlice";
+import { floodFill} from "../../features/grids/gridsSlice";
 import { useAppDispatch } from "../../features/hooks";
 import { arrayBuffer } from "stream/consumers";
-import { addGrid, deleteAllGrids } from "../../features/sharedActions";
+import { addGrid, copyGrid, deleteAllGrids } from "../../features/sharedActions";
+import { GRID_417_PACIFIC_ATLANTIC_WATER_FLOW_GRID } from "../../features/grids/defaultGrids";
 
 
 const ARRAY_2D_INDEX_IS_VALID = <T,>(arr: T[][], row: number, col: number): boolean => {
@@ -340,6 +341,13 @@ export const Controls = () => {
         dispatch(addGrid({num: 1}));
     }
 
+    const onClickSetUp417 = () => {
+        dispatch(deleteAllGrids);
+        dispatch(copyGrid({cells: GRID_417_PACIFIC_ATLANTIC_WATER_FLOW_GRID}));
+
+    }
+
+
 
     useEffect(() => {
         if (animationOn) {
@@ -377,15 +385,10 @@ export const Controls = () => {
             <button onClick={onClickFindPathsToCells}>Paths to Cells</button>
             <button onClick={onClickAddGrid}>Add Grid</button>
         </div>
-        <p>
-            Sunday: Decision to Leave 11:30 am Regency Irvine
-            Monday: Tar 3:40pm or 7:15 pm Summit Sierra
-            Tuesday: Triangle of Sadness 3:50PM 7:10pm  10:25pm Summit Sierra
-            Wednesday Terrifier 2 7:50pm Summit Sierra
-            Thursday Godzilla Against Mechagodzilla 7:15pm Summit Sierra
-            Friday One Piece Red Galaxy Theaters
-
-        </p>
+        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
+            <button onClick={onClickSetUp417}>SetUp417</button>
+        </div>
+        <br></br>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
             Selected Grid: 
             <input 

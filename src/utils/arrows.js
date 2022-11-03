@@ -1,4 +1,4 @@
-import {addSVG} from './utils.js';
+import {addSVG} from './addSVG'
 
 function getPageRelativeRect(elem) {
   let rect;
@@ -350,4 +350,12 @@ export default class ArrowManager {
 }
 
 // this is crap but easy
+//query the div with the arrows id
 export const arrowManager = new ArrowManager(document.querySelector('#arrows'));
+
+/*arrows[i] = arrowManager.add(
+  cell,
+  targetInfo.ui.elem.querySelector('.name'),
+  getColorForWebGLObject(value, targetInfo.ui.elem, i / maxAttribs));
+
+*/

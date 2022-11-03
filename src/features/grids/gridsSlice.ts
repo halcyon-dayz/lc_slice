@@ -1,5 +1,6 @@
 import {createSlice } from "@reduxjs/toolkit";
 import {RootState, Cell, GridDS} from "../../utils/types"
+import { GRID_417_PACIFIC_ATLANTIC_WATER_FLOW_GRID } from "./defaultGrids";
 
 import { PayloadAction } from "@reduxjs/toolkit";
 import { 
@@ -22,6 +23,8 @@ import {
 	deleteGridAt,
 	DeleteGridAtPayload,
 	deleteAllGrids,
+	copyGrid,
+	CopyGridPayload
 } from "../sharedActions"
 
 import { ThunkAction} from "@reduxjs/toolkit";
@@ -251,7 +254,9 @@ const gridsSlice = createSlice({
 	   }).addCase(deleteAllGrids, (
 		   state
 	   ) => {
-		   state = [];
+		   for (let i = 0; i < state.length; i++) {
+			state.pop();
+		   }
 	   }).addCase(deleteGrid, (
 		   state, 
 		   action: PayloadAction<DeleteGridPayload>
@@ -283,6 +288,24 @@ const gridsSlice = createSlice({
 			   state = [...state.slice(0, effectiveIndex), ...state.slice(effectiveIndex + 1)];
 			   return;    
 		   }
+	   }).addCase(copyGrid, (
+		state,
+		action: PayloadAction<CopyGridPayload>
+	   ) => {
+		state.pop();
+		const {cells} = action.payload;
+		let prevLength = state.length;
+		const newGrid: GridDS = {
+			type: "GRID",
+			indexInList: (prevLength),
+			label: `Grid ${prevLength + 1}`,
+			cells: cells,
+			cellStyleHeight: 50,
+			cellStyleWidth: 50,
+			width: cells[0].length,
+			height: cells.length
+		};
+		state.push(newGrid);
 	   })
 	}
 }) 
