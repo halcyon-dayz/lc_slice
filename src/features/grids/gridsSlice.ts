@@ -1,8 +1,7 @@
-import {createSlice } from "@reduxjs/toolkit";
+import {createSlice} from "@reduxjs/toolkit"
 import {RootState, Cell, GridDS} from "../../utils/types"
 import { GRID_417_PACIFIC_ATLANTIC_WATER_FLOW_GRID } from "./defaultGrids";
-
-import { PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction } from "@reduxjs/toolkit"
 import { 
 	ChangeGridWidthPayload,
 	ChangeGridHeightPayload,
@@ -64,7 +63,7 @@ const gridsSlice = createSlice({
 		 * @param {number} [action.payload.defaultValue] The value that will populate the newly created column.
 		 */
 		changeGridWidth: (
-			state, 
+			state: RootState["grids"], 
 			action: PayloadAction<ChangeGridWidthPayload>
 		) => {
 			const {newWidth, defaultValue, gridIndex} = action.payload;
@@ -93,7 +92,7 @@ const gridsSlice = createSlice({
 		 * @param {number} action.payload.newHeight The new height (num. rows) of the grid.
 		 * @param {number} [action.payload.defaultValue] The value that will populate each cell in every new row.
 		 */
-		changeGridHeight: (state, action: PayloadAction<ChangeGridHeightPayload>) => {
+		changeGridHeight: (state: RootState["grids"], action: PayloadAction<ChangeGridHeightPayload>) => {
 			const {newHeight, defaultValue, gridIndex} = action.payload;
 			if (!isValidIndex(state.length, gridIndex) || newHeight < 2) {
 				return;
@@ -128,7 +127,10 @@ const gridsSlice = createSlice({
 		 * @param {CellStatus} [action.payload.defaultStatus] 
 		 *  Cell Status that will replace existing cell status in each cell.
 		 */
-		clearGridCells: (state, action: PayloadAction<ClearGridCellsPayload>) => {
+		clearGridCells: (
+			state: RootState["grids"], 
+			action: PayloadAction<ClearGridCellsPayload>
+		) => {
 			const {gridIndex, defaultValue, defaultStatus} = action.payload;
 			if (!isValidIndex(state.length, gridIndex)) {
 				return;
@@ -159,7 +161,7 @@ const gridsSlice = createSlice({
 		 * @param {status} [action.payload.status]
 		 *  Status to apply to the selected cell.
 		 */
-		changeGridCell: (state, action: PayloadAction<ChangeGridCellPayload>) => {
+		changeGridCell: (state: RootState["grids"], action: PayloadAction<ChangeGridCellPayload>) => {
 			const {gridIndex, row, col, data, status} = action.payload;
 			if (!isValidIndex(state.length, gridIndex)|| row >= state[gridIndex].height || 
 				col >= state[gridIndex].width || row < 0 || col < 0 ||
@@ -179,7 +181,7 @@ const gridsSlice = createSlice({
 				state[gridIndex].endNodeCol = col; 
 			}
 		},
-		clearGridRow: (state, action: PayloadAction<ClearGridRowPayload>) => {
+		clearGridRow: (state: RootState["grids"], action: PayloadAction<ClearGridRowPayload>) => {
 			const {gridIndex, row, data, status} = action.payload;
 			if (!isValidIndex(state.length, gridIndex)) {
 				return;
@@ -206,14 +208,14 @@ const gridsSlice = createSlice({
 		 * @param {status} [action.payload.status]
 		 *  Status to apply to the selected cell.
 		 */
-		changeGridCellStatus: (state, action: PayloadAction<ChangeGridCellStatusPayload>) => {
+		changeGridCellStatus: (state: RootState["grids"], action: PayloadAction<ChangeGridCellStatusPayload>) => {
 			const {gridIndex, row, col, status} = action.payload;
 			if (!isValidIndex(state.length, gridIndex) || row >= state[gridIndex].height || col >= state[gridIndex].width || row < 0 || col < 0) {
 				return;
 			}
 			state[gridIndex].cells[row][col].status = status;
 		},
-		changeGridCellData: (state, action: PayloadAction<ChangeGridCellDataPayload>) => {
+		changeGridCellData: (state: RootState["grids"], action: PayloadAction<ChangeGridCellDataPayload>) => {
 			const {gridIndex, data, row, col} = action.payload;
 			if (!isValidIndex(state.length, gridIndex) || row >= state[gridIndex].height || col >= state[gridIndex].width || row < 0 || col < 0) {
 				return;
@@ -231,22 +233,25 @@ const gridsSlice = createSlice({
 		 * @param {string} action.payload.label 
 		 *  New label for the selected grid data structure.
 		 */
-		changeGridLabel: (state, action: PayloadAction<ChangeGridLabelPayload>) => {
+		changeGridLabel: (state: RootState["grids"], action: PayloadAction<ChangeGridLabelPayload>) => {
 			const {gridIndex, label} = action.payload;
 			if (!isValidIndex(state.length, gridIndex) || gridIndex >= state.length || gridIndex < 0) {
 				return;
 			}
 			state[gridIndex].label = label;
 		},
-		changeGridCellSize: (state, action: PayloadAction<ChangeGridCellSizePayload>) => {
+		changeGridCellSize: (state: RootState["grids"], action: PayloadAction<ChangeGridCellSizePayload>) => {
 			const {width, height, gridIndex} = action.payload;
+			if (!isValidIndex(state.length, gridIndex)) {
+				return;
+			}
 			state[gridIndex].cellStyleWidth = width;
 			state[gridIndex].cellStyleHeight = height;
 		}
 	},
 	extraReducers: (builder) => {
 		builder.addCase(addGrid, (
-		   state,
+		   state: RootState["grids"],
 		   action: PayloadAction<AddGridPayload>
 	   ) => {
 		   const {num} = action.payload;
@@ -266,13 +271,13 @@ const gridsSlice = createSlice({
 			   state.push(newGrid);
 		   }
 	   }).addCase(deleteAllGrids, (
-		   state
+		   state: RootState["grids"]
 	   ) => {
 		   for (let i = 0; i < state.length; i++) {
 			state.pop();
 		   }
 	   }).addCase(deleteGrid, (
-		   state, 
+		   state: RootState["grids"], 
 		   action: PayloadAction<DeleteGridPayload>
 	   ) => {
 		   const {num} = action.payload;
@@ -286,7 +291,7 @@ const gridsSlice = createSlice({
 				state.pop();
 		   }
 	   }).addCase(deleteGridAt, (
-		   state, 
+		   state: RootState["grids"], 
 		   action: PayloadAction<DeleteGridAtPayload>
 	   ) => {
 		   const {idx} = action.payload;
@@ -303,7 +308,7 @@ const gridsSlice = createSlice({
 			   return;    
 		   }
 	   }).addCase(copyGrid, (
-		state,
+		state: RootState["grids"],
 		action: PayloadAction<CopyGridPayload>
 	   ) => {
 		state.pop();

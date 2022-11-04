@@ -15,6 +15,8 @@ import {Container, Section, Bar, BarActionType} from "react-simple-resizer"
 import { PathFindingVisualizer } from './components/PathFindingVisualizer';
 import { Controls } from './components/Controls';
 import { dragRefWith } from './utils/dragUtils';
+import { useDispatch } from 'react-redux';
+import { changeGridCellSize } from './features/grids/gridsSlice';
 
 
 const NavItemLeftList: NavItemProps[] = [
@@ -80,6 +82,7 @@ function App() {
   const [barActivated, setBarActivated] = useState<boolean>(false);
 
   const testRefOne = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
 
 
   useEffect(() => {
@@ -87,6 +90,10 @@ function App() {
       setHeight(window.innerHeight - 44);
     });
   }, []);
+
+  const onSectionSizeChanged = () => {
+    dispatch(changeGridCellSize)
+  }
 
 
   return (

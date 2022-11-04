@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@reduxjs/toolkit": "^1.8.6",
+    "@reduxjs/toolkit": "^1.9.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
@@ -56,5 +56,8 @@
     "postinstall-postinstall": "^2.1.0",
     "ts-jest": "^29.0.3"
   },
-  "packageManager": "yarn@3.2.4"
+  "packageManager": "yarn@3.2.4",
+  "resolutions": {
+    "@reduxjs/toolkit@^1.9.0": "patch:@reduxjs/toolkit@npm%3A1.9.0#./.yarn/patches/@reduxjs-toolkit-npm-1.9.0-7c196c5c96.patch"
+  }
 }
