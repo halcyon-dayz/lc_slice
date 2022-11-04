@@ -43,6 +43,14 @@ const initialState: RootState["grids"] = [{
 	cellStyleHeight: 50,
 }]
 
+const isValidIndex = (stateLength: number, index: number): boolean => {
+	if (stateLength === 0 || index >= stateLength || index < 0) {
+		return false;
+	}
+	return true;
+
+}
+
 const gridsSlice = createSlice({
 	name: "grids",
 	initialState, 
@@ -60,7 +68,7 @@ const gridsSlice = createSlice({
 			action: PayloadAction<ChangeGridWidthPayload>
 		) => {
 			const {newWidth, defaultValue, gridIndex} = action.payload;
-			if (newWidth < 2) {
+			if (!isValidIndex(state.length, gridIndex) || newWidth < 2) {
 				return;
 			}
 			if (newWidth > state[gridIndex].width) {
@@ -87,13 +95,14 @@ const gridsSlice = createSlice({
 		 */
 		changeGridHeight: (state, action: PayloadAction<ChangeGridHeightPayload>) => {
 			const {newHeight, defaultValue, gridIndex} = action.payload;
+			if (!isValidIndex(state.length, gridIndex) || newHeight < 2) {
+				return;
+			}
 			const dummyCell: Cell = {
 				data: defaultValue ? defaultValue : 0,
 				status: "UNEXPLORED",
 			}
-			if (newHeight < 2) {
-				return;
-			}
+
 			if (newHeight > state[gridIndex].height) {
 				for (let i = 0; i < newHeight - state[gridIndex].height; i++) {
 					let newArr = new Array(state[gridIndex].width).fill(dummyCell);
@@ -121,6 +130,9 @@ const gridsSlice = createSlice({
 		 */
 		clearGridCells: (state, action: PayloadAction<ClearGridCellsPayload>) => {
 			const {gridIndex, defaultValue, defaultStatus} = action.payload;
+			if (!isValidIndex(state.length, gridIndex)) {
+				return;
+			}
 			for (let i = 0; i < state[gridIndex].cells.length; i++) {
 				for (let j = 0; j < state[gridIndex].cells[0].length; j++) {
 					state[gridIndex].cells[i][j] = {
@@ -149,16 +161,12 @@ const gridsSlice = createSlice({
 		 */
 		changeGridCell: (state, action: PayloadAction<ChangeGridCellPayload>) => {
 			const {gridIndex, row, col, data, status} = action.payload;
-			if (row >= state[gridIndex].height || col >= state[gridIndex].width || row < 0 || col < 0) {
+			if (!isValidIndex(state.length, gridIndex)|| row >= state[gridIndex].height || 
+				col >= state[gridIndex].width || row < 0 || col < 0 ||
+				data === null || data === undefined
+			) {
 				return;
 			}
-			if (data === null || data === undefined) {
-				return;
-			}
-			/* if ((state.startNodeRow !== undefined && status === "START") || (state.endNodeRow !== undefined && status === "END")) {
-				console.log("no")
-				return;
-			} */
 			state[gridIndex].cells[row][col] = {data: data, status: status}
 			if (status === "START") {
 				state[gridIndex].startNodeRow = row;
@@ -173,6 +181,9 @@ const gridsSlice = createSlice({
 		},
 		clearGridRow: (state, action: PayloadAction<ClearGridRowPayload>) => {
 			const {gridIndex, row, data, status} = action.payload;
+			if (!isValidIndex(state.length, gridIndex)) {
+				return;
+			}
 			for (let i = 0; i < state[gridIndex].cells[0].length; i++) {
 				state[gridIndex].cells[row][i] = {
 					data: data,
@@ -197,14 +208,14 @@ const gridsSlice = createSlice({
 		 */
 		changeGridCellStatus: (state, action: PayloadAction<ChangeGridCellStatusPayload>) => {
 			const {gridIndex, row, col, status} = action.payload;
-			if (row >= state[gridIndex].height || col >= state[gridIndex].width || row < 0 || col < 0) {
+			if (!isValidIndex(state.length, gridIndex) || row >= state[gridIndex].height || col >= state[gridIndex].width || row < 0 || col < 0) {
 				return;
 			}
 			state[gridIndex].cells[row][col].status = status;
 		},
 		changeGridCellData: (state, action: PayloadAction<ChangeGridCellDataPayload>) => {
 			const {gridIndex, data, row, col} = action.payload;
-			if (row >= state[gridIndex].height || col >= state[gridIndex].width || row < 0 || col < 0) {
+			if (!isValidIndex(state.length, gridIndex) || row >= state[gridIndex].height || col >= state[gridIndex].width || row < 0 || col < 0) {
 				return;
 			}
 			state[gridIndex].cells[row][col].data = data;
@@ -222,6 +233,9 @@ const gridsSlice = createSlice({
 		 */
 		changeGridLabel: (state, action: PayloadAction<ChangeGridLabelPayload>) => {
 			const {gridIndex, label} = action.payload;
+			if (!isValidIndex(state.length, gridIndex) || gridIndex >= state.length || gridIndex < 0) {
+				return;
+			}
 			state[gridIndex].label = label;
 		},
 		changeGridCellSize: (state, action: PayloadAction<ChangeGridCellSizePayload>) => {

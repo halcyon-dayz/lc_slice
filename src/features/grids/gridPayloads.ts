@@ -17,7 +17,7 @@ export type ChangeGridCellPayload = {
     gridIndex: number,
     row: number,
     col: number,
-    data: number,
+    data: any,
     status: CellStatus
 }
 
@@ -31,7 +31,7 @@ export type ChangeGridCellSizePayload = {
 
 export type ClearGridCellsPayload = {
     gridIndex: number
-    defaultValue?: number
+    defaultValue?: any
     defaultStatus?: CellStatus
 }
 

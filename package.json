@@ -55,5 +55,6 @@
   "devDependencies": {
     "postinstall-postinstall": "^2.1.0",
     "ts-jest": "^29.0.3"
-  }
+  },
+  "packageManager": "yarn@3.2.4"
 }

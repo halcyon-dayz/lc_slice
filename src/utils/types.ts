@@ -10,7 +10,7 @@ export type CellStatus = "NO_DATA" | "PROCESSING" | "EXPLORED" | "LOCKED" | "UNE
 export type DataStructureType = "GRID" | "ARRAY"
 
 export type Cell = {
-    data: number
+    data: any
     status: CellStatus
 }
 

@@ -17,6 +17,42 @@ const onlyNumbers = (str: string) => {
     //return /^[0-9.,]+$/.test(str);
 }
 
+const onlyBooleans = (str: string) => {
+    if (str.includes("true") || str.includes("false")) {
+        return true;
+    }
+    return false;
+}
+
+const parseBoolean = (str: string) => {
+    const trueCheck = str.includes("true");
+    const falseCheck = str.includes("false");
+    if (trueCheck && falseCheck) {
+        return true;
+    }
+    if (falseCheck) {
+        return false;
+    }
+    if (trueCheck) {
+        return true;
+    }
+
+}
+
+const parseCellData = (data: any) => {
+    console.log(data);
+    console.log("parsing cell data");
+    if (data === true || data === false) {
+        if (data === true) {
+            return "true";
+        }
+        if (data === "false") {
+            return "false";
+        }
+    }
+    return data;
+}
+
 export const Node = ({gridIndex, rowIdx, colIdx, styleWidth}: NodeProps) => {
     //TODO: Select individual cells
     const [stateIndex, setStateIndex] = useState<number>(0);
@@ -36,11 +72,17 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth}: NodeProps) => {
         if (value === null) {
             return;
         }
-        if (!onlyNumbers(value)) {
+        if (onlyNumbers(value)) {
+            const num = parseInt(value);
+            dispatch(changeGridCell({gridIndex: 0, row: rowIdx, col: colIdx, data: num, status: cellStatus}));
             return;
         }
-        const num = parseInt(value);
-        dispatch(changeGridCell({gridIndex: 0, row: rowIdx, col: colIdx, data: num, status: cellStatus}))
+        if (onlyBooleans(value)) {
+            const val = parseBoolean(value);
+            dispatch(changeGridCell({gridIndex: 0, row: rowIdx, col: colIdx, data: val, status: cellStatus}));
+            
+        }
+        
     }
 
     return (
@@ -61,7 +103,7 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth}: NodeProps) => {
             onInput={onEditData}
             suppressContentEditableWarning={true}
         >
-            {cellData}
+            {cellData.toString()}
         </div>
     )
 }

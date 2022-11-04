@@ -16,6 +16,7 @@ export const Grid = ({gridIndex}: GridProps) => {
 
     return (
         <div className="grid" style={{marginBottom: "50px"}}>
+            {grid.label}
             {grid.cells.map((row, rowIdx) => (
                 <div key={`Grid_${gridIndex}_Row_${rowIdx}`}>
                     {row.map((node, nodeIdx) => (
