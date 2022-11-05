@@ -14,7 +14,7 @@ import {
 import { floodFill} from "../../features/grids/gridsSlice";
 import { useAppDispatch } from "../../features/hooks";
 import { arrayBuffer } from "stream/consumers";
-import { addGrid, copyGrid, deleteAllGrids } from "../../features/sharedActions";
+import { addGrid, copyGrid, deleteGrid } from "../../features/sharedActions";
 import { GRID_417_PACIFIC_ATLANTIC_WATER_FLOW_GRID } from "../../features/grids/defaultGrids";
 
 
@@ -77,6 +77,9 @@ export const Controls = () => {
     }
 
     const clickIncreaseColumns = () => {
+        if (grids.length === 0) {
+            return;
+        }
         dispatch(changeGridHeight({
             gridIndex: inputGrid, 
             newHeight: grids[inputGrid].height + 1
@@ -84,17 +87,26 @@ export const Controls = () => {
     }
 
     const clickDecreaseColumns = () => {
+        if (grids.length === 0) {
+            return;
+        }
         if (grids[inputGrid].height - 1 >= 2) {
             dispatch(changeGridHeight({gridIndex: inputGrid, newHeight: grids[inputGrid].height - 1}))
         }  
     } 
 
     const clickFloodFill = () => {
+        if (grids.length === 0) {
+            return;
+        }
         console.log("Flood Fill clicked");
         dispatch(floodFill(inputGrid));
     }
 
     const clickStepDFS = () => {
+        if (grids.length === 0) {
+            return;
+        }
         const row = currentCell[0];
         const col = currentCell[1];
         console.log(row)
@@ -135,6 +147,9 @@ export const Controls = () => {
 
 
     const setUpMonkeyIsland = () => {
+        if (grids.length === 0) {
+            return;
+        }
         setCurrentCell([0, 0]);
         for (let i = 0; i < grids[inputGrid].cells.length; i++) {
             for (let j = 0; j < grids[inputGrid].cells[0].length; j++) {
@@ -150,6 +165,9 @@ export const Controls = () => {
     }
 
     const setUp200 = () => {
+        if (grids.length === 0) {
+            return;
+        }
         setCurrentCell([0, 0]);
         for (let i = 0; i < grids[inputGrid].cells.length; i++) {
             for (let j = 0; j < grids[inputGrid].cells[0].length; j++) {
@@ -194,6 +212,9 @@ export const Controls = () => {
     }
 
     const step200 = () => {
+        if (grids.length === 0) {
+            return;
+        }
         const row = currentCell[0];
         const col = currentCell[0];
         if (grids[inputGrid].cells[row][col].status === "ISLAND"){
@@ -241,6 +262,9 @@ export const Controls = () => {
     }
 
     const clearSelectedRow = () => {
+        if (grids.length === 0) {
+            return;
+        }
         dispatch(clearGridRow({
             gridIndex: inputGrid,
             row: selectedRow,
@@ -250,11 +274,17 @@ export const Controls = () => {
     }
 
     const onClearCells = () => {
+        if (grids.length === 0) {
+            return;
+        }
         setAnimationOn(false);
         dispatch(clearGridCells({gridIndex: inputGrid, defaultValue: 0}));
     }
 
     const onClickFindPathsToCells = () => {
+        if (grids.length === 0) {
+            return;
+        }
         //Store current row and column values
         const row = currentCell[0];
         const col = currentCell[1];
@@ -342,9 +372,8 @@ export const Controls = () => {
     }
 
     const onClickSetUp417 = () => {
-        dispatch(deleteAllGrids);
+        dispatch(deleteGrid({num: grids.length}));
         dispatch(copyGrid({cells: GRID_417_PACIFIC_ATLANTIC_WATER_FLOW_GRID}));
-
     }
 
 
@@ -395,7 +424,7 @@ export const Controls = () => {
                 type="number" 
                 value={inputGrid}
                 min={0} 
-                max={grids.length - 1}
+                max={grids.length >= 1 ? grids.length - 1 : 0}
                 onChange={onChangeSelectedGrid}
                 ></input>
 
@@ -410,7 +439,7 @@ export const Controls = () => {
                 type="number" 
                 value={selectedRow}
                 min={0} 
-                max={grids[inputGrid].cells.length - 1}
+                max={grids.length >= 1 ? grids[inputGrid].cells.length - 1 : 0}
                 onChange={onChangeSelectedRow}
                 ></input>
         </div>

@@ -11,7 +11,6 @@ import {
 	DeleteGridPayload,
 	deleteGridAt,
 	DeleteGridAtPayload,
-	deleteAllGrids,
 	copyGrid,
 	CopyGridPayload
 } from "../sharedActions"
@@ -21,7 +20,9 @@ import {
 	isStateValid,
 	GridBeforeEachFunc,
 	GridDuringFunc,
-	GridDuringWithActionFunc
+	GridDuringWithActionFunc,
+	createGridActionS,
+	createGridActionSA
 } from "./gridUtils"
 
 import { ThunkAction} from "@reduxjs/toolkit";
@@ -29,75 +30,11 @@ import { Action } from "@reduxjs/toolkit";
 import {defaultGrid} from "../../utils/defaultData";
 //Default Cell value
 
-const initialState: RootState["grids"] = [{
-	type: "GRID",
-	indexInList: 0,
-	width: 5,
-	height: 5,
-	cells: defaultGrid,
-	label: "Grid #1",
-	cellStyleWidth: 50,
-	cellStyleHeight: 50,
-}]
-
-
-
+const initialState: RootState["grids"] = [];
 
 const gridBeforeEach = (state: RootState["grids"], action?: PayloadAction<any>) => {
 	return action ? ( isValidIndex(state.length, action.payload.gridIndex) ) : (isStateValid(state.length))
 }
-
-const gridWidthDuring = (state: RootState["grids"], action: PayloadAction<any>) => {
-	const {newWidth, defaultValue, gridIndex} = action.payload;
-		if (!isValidIndex(state.length, gridIndex) || newWidth < 2) {
-			return;
-		}
-		if (newWidth > state[gridIndex].width) {
-			for (let i = 0; i < state[gridIndex].height; i++) {
-				state[gridIndex].cells[i].push({
-					data: defaultValue ? defaultValue : 0,
-					status: "UNEXPLORED",
-				});
-			}
-		} else if (newWidth < state[gridIndex].width) {
-			for (let i = 0; i < state[gridIndex].height; i++) {
-				state[gridIndex].cells[i].pop();
-			}
-		}
-		state[gridIndex].width = newWidth;
-}
-
-
-
-
-
-const createGridActionWithAction = (beforeEach: GridBeforeEachFunc, during: GridDuringWithActionFunc) => {
-	return (state: RootState["grids"], action: PayloadAction<any>) => {
-		const beforeTest = beforeEach(state, action);
-		console.log("before test ran")
-		if (!beforeTest) {
-			return;
-		}
-		during(state, action);
-	}
-}
-
-const createGridAction = (beforeEach: GridBeforeEachFunc, during: GridDuringFunc) => {
-	return (state: RootState["grids"]) => {
-		const beforeTest = beforeEach(state);
-		console.log("before test ran")
-		if (!beforeTest) {
-			return;
-		}
-		during(state);
-	}
-}
-
-const changeGridWidthAction = createGridActionWithAction(gridBeforeEach, gridWidthDuring);
-	
-
-
-
 
 const gridsReducerObject = {
 	/**
@@ -108,12 +45,12 @@ const gridsReducerObject = {
 	 * @param {number} action.payload.newWidth The new width (num. columns) of the grid.
 	 * @param {number} [action.payload.defaultValue] The value that will populate the newly created column.
 	 */
-	changeGridWidth: changeGridWidthAction/*(
-		state: RootState["grids"], 
-		action: PayloadAction<ChangeGridWidthPayload>,
+	changeGridWidth: createGridActionSA(gridBeforeEach, (
+		state,
+		action: PayloadAction<GridPayloads.ChangeGridWidthPayload>
 	) => {
 		const {newWidth, defaultValue, gridIndex} = action.payload;
-		if (!isValidIndex(state.length, gridIndex) || newWidth < 2) {
+		if (newWidth < 2) {
 			return;
 		}
 		if (newWidth > state[gridIndex].width) {
@@ -128,17 +65,15 @@ const gridsReducerObject = {
 				state[gridIndex].cells[i].pop();
 			}
 		}
-		state[gridIndex].width = newWidth;
-	}*/,
+		state[gridIndex].width = newWidth;	
+	}),
 	/**
-	 * Changes the height of the grid, adding new rows below the last existing row.
-	 * @param {RootState} state The current state of the Redux store.
-	 * @param {PayloadAction<ChangeGridHeightPayload>} action  Redux PayloadAction containing the params below.
-	 * @param {number} action.payload.gridIndex The grid in the grid list to be operated on.
-	 * @param {number} action.payload.newHeight The new height (num. rows) of the grid.
-	 * @param {number} [action.payload.defaultValue] The value that will populate each cell in every new row.
+	 * Changes the height of the grid, adding new rows below the last existing row.low.
 	 */
-	changeGridHeight: (state: RootState["grids"], action: PayloadAction<GridPayloads.ChangeGridHeightPayload>) => {
+	changeGridHeight: createGridActionSA(gridBeforeEach, (
+		state, 
+		action: PayloadAction<GridPayloads.ChangeGridHeightPayload>
+	) => {
 		const {newHeight, defaultValue, gridIndex} = action.payload;
 		if (!isValidIndex(state.length, gridIndex) || newHeight < 2) {
 			return;
@@ -159,7 +94,7 @@ const gridsReducerObject = {
 			}
 		}
 		state[gridIndex].height = newHeight;
-	},
+	}),
 	/**
 	 * Replace the data in each cell with default data and status values.
 	 * @param {RootState} state 
@@ -323,12 +258,6 @@ const gridsSlice = createSlice({
 			   };
 			   state.push(newGrid);
 		   }
-	   }).addCase(deleteAllGrids, (
-		   state: RootState["grids"]
-	   ) => {
-		   for (let i = 0; i < state.length; i++) {
-			state.pop();
-		   }
 	   }).addCase(deleteGrid, (
 		   state: RootState["grids"], 
 		   action: PayloadAction<DeleteGridPayload>
@@ -364,7 +293,6 @@ const gridsSlice = createSlice({
 		state: RootState["grids"],
 		action: PayloadAction<CopyGridPayload>
 	   ) => {
-		state.pop();
 		const {cells} = action.payload;
 		let prevLength = state.length;
 		const newGrid: GridDS = {
