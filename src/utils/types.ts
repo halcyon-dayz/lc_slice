@@ -1,6 +1,7 @@
 import { AnyAction } from "@reduxjs/toolkit";
 import { ThunkAction } from "@reduxjs/toolkit";
 import { lchown } from "fs";
+import { Root } from "react-dom/client";
 import { LC_QUESTIONS } from "./questionEnum";
 
 
@@ -59,6 +60,10 @@ export type RootState = {
     arrays: ArrDS[],
     totalStructs: number
 }
+
+
+export type RootStateKeys = keyof RootState
+
 
 export type AppThunk<ReturnType = void> = ThunkAction<
     ReturnType,

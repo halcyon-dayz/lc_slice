@@ -2,17 +2,7 @@ import {createSlice} from "@reduxjs/toolkit"
 import {RootState, Cell, GridDS} from "../../utils/types"
 import { GRID_417_PACIFIC_ATLANTIC_WATER_FLOW_GRID } from "./defaultGrids";
 import { PayloadAction } from "@reduxjs/toolkit"
-import { 
-	ChangeGridWidthPayload,
-	ChangeGridHeightPayload,
-	ChangeGridCellPayload,
-	ChangeGridCellSizePayload,
-	ClearGridCellsPayload,
-	ChangeGridLabelPayload,
-	ChangeGridCellStatusPayload,
-	ClearGridRowPayload,
-	ChangeGridCellDataPayload
-} from "./gridPayloads";
+import * as GridPayloads from "./gridPayloads"
 
 import {
 	addGrid,
@@ -25,6 +15,14 @@ import {
 	copyGrid,
 	CopyGridPayload
 } from "../sharedActions"
+
+import {
+	isValidIndex,
+	isStateValid,
+	GridBeforeEachFunc,
+	GridDuringFunc,
+	GridDuringWithActionFunc
+} from "./gridUtils"
 
 import { ThunkAction} from "@reduxjs/toolkit";
 import { Action } from "@reduxjs/toolkit";
@@ -42,213 +40,268 @@ const initialState: RootState["grids"] = [{
 	cellStyleHeight: 50,
 }]
 
-const isValidIndex = (stateLength: number, index: number): boolean => {
-	if (stateLength === 0 || index >= stateLength || index < 0) {
-		return false;
-	}
-	return true;
 
+
+
+const gridBeforeEach = (state: RootState["grids"], action?: PayloadAction<any>) => {
+	return action ? ( isValidIndex(state.length, action.payload.gridIndex) ) : (isStateValid(state.length))
 }
+
+const gridWidthDuring = (state: RootState["grids"], action: PayloadAction<any>) => {
+	const {newWidth, defaultValue, gridIndex} = action.payload;
+		if (!isValidIndex(state.length, gridIndex) || newWidth < 2) {
+			return;
+		}
+		if (newWidth > state[gridIndex].width) {
+			for (let i = 0; i < state[gridIndex].height; i++) {
+				state[gridIndex].cells[i].push({
+					data: defaultValue ? defaultValue : 0,
+					status: "UNEXPLORED",
+				});
+			}
+		} else if (newWidth < state[gridIndex].width) {
+			for (let i = 0; i < state[gridIndex].height; i++) {
+				state[gridIndex].cells[i].pop();
+			}
+		}
+		state[gridIndex].width = newWidth;
+}
+
+
+
+
+
+const createGridActionWithAction = (beforeEach: GridBeforeEachFunc, during: GridDuringWithActionFunc) => {
+	return (state: RootState["grids"], action: PayloadAction<any>) => {
+		const beforeTest = beforeEach(state, action);
+		console.log("before test ran")
+		if (!beforeTest) {
+			return;
+		}
+		during(state, action);
+	}
+}
+
+const createGridAction = (beforeEach: GridBeforeEachFunc, during: GridDuringFunc) => {
+	return (state: RootState["grids"]) => {
+		const beforeTest = beforeEach(state);
+		console.log("before test ran")
+		if (!beforeTest) {
+			return;
+		}
+		during(state);
+	}
+}
+
+const changeGridWidthAction = createGridActionWithAction(gridBeforeEach, gridWidthDuring);
+	
+
+
+
+
+const gridsReducerObject = {
+	/**
+	 * Changes the width of the grid, adding a new column to each row.
+	 * @param {RootState} state The current state of the Redux store.
+	 * @param {PayloadAction<ChangeGridWidthPayload>} action  Redux PayloadAction containing the params below.
+	 * @param {number} action.payload.gridIndex The grid in the grid list to be operated on.
+	 * @param {number} action.payload.newWidth The new width (num. columns) of the grid.
+	 * @param {number} [action.payload.defaultValue] The value that will populate the newly created column.
+	 */
+	changeGridWidth: changeGridWidthAction/*(
+		state: RootState["grids"], 
+		action: PayloadAction<ChangeGridWidthPayload>,
+	) => {
+		const {newWidth, defaultValue, gridIndex} = action.payload;
+		if (!isValidIndex(state.length, gridIndex) || newWidth < 2) {
+			return;
+		}
+		if (newWidth > state[gridIndex].width) {
+			for (let i = 0; i < state[gridIndex].height; i++) {
+				state[gridIndex].cells[i].push({
+					data: defaultValue ? defaultValue : 0,
+					status: "UNEXPLORED",
+				});
+			}
+		} else if (newWidth < state[gridIndex].width) {
+			for (let i = 0; i < state[gridIndex].height; i++) {
+				state[gridIndex].cells[i].pop();
+			}
+		}
+		state[gridIndex].width = newWidth;
+	}*/,
+	/**
+	 * Changes the height of the grid, adding new rows below the last existing row.
+	 * @param {RootState} state The current state of the Redux store.
+	 * @param {PayloadAction<ChangeGridHeightPayload>} action  Redux PayloadAction containing the params below.
+	 * @param {number} action.payload.gridIndex The grid in the grid list to be operated on.
+	 * @param {number} action.payload.newHeight The new height (num. rows) of the grid.
+	 * @param {number} [action.payload.defaultValue] The value that will populate each cell in every new row.
+	 */
+	changeGridHeight: (state: RootState["grids"], action: PayloadAction<GridPayloads.ChangeGridHeightPayload>) => {
+		const {newHeight, defaultValue, gridIndex} = action.payload;
+		if (!isValidIndex(state.length, gridIndex) || newHeight < 2) {
+			return;
+		}
+		const dummyCell: Cell = {
+			data: defaultValue ? defaultValue : 0,
+			status: "UNEXPLORED",
+		}
+
+		if (newHeight > state[gridIndex].height) {
+			for (let i = 0; i < newHeight - state[gridIndex].height; i++) {
+				let newArr = new Array(state[gridIndex].width).fill(dummyCell);
+				state[gridIndex].cells.push(newArr);
+			}       
+		} else if (newHeight < state[gridIndex].height) {
+			for (let i = 0; i < state[gridIndex].height - newHeight; i++) {
+				state[gridIndex].cells.pop()
+			}
+		}
+		state[gridIndex].height = newHeight;
+	},
+	/**
+	 * Replace the data in each cell with default data and status values.
+	 * @param {RootState} state 
+	 *  The current state of the Redux store
+	 * @param {PayloadAction<ClearGridCellsPayload>} action  
+	 *  Redux PayloadAction containing the params below.
+	 * @param {number} action.payload.gridIndex 
+	 *  The grid in the grid list to be operated on.
+	 * @param {number} [action.payload.defaultValue] 
+	 *  Value that will replace existing values in each cell.
+	 * @param {CellStatus} [action.payload.defaultStatus] 
+	 *  Cell Status that will replace existing cell status in each cell.
+	 */
+	clearGridCells: (
+		state: RootState["grids"], 
+		action: PayloadAction<GridPayloads.ClearGridCellsPayload>
+	) => {
+		const {gridIndex, defaultValue, defaultStatus} = action.payload;
+		if (!isValidIndex(state.length, gridIndex)) {
+			return;
+		}
+		for (let i = 0; i < state[gridIndex].cells.length; i++) {
+			for (let j = 0; j < state[gridIndex].cells[0].length; j++) {
+				state[gridIndex].cells[i][j] = {
+					data: defaultValue ? defaultValue : 0,
+					status: defaultStatus ? defaultStatus: "UNEXPLORED"
+				}
+			}
+		}
+	},
+	/**
+	 * Replace the data in each cell with default data and status values.
+	 * @param {RootState} state 
+	 *  The current state of the Redux store
+	 * @param {PayloadAction<ChangeGridCellPayload>} action  
+	 *  Redux PayloadAction containing the params below.
+	 * @param {number} action.payload.gridIndex 
+	 *  The grid in the grid list to be operated on.
+	 * @param {number} [action.payload.row] 
+	 *  Row in the grid to operate on.
+	 * @param {number} [action.payload.col] 
+	 *  Column in the grid to operate on.
+	 * @param {data} [action.payload.data]
+	 *  Data to put in the selected cell.
+	 * @param {status} [action.payload.status]
+	 *  Status to apply to the selected cell.
+	 */
+	changeGridCell: (state: RootState["grids"], action: PayloadAction<GridPayloads.ChangeGridCellPayload>) => {
+		const {gridIndex, row, col, data, status} = action.payload;
+		if (!isValidIndex(state.length, gridIndex)|| row >= state[gridIndex].height || 
+			col >= state[gridIndex].width || row < 0 || col < 0 ||
+			data === null || data === undefined
+		) {
+			return;
+		}
+		state[gridIndex].cells[row][col] = {data: data, status: status}
+		if (status === "START") {
+			state[gridIndex].startNodeRow = row;
+			state[gridIndex].startNodeCol = col;
+			console.log("start set")
+			return;
+		}
+		if (status === "END") {
+			state[gridIndex].endNodeRow = row;
+			state[gridIndex].endNodeCol = col; 
+		}
+	},
+	clearGridRow: (state: RootState["grids"], action: PayloadAction<GridPayloads.ClearGridRowPayload>) => {
+		const {gridIndex, row, data, status} = action.payload;
+		if (!isValidIndex(state.length, gridIndex)) {
+			return;
+		}
+		for (let i = 0; i < state[gridIndex].cells[0].length; i++) {
+			state[gridIndex].cells[row][i] = {
+				data: data,
+				status: status,
+			}
+		}
+	},
+	/**
+	 * Replace the data in each cell with default data and status values.
+	 * @param {RootState} state 
+	 *  The current state of the Redux store
+	 * @param {PayloadAction<ChangeGridCellPayload>} action  
+	 *  Redux PayloadAction containing the params below.
+	 * @param {number} action.payload.gridIndex 
+	 *  The grid in the grid list to be operated on.
+	 * @param {number} [action.payload.row] 
+	 *  Row in the grid to operate on.
+	 * @param {number} [action.payload.col] 
+	 *  Column in the grid to operate on.
+	 * @param {status} [action.payload.status]
+	 *  Status to apply to the selected cell.
+	 */
+	changeGridCellStatus: (state: RootState["grids"], action: PayloadAction<GridPayloads.ChangeGridCellStatusPayload>) => {
+		const {gridIndex, row, col, status} = action.payload;
+		if (!isValidIndex(state.length, gridIndex) || row >= state[gridIndex].height || col >= state[gridIndex].width || row < 0 || col < 0) {
+			return;
+		}
+		state[gridIndex].cells[row][col].status = status;
+	},
+	changeGridCellData: (state: RootState["grids"], action: PayloadAction<GridPayloads.ChangeGridCellDataPayload>) => {
+		const {gridIndex, data, row, col} = action.payload;
+		if (!isValidIndex(state.length, gridIndex) || row >= state[gridIndex].height || col >= state[gridIndex].width || row < 0 || col < 0) {
+			return;
+		}
+		state[gridIndex].cells[row][col].data = data;
+	},
+	/**
+	 * Replace the data in each cell with default data and status values.
+	 * @param {RootState} state 
+	 *  The current state of the Redux store
+	 * @param {PayloadAction<ChangeGridLabelPayload>} action  
+	 *  Redux PayloadAction containing the params below.
+	 * @param {number} action.payload.gridIndex
+	 *  The grid in the grid list to be operated on.
+	 * @param {string} action.payload.label 
+	 *  New label for the selected grid data structure.
+	 */
+	changeGridLabel: (state: RootState["grids"], action: PayloadAction<GridPayloads.ChangeGridLabelPayload>) => {
+		const {gridIndex, label} = action.payload;
+		if (!isValidIndex(state.length, gridIndex) || gridIndex >= state.length || gridIndex < 0) {
+			return;
+		}
+		state[gridIndex].label = label;
+	},
+	changeGridCellSize: (state: RootState["grids"], action: PayloadAction<GridPayloads.ChangeGridCellSizePayload>) => {
+		const {width, height, gridIndex} = action.payload;
+		if (!isValidIndex(state.length, gridIndex)) {
+			return;
+		}
+		state[gridIndex].cellStyleWidth = width;
+		state[gridIndex].cellStyleHeight = height;
+	}
+}
+
+console.log(gridsReducerObject);
 
 const gridsSlice = createSlice({
 	name: "grids",
 	initialState, 
-	reducers: {
-		/**
-		 * Changes the width of the grid, adding a new column to each row.
-		 * @param {RootState} state The current state of the Redux store.
-		 * @param {PayloadAction<ChangeGridWidthPayload>} action  Redux PayloadAction containing the params below.
-		 * @param {number} action.payload.gridIndex The grid in the grid list to be operated on.
-		 * @param {number} action.payload.newWidth The new width (num. columns) of the grid.
-		 * @param {number} [action.payload.defaultValue] The value that will populate the newly created column.
-		 */
-		changeGridWidth: (
-			state: RootState["grids"], 
-			action: PayloadAction<ChangeGridWidthPayload>
-		) => {
-			const {newWidth, defaultValue, gridIndex} = action.payload;
-			if (!isValidIndex(state.length, gridIndex) || newWidth < 2) {
-				return;
-			}
-			if (newWidth > state[gridIndex].width) {
-				for (let i = 0; i < state[gridIndex].height; i++) {
-					state[gridIndex].cells[i].push({
-						data: defaultValue ? defaultValue : 0,
-						status: "UNEXPLORED",
-					});
-				}
-			} else if (newWidth < state[gridIndex].width) {
-				for (let i = 0; i < state[gridIndex].height; i++) {
-					state[gridIndex].cells[i].pop();
-				}
-			}
-			state[gridIndex].width = newWidth;
-		},
-		/**
-		 * Changes the height of the grid, adding new rows below the last existing row.
-		 * @param {RootState} state The current state of the Redux store.
-		 * @param {PayloadAction<ChangeGridHeightPayload>} action  Redux PayloadAction containing the params below.
-		 * @param {number} action.payload.gridIndex The grid in the grid list to be operated on.
-		 * @param {number} action.payload.newHeight The new height (num. rows) of the grid.
-		 * @param {number} [action.payload.defaultValue] The value that will populate each cell in every new row.
-		 */
-		changeGridHeight: (state: RootState["grids"], action: PayloadAction<ChangeGridHeightPayload>) => {
-			const {newHeight, defaultValue, gridIndex} = action.payload;
-			if (!isValidIndex(state.length, gridIndex) || newHeight < 2) {
-				return;
-			}
-			const dummyCell: Cell = {
-				data: defaultValue ? defaultValue : 0,
-				status: "UNEXPLORED",
-			}
-
-			if (newHeight > state[gridIndex].height) {
-				for (let i = 0; i < newHeight - state[gridIndex].height; i++) {
-					let newArr = new Array(state[gridIndex].width).fill(dummyCell);
-					state[gridIndex].cells.push(newArr);
-				}       
-			} else if (newHeight < state[gridIndex].height) {
-				for (let i = 0; i < state[gridIndex].height - newHeight; i++) {
-					state[gridIndex].cells.pop()
-				}
-			}
-			state[gridIndex].height = newHeight;
-		},
-		/**
-		 * Replace the data in each cell with default data and status values.
-		 * @param {RootState} state 
-		 *  The current state of the Redux store
-		 * @param {PayloadAction<ClearGridCellsPayload>} action  
-		 *  Redux PayloadAction containing the params below.
-		 * @param {number} action.payload.gridIndex 
-		 *  The grid in the grid list to be operated on.
-		 * @param {number} [action.payload.defaultValue] 
-		 *  Value that will replace existing values in each cell.
-		 * @param {CellStatus} [action.payload.defaultStatus] 
-		 *  Cell Status that will replace existing cell status in each cell.
-		 */
-		clearGridCells: (
-			state: RootState["grids"], 
-			action: PayloadAction<ClearGridCellsPayload>
-		) => {
-			const {gridIndex, defaultValue, defaultStatus} = action.payload;
-			if (!isValidIndex(state.length, gridIndex)) {
-				return;
-			}
-			for (let i = 0; i < state[gridIndex].cells.length; i++) {
-				for (let j = 0; j < state[gridIndex].cells[0].length; j++) {
-					state[gridIndex].cells[i][j] = {
-						data: defaultValue ? defaultValue : 0,
-						status: defaultStatus ? defaultStatus: "UNEXPLORED"
-					}
-				}
-			}
-		},
-		/**
-		 * Replace the data in each cell with default data and status values.
-		 * @param {RootState} state 
-		 *  The current state of the Redux store
-		 * @param {PayloadAction<ChangeGridCellPayload>} action  
-		 *  Redux PayloadAction containing the params below.
-		 * @param {number} action.payload.gridIndex 
-		 *  The grid in the grid list to be operated on.
-		 * @param {number} [action.payload.row] 
-		 *  Row in the grid to operate on.
-		 * @param {number} [action.payload.col] 
-		 *  Column in the grid to operate on.
-		 * @param {data} [action.payload.data]
-		 *  Data to put in the selected cell.
-		 * @param {status} [action.payload.status]
-		 *  Status to apply to the selected cell.
-		 */
-		changeGridCell: (state: RootState["grids"], action: PayloadAction<ChangeGridCellPayload>) => {
-			const {gridIndex, row, col, data, status} = action.payload;
-			if (!isValidIndex(state.length, gridIndex)|| row >= state[gridIndex].height || 
-				col >= state[gridIndex].width || row < 0 || col < 0 ||
-				data === null || data === undefined
-			) {
-				return;
-			}
-			state[gridIndex].cells[row][col] = {data: data, status: status}
-			if (status === "START") {
-				state[gridIndex].startNodeRow = row;
-				state[gridIndex].startNodeCol = col;
-				console.log("start set")
-				return;
-			}
-			if (status === "END") {
-				state[gridIndex].endNodeRow = row;
-				state[gridIndex].endNodeCol = col; 
-			}
-		},
-		clearGridRow: (state: RootState["grids"], action: PayloadAction<ClearGridRowPayload>) => {
-			const {gridIndex, row, data, status} = action.payload;
-			if (!isValidIndex(state.length, gridIndex)) {
-				return;
-			}
-			for (let i = 0; i < state[gridIndex].cells[0].length; i++) {
-				state[gridIndex].cells[row][i] = {
-					data: data,
-					status: status,
-				}
-			}
-		},
-		/**
-		 * Replace the data in each cell with default data and status values.
-		 * @param {RootState} state 
-		 *  The current state of the Redux store
-		 * @param {PayloadAction<ChangeGridCellPayload>} action  
-		 *  Redux PayloadAction containing the params below.
-		 * @param {number} action.payload.gridIndex 
-		 *  The grid in the grid list to be operated on.
-		 * @param {number} [action.payload.row] 
-		 *  Row in the grid to operate on.
-		 * @param {number} [action.payload.col] 
-		 *  Column in the grid to operate on.
-		 * @param {status} [action.payload.status]
-		 *  Status to apply to the selected cell.
-		 */
-		changeGridCellStatus: (state: RootState["grids"], action: PayloadAction<ChangeGridCellStatusPayload>) => {
-			const {gridIndex, row, col, status} = action.payload;
-			if (!isValidIndex(state.length, gridIndex) || row >= state[gridIndex].height || col >= state[gridIndex].width || row < 0 || col < 0) {
-				return;
-			}
-			state[gridIndex].cells[row][col].status = status;
-		},
-		changeGridCellData: (state: RootState["grids"], action: PayloadAction<ChangeGridCellDataPayload>) => {
-			const {gridIndex, data, row, col} = action.payload;
-			if (!isValidIndex(state.length, gridIndex) || row >= state[gridIndex].height || col >= state[gridIndex].width || row < 0 || col < 0) {
-				return;
-			}
-			state[gridIndex].cells[row][col].data = data;
-		},
-		/**
-		 * Replace the data in each cell with default data and status values.
-		 * @param {RootState} state 
-		 *  The current state of the Redux store
-		 * @param {PayloadAction<ChangeGridLabelPayload>} action  
-		 *  Redux PayloadAction containing the params below.
-		 * @param {number} action.payload.gridIndex
-		 *  The grid in the grid list to be operated on.
-		 * @param {string} action.payload.label 
-		 *  New label for the selected grid data structure.
-		 */
-		changeGridLabel: (state: RootState["grids"], action: PayloadAction<ChangeGridLabelPayload>) => {
-			const {gridIndex, label} = action.payload;
-			if (!isValidIndex(state.length, gridIndex) || gridIndex >= state.length || gridIndex < 0) {
-				return;
-			}
-			state[gridIndex].label = label;
-		},
-		changeGridCellSize: (state: RootState["grids"], action: PayloadAction<ChangeGridCellSizePayload>) => {
-			const {width, height, gridIndex} = action.payload;
-			if (!isValidIndex(state.length, gridIndex)) {
-				return;
-			}
-			state[gridIndex].cellStyleWidth = width;
-			state[gridIndex].cellStyleHeight = height;
-		}
-	},
+	reducers: gridsReducerObject,
 	extraReducers: (builder) => {
 		builder.addCase(addGrid, (
 		   state: RootState["grids"],
@@ -328,6 +381,7 @@ const gridsSlice = createSlice({
 	   })
 	}
 }) 
+
 
 export const gridsReducer = gridsSlice.reducer 
 
