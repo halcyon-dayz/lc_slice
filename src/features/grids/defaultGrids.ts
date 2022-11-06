@@ -1,6 +1,6 @@
 import { Cell } from "../../utils/types"
 
-export const GRID_417_PACIFIC_ATLANTIC_WATER_FLOW_GRID: Cell[][] = [
+export const GRID_417_PACIFIC_ATLANTIC_WATER_FLOW: Cell[][] = [
     [
         {data: 1, status: "UNEXPLORED"}, 
         {data: 2, status: "UNEXPLORED"}, 
@@ -36,4 +36,42 @@ export const GRID_417_PACIFIC_ATLANTIC_WATER_FLOW_GRID: Cell[][] = [
         {data: 2, status: "UNEXPLORED"}, 
         {data: 4, status: "UNEXPLORED"}, 
     ]
+]
+
+export const GRID_417_BOOLEAN: Cell[][] = [
+    [
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+    ],
+    [
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+    ],
+    [
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+    ],
+    [
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+    ],
+    [
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+        {data: false, status: "UNEXPLORED"}, 
+    ],
 ]

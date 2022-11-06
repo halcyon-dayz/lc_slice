@@ -1,8 +1,9 @@
 import {createSlice} from "@reduxjs/toolkit"
 import {RootState, Cell, GridDS} from "../../utils/types"
-import { GRID_417_PACIFIC_ATLANTIC_WATER_FLOW_GRID } from "./defaultGrids";
 import { PayloadAction } from "@reduxjs/toolkit"
 import * as GridPayloads from "./gridPayloads"
+
+import { GRID_GENERIC_CONTEXT } from "./gridTypes"
 
 import {
 	addGrid,
@@ -28,11 +29,12 @@ import {
 import { ThunkAction} from "@reduxjs/toolkit";
 import { Action } from "@reduxjs/toolkit";
 import {defaultGrid} from "../../utils/defaultData";
+import { Root } from "react-dom/client"
 //Default Cell value
 
 const initialState: RootState["grids"] = [];
 
-const gridBeforeEach = (state: RootState["grids"], action?: PayloadAction<any>) => {
+const gridBeforeEach: GridBeforeEachFunc = (state: RootState["grids"], action?: PayloadAction<any>) => {
 	return action ? ( isValidIndex(state.length, action.payload.gridIndex) ) : (isStateValid(state.length))
 }
 
@@ -329,7 +331,43 @@ export const selectAllGrids = (
 	state: RootState
 ) => state.grids;
 
+
 type AppThunk = ThunkAction<void, any, unknown, Action<string>>
+
+
+export const changeGridLabels = (startIndex: number, labels: string[]): AppThunk => {
+	return (
+		dispatch,
+		getState
+	) => {
+		let grids = getState().grids;
+		if (startIndex < 0 || startIndex >= grids.length) {
+			return;
+		}
+		let labelBoundary = 0;
+		if (startIndex + labels.length >= grids.length) {
+			labelBoundary = startIndex + labels.length;
+		} else {
+			labelBoundary = grids.length;
+		}
+		let labelIndex = 0;
+		for (let i = startIndex; i < labelBoundary; i++) {
+			dispatch(changeGridLabel({gridIndex: i, label: labels[labelIndex]}));
+			labelIndex++;
+		}
+	}
+}
+
+export const copyGrids = (grids: Cell[][][]): AppThunk => {
+	return (
+		dispatch, 
+		getState
+	) => {
+		for (let i = 0; i < grids.length; i++) {
+			dispatch(copyGrid({cells: grids[i]}));
+		}
+	}
+}
 
 export const floodFill = (gridIndex: number): AppThunk => {
 	return (

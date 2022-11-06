@@ -15,7 +15,7 @@ export const Grid = ({gridIndex}: GridProps) => {
     console.log(grid.cells);
 
     return (
-        <div className="grid" style={{marginBottom: "50px"}}>
+        <div className="grid" style={{marginBottom: "20px"}}>
             {grid.label}
             {grid.cells.map((row, rowIdx) => (
                 <div key={`Grid_${gridIndex}_Row_${rowIdx}`}>

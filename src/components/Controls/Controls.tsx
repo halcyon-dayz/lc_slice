@@ -10,12 +10,16 @@ import {
     clearGridRow,
     clearGridCells,
     changeGridCellData,
+    changeGridLabel,
+    changeGridLabels,
+    copyGrids
 } from "../../features/grids/gridsSlice";
 import { floodFill} from "../../features/grids/gridsSlice";
-import { useAppDispatch } from "../../features/hooks";
+import { useAppDispatch, useAppSelector } from "../../features/hooks";
 import { arrayBuffer } from "stream/consumers";
 import { addGrid, copyGrid, deleteGrid } from "../../features/sharedActions";
-import { GRID_417_PACIFIC_ATLANTIC_WATER_FLOW_GRID } from "../../features/grids/defaultGrids";
+import { GRID_417_BOOLEAN, GRID_417_PACIFIC_ATLANTIC_WATER_FLOW } from "../../features/grids/defaultGrids";
+import { GRID_GENERIC_CONTEXT } from "../../features/grids/gridTypes";
 
 
 const ARRAY_2D_INDEX_IS_VALID = <T,>(arr: T[][], row: number, col: number): boolean => {
@@ -36,6 +40,12 @@ const ARRAY_2D_GET_NEXT_INDEX = <T,>(arr: T[][], row: number, col: number): [num
 }
 
 
+type CONTEXT_417 = {
+    prevCell: [number, number]
+    prevCurTile: number
+}
+
+
 export const Controls = () => {
     const [inputGrid, setInputGrid] = useState<number>(0);
     const [prevCells, setPrevCells] = useState<[number, number][]>([]);
@@ -43,6 +53,9 @@ export const Controls = () => {
     const [animationOn, setAnimationOn] = useState<boolean>(false);
     const [clearValue, setClearValue] = useState<number>(0);
     const [selectedRow, setSelectedRow] = useState<number>(0);
+    const [stackContext, setStackContext] = useState<GRID_GENERIC_CONTEXT[]>([])
+
+
 
     const grids = useSelector(selectAllGrids);
     const dispatch = useAppDispatch();
@@ -373,10 +386,58 @@ export const Controls = () => {
 
     const onClickSetUp417 = () => {
         dispatch(deleteGrid({num: grids.length}));
-        dispatch(copyGrid({cells: GRID_417_PACIFIC_ATLANTIC_WATER_FLOW_GRID}));
+        dispatch(copyGrids([GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_417_BOOLEAN, GRID_417_BOOLEAN]))
+        dispatch(changeGridLabels(0, ["Water Flow", "Pacific", "Atlantic"]));
+        setCurrentCell([0, 0]);
+        setPrevCells([]);
     }
 
+    const directToPacific = (i: number, j: number): boolean => {
+        if (i === 0 || j === 0) {
+            return true;
+        }
+        return false;
+    }
 
+    const directToAtlantic = (i: number, j: number): boolean => {
+        if (i === grids[0].cells.length - 1 || j === grids[0].cells[0].length - 1) {
+            return true;
+        }
+        return false;
+    }
+
+    const onClickStep417 = () => {
+        //Flow of checks
+        //1. Start at [0, 0]
+        //2. FloodFill Pacifc from Left Side, stop when we reach ([grids.length - 1, 0])
+        //3. Flood Fill Atlantic from Right Side, stop when we reach([grids.length - 1, grids[0].length - 1]])
+        //4. Flood Fill Pacific From Top, stop when we reach ([0, grids[0].length - 1])
+        //5. Flood Fill Atlantic from Bottom, stop when we reach ([0, grids[grids.length - 1].length - 1])
+        const waterFlowGrid = grids[0];
+        const pacificGrid = grids[1];
+        const atlanticGrid = grids[2];
+        if (directToPacific(currentCell[0], currentCell[1])) {
+            dispatch(changeGridCellData({
+                gridIndex: 1,
+                row: currentCell[0],
+                col: currentCell[1],
+                data: true
+            })) 
+        }
+
+        if(directToAtlantic(currentCell[0], currentCell[1])) {
+            dispatch(changeGridCellData({
+                gridIndex: 2,
+                row: currentCell[0],
+                col: currentCell[1],
+                data: true
+            })) 
+        }
+        const nextCell = ARRAY_2D_GET_NEXT_INDEX(
+            grids[0].cells, currentCell[0], currentCell[1]
+        );
+        setCurrentCell(nextCell);
+    }
 
     useEffect(() => {
         if (animationOn) {
@@ -416,6 +477,8 @@ export const Controls = () => {
         </div>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
             <button onClick={onClickSetUp417}>SetUp417</button>
+            <button onClick={onClickStep417}>Step 417</button>
+            <button>Complete 417</button>
         </div>
         <br></br>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
