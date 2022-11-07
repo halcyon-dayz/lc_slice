@@ -11,7 +11,7 @@ export const isValidIndex = (stateLength: number, index: number): boolean => {
 }
 
 export const isStateValid = (stateLength: number) => {
-	if (stateLength === 0) {
+	if (stateLength <= 0) {
 		return false;
 	}
 	return true;
@@ -49,7 +49,7 @@ export const ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL = <T,>(
 	const vertDir = curCell[0] - prevCell[0];
 	const horDir = curCell[1] - prevCell[1];
 	if (!asString) {
-		return [horDir, vertDir];
+		return [vertDir, horDir];
 	} 
 	/*
 	----------------
@@ -131,14 +131,16 @@ export const ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL = (
 	];
 }
 
+/* Directional Utilities */
+export const northDir: [number, number] = [-1, 0];
+export const eastDir: [number, number] = [0, 1];
+export const westDir: [number, number] = [0, -1];
+export const southDir: [number, number] = [1, 0]
+
 export const ARRAY_2D_GET_EIGHT_DIRECTIONS_FROM_CELL = (
 	cell: [number, number]
 ): [number, number][] => {
 	//North->NorthEast->East->SouthEast->South->SouthWest->West->NorthWest
-	const northDir: [number, number] = [-1, 0];
-	const eastDir: [number, number] = [0, 1];
-	const westDir: [number, number] = [0, -1];
-	const southDir: [number, number] = [1, 0]
 	const north = GRID_CELL_ADD([cell, northDir]);
 	const east = GRID_CELL_ADD([cell, eastDir]);
 	const south = GRID_CELL_ADD([cell, southDir]);
@@ -147,7 +149,6 @@ export const ARRAY_2D_GET_EIGHT_DIRECTIONS_FROM_CELL = (
 	const southeast = GRID_CELL_ADD([cell, southDir, eastDir]);
 	const southwest = GRID_CELL_ADD([cell, southDir, westDir]);
 	const northwest = GRID_CELL_ADD([cell, northDir, westDir]);
-	console.log(north, northeast, east, southeast, south);
 	return [
 		north,
 		northeast,

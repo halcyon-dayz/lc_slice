@@ -15,7 +15,7 @@ const arraysSlice = createSlice({
         builder.addCase(deleteArray, (state, action: PayloadAction<DeleteArrayPayload>) => {
             const {num} = action.payload;
             if (num <= 0) {
-                return;
+                return state;
             }
             if (num > state.length) {
                 return [];

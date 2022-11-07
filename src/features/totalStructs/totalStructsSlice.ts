@@ -20,7 +20,7 @@ import {
 
 //#endregion
 
-const initialState: RootState["totalStructs"] = 1;
+const initialState: RootState["totalStructs"] = 0;
 
 
 //#region Total Structs Slice and Side Effects
