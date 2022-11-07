@@ -1,8 +1,9 @@
-/* eslint-disable no-lone-blocks */
-import {createSlice } from "@reduxjs/toolkit";
+// #region Total Structs Imports
+import {createSlice, Action} from "@reduxjs/toolkit";
 import {RootState} from "../../utils/types"
 
 import { PayloadAction } from "@reduxjs/toolkit";
+import { ThunkAction } from "@reduxjs/toolkit";
 
 import { 
     AddArrayPayload, 
@@ -17,8 +18,12 @@ import {
     CopyGridPayload
 } from "../sharedActions";
 
+//#endregion
+
 const initialState: RootState["totalStructs"] = 1;
 
+
+//#region Total Structs Slice and Side Effects
 const totalStructsSlice = createSlice({
     name: "dataStructure",
     initialState, 
@@ -48,6 +53,22 @@ const totalStructsSlice = createSlice({
         })
     }
 }) 
+
+//#endregion
+
+type AppThunk = ThunkAction<void, any, unknown, Action<string>>
+export const deleteAllStructs = (): AppThunk => {
+    return (
+        dispatch,
+        getState
+    ) => {
+        let grids = getState().grids;
+        let arrays = getState().arrays;
+        dispatch(deleteGrid({num: grids.length}));
+        dispatch(deleteArray({num: arrays.length}));
+
+    }
+}
 
 export const totalStructsReducer = totalStructsSlice.reducer
 export const selectTotalStructs = (state: RootState) => state.totalStructs;

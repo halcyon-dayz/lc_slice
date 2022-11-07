@@ -22,7 +22,6 @@ interface TreeNode<TValue = unknown, TKey = unknown> {
     key?: TKey
 }
 
-
 export type GridDS = {
     type: string,
     indexInList: number,
@@ -41,16 +40,10 @@ export type GridDS = {
 
 export type ArrDS = {
     type: string,
-    label: string,
+    label?: string,
     data: Cell[]
-    width: number
-}
-
-
-export type DataStructures = {
-    grids: GridDS[],
-    arrays: ArrDS[],
-    totalStructs: number
+    width: number,
+    pointerLocations?: number[],
 }
 
 export type RootState = {

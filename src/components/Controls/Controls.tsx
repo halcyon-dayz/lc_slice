@@ -1,3 +1,4 @@
+// #region Imports
 import { ControlsContainer } from "./styles"
 import React, {useState, useEffect} from "react"
 import { useSelector} from "react-redux";
@@ -20,30 +21,12 @@ import { arrayBuffer } from "stream/consumers";
 import { addGrid, copyGrid, deleteGrid } from "../../features/sharedActions";
 import { GRID_417_BOOLEAN, GRID_417_PACIFIC_ATLANTIC_WATER_FLOW } from "../../features/grids/defaultGrids";
 import { GRID_CONTEXT } from "../../features/grids/gridTypes";
-
-
-const ARRAY_2D_INDEX_IS_VALID = <T,>(arr: T[][], row: number, col: number): boolean => {
-    if (row < 0 || col < 0 || row >= arr.length || col >= arr[0].length) {
-        return false
-    }
-    return true;
-}
-
-const ARRAY_2D_GET_NEXT_INDEX = <T,>(arr: T[][], row: number, col: number): [number, number] => {
-    if (!ARRAY_2D_INDEX_IS_VALID(arr, row, col)) {
-        return [-1, -1];
-    }
-    if (col === arr[0].length - 1 && ARRAY_2D_INDEX_IS_VALID(arr, row + 1, 0)) {
-        return [row + 1, 0];
-    }
-    return [row, col + 1];
-}
-
-
-type CONTEXT_417 = {
-    prevCell: [number, number]
-    prevCurTile: number
-}
+import { 
+    ARRAY_2D_GET_NEXT_INDEX, 
+    ARRAY_2D_IS_VALID_INDEX,
+    GRID_CELL_INDEX_HAS_STATUS
+} from "../../features/grids/gridUtils";
+//#endregion
 
 
 export const Controls = () => {
@@ -422,7 +405,7 @@ export const Controls = () => {
         const curTileValue = waterFlowGrid.cells[i][j].data;
         if (
             directToPacific(i, j) && 
-            grids[0].cells[i][j].status !== "UNEXPLORED" &&
+            grids[0].cells[i][j].status !== "UNEXPLORED" && 
             stackContext.length === 0
         ) {
             //Set status of waterFlowGrid to explored
@@ -431,7 +414,7 @@ export const Controls = () => {
                 row: i, 
                 col: j,
                 status: "EXPLORED"
-            }))
+            }));
             //Change data in the pacific grid to true
             dispatch(changeGridCellData({
                 gridIndex: 1,
@@ -439,22 +422,22 @@ export const Controls = () => {
                 col: currentCell[1],
                 data: true
             }));
-            if (ARRAY_2D_INDEX_IS_VALID(grids[0].cells, i + 1, j)) {
-
+            if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i + 1, j, "UNEXPLORED")) {
+                setCurrentCell([i + 1, j])
             }
-            if (ARRAY_2D_INDEX_IS_VALID(grids[0].cells, i - 1, j)) {
-                
+            if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i - 1, j, "UNEXPLORED")) {
+                setCurrentCell([i - 1, j])
             }
-            if (ARRAY_2D_INDEX_IS_VALID(grids[0].cells, i, j + 1)) {
-                
+            if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i, j + 1, "UNEXPLORED")) {
+                setCurrentCell([i, j + 1])
             }
-            if (ARRAY_2D_INDEX_IS_VALID(grids[0].cells, i, j - 1)) {
-                
+            if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i, j - 1, "UNEXPLORED")) {
+                setCurrentCell([i, j - 1]);
             }
             setStackContext([...stackContext, {
                 prevCell: [i, j],
                 prevTileValue: curTileValue
-            }]
+            }]);
         }
 
         if(directToAtlantic(currentCell[0], currentCell[1])) {

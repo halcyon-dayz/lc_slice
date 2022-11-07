@@ -1,5 +1,6 @@
-import { RootState } from "../../utils/types";
+import { CellStatus, RootState } from "../../utils/types";
 import {PayloadAction} from "@reduxjs/toolkit"
+import { Cell } from "../../utils/types";
 
 /* Grid Utility Functions */
 export const isValidIndex = (stateLength: number, index: number): boolean => {
@@ -16,7 +17,7 @@ export const isStateValid = (stateLength: number) => {
 	return true;
 }
 
-export const ARRAY_2D_INDEX_IS_VALID = <T,>(arr: T[][], row: number, col: number): boolean => {
+export const ARRAY_2D_IS_VALID_INDEX = <T,>(arr: T[][], row: number, col: number): boolean => {
     if (row < 0 || col < 0 || row >= arr.length || col >= arr[0].length) {
         return false
     }
@@ -24,16 +25,23 @@ export const ARRAY_2D_INDEX_IS_VALID = <T,>(arr: T[][], row: number, col: number
 }
 
 export const ARRAY_2D_GET_NEXT_INDEX = <T,>(arr: T[][], row: number, col: number): [number, number] => {
-    if (ARRAY_2D_INDEX_IS_VALID(arr, row, col) === false) {
+    if (ARRAY_2D_IS_VALID_INDEX(arr, row, col) === false) {
         return [-1, -1];
     }
     if (row === arr.length - 1 && col === arr[0].length - 1) {
         return [0, 0];
     }
-    if (col === arr[0].length - 1 && ARRAY_2D_INDEX_IS_VALID(arr, row + 1, 0)) {
+    if (col === arr[0].length - 1 && ARRAY_2D_IS_VALID_INDEX(arr, row + 1, 0)) {
         return [row + 1, 0];
     }
     return [row, col + 1];
+}
+
+export const GRID_CELL_INDEX_HAS_STATUS = (arr: Cell[][], row: number, col: number, status: CellStatus): boolean => {
+	return ( 
+		ARRAY_2D_IS_VALID_INDEX(arr, row, col) &&
+		arr[row][col].status === status
+	)
 }
 
 /* Grid Slice Type Helpers */

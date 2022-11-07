@@ -1,3 +1,1 @@
-export type changeArray = {
-    val: number
-}
+export type clearArray = number;

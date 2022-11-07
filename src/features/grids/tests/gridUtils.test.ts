@@ -1,6 +1,6 @@
 import {
     ARRAY_2D_GET_NEXT_INDEX, 
-    ARRAY_2D_INDEX_IS_VALID
+    ARRAY_2D_IS_VALID_INDEX
 } from "../gridUtils"
 
 
@@ -18,19 +18,19 @@ describe('gridUtils tests', () => {
     test("if all existing cells are valid", () => {
         for (let i = 0; i < defaultArray.length; i++) {
             for (let j = 0; j < defaultArray[0].length; j++) {
-                expect(ARRAY_2D_INDEX_IS_VALID(defaultArray, i, j)).toBeTruthy();
+                expect(ARRAY_2D_IS_VALID_INDEX(defaultArray, i, j)).toBeTruthy();
             }
         }
     })
 
     test("if returns false on invalid row", () => {
-        expect(ARRAY_2D_INDEX_IS_VALID(defaultArray, defaultArray.length, 0)).toBeFalsy();
-        expect(ARRAY_2D_INDEX_IS_VALID(defaultArray, defaultArray.length + 1, 0)).toBeFalsy();
+        expect(ARRAY_2D_IS_VALID_INDEX(defaultArray, defaultArray.length, 0)).toBeFalsy();
+        expect(ARRAY_2D_IS_VALID_INDEX(defaultArray, defaultArray.length + 1, 0)).toBeFalsy();
     })
 
     test("if returns false on invalid column", () => {
-        expect(ARRAY_2D_INDEX_IS_VALID(defaultArray, 0, defaultArray[0].length)).toBeFalsy();
-        expect(ARRAY_2D_INDEX_IS_VALID(defaultArray, 0, defaultArray[0].length + 1)).toBeFalsy();
+        expect(ARRAY_2D_IS_VALID_INDEX(defaultArray, 0, defaultArray[0].length)).toBeFalsy();
+        expect(ARRAY_2D_IS_VALID_INDEX(defaultArray, 0, defaultArray[0].length + 1)).toBeFalsy();
     })
 
     test("if ARR_2D_GET_NEXT_INDEX returns [-1, -1] for invalid cells", () => {

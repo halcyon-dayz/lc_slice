@@ -1,3 +1,4 @@
+//#region Imports
 import {createSlice} from "@reduxjs/toolkit"
 import {RootState, Cell, GridDS} from "../../utils/types"
 import { PayloadAction } from "@reduxjs/toolkit"
@@ -29,6 +30,9 @@ import {
 import { ThunkAction} from "@reduxjs/toolkit";
 import { Action } from "@reduxjs/toolkit";
 import {defaultGrid} from "../../utils/defaultData";
+
+//#endregion
+
 //Default Cell value
 
 const initialState: RootState["grids"] = [];
@@ -37,6 +41,7 @@ const gridBeforeEach: GridBeforeEachFunc = (state: RootState["grids"], action?: 
 	return action ? ( isValidIndex(state.length, action.payload.gridIndex) ) : (isStateValid(state.length))
 }
 
+// #region Reducer object
 const gridsReducerObject = {
 	/**
 	 * Changes the width of the grid, adding a new column to each row.
@@ -241,8 +246,9 @@ const gridsReducerObject = {
 	}
 }
 
-console.log(gridsReducerObject);
+//#endregion
 
+// #region Grid Slice with side effect actions
 const gridsSlice = createSlice({
 	name: "grids",
 	initialState, 
@@ -320,6 +326,8 @@ const gridsSlice = createSlice({
 	}
 }) 
 
+//#endregion
+
 
 export const gridsReducer = gridsSlice.reducer 
 
@@ -339,9 +347,8 @@ export const selectAllGrids = (
 	state: RootState
 ) => state.grids;
 
-
+//#region Grid Thunk Actions
 type AppThunk = ThunkAction<void, any, unknown, Action<string>>
-
 
 export const changeGridLabels = (startIndex: number, labels: string[]): AppThunk => {
 	return (
@@ -377,15 +384,6 @@ export const copyGrids = (grids: Cell[][][]): AppThunk => {
 	}
 }
 
-export const changeGridWidths = (
-	startIndex: number, 
-	newWidths: number[], 
-	defaultValue: number
-) => {
-	return;
-
-}
-
 export const floodFill = (gridIndex: number): AppThunk => {
 	return (
 		dispatch, 
@@ -406,57 +404,4 @@ export const floodFill = (gridIndex: number): AppThunk => {
 	}
 }
 
-/* export const floodFillBFS = (): AppThunk => {
-	return (
-		dispatch,
-		getState
-	) => {
-		const bfs = (row: number, col: number, oldColor: number, newColor: number) => {
-
-		}
-	}
-} */
-
-
-/* export const saveProject = createAsyncThunk(
-	"SAVE_PROJECT",
-	async (
-	  { projectName, thumbnail }: SaveProjectArg,
-	  { getState }
-	) => {
-	  try {
-		const response = await newProject(
-		  projectName,
-		  (getState() as RootState)?.strokes,
-		  thumbnail
-		)
-		console.log(response)
-	  } catch (err) {
-		console.log(err)
-	  }
-	}
-  )
-
-  export const newProject = (
-  name: string,
-  strokes: Stroke[],
-  image: string
-) =>
-  fetch("http://localhost:4000/projects/new", {
-	method: "POST",
-	headers: {
-	  Accept: "application/json",
-	  "Content-Type": "application/json"
-	},
-	body: JSON.stringify({
-	  name,
-	  strokes,
-	  image
-	})
-  }).then((res) => res.json())
-
-export const getProject = (projectId: string) => {
-  return fetch(`http://localhost:4000/projects/${projectId}`).then(
-	(res) => res.json()
-  )
-} */
+//#endregion
