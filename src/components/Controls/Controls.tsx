@@ -22,7 +22,9 @@ import { addGrid, copyGrid, deleteGrid } from "../../features/sharedActions";
 import { GRID_417_BOOLEAN, GRID_417_PACIFIC_ATLANTIC_WATER_FLOW } from "../../features/grids/defaultGrids";
 import { GRID_417_CONTEXT, GRID_CONTEXT } from "../../features/grids/gridTypes";
 import { 
+    ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL,
     ARRAY_2D_GET_NEXT_INDEX, 
+    ARRAY_2D_IS_INDEX_SAME, 
     ARRAY_2D_IS_VALID_INDEX,
     GRID_CELL_INDEX_HAS_STATUS
 } from "../../features/grids/gridUtils";
@@ -493,7 +495,26 @@ export const Controls = () => {
             }]);
             return;
         } else {
-            console.log("Return to prev cell")
+            console.log("Return to prev cell");
+            const prevCell = stackContext[stackContext.length - 1].prevCell;
+            const dirFromPrev: [number, number] = (ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL(prevCell, currentCell) as [number, number]);
+            //TODO: FIX THIS HEINOUS CODE, don't use i and j for indices here
+            if (!ARRAY_2D_IS_INDEX_SAME([i + 1, j], dirFromPrev) && GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i + 1, j, "UNEXPLORED")) {
+                setCurrentCell([i + 1, j]);
+                return;
+            }
+            if (!ARRAY_2D_IS_INDEX_SAME([i - 1, j], dirFromPrev) && GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i - 1, j, "UNEXPLORED")) {
+                setCurrentCell([i - 1, j]);
+                return;
+            }
+            if (!ARRAY_2D_IS_INDEX_SAME([i, j + 1], dirFromPrev) && GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i, j + 1, "UNEXPLORED")) {
+                setCurrentCell([i, j + 1])
+                return;
+            }
+            if (!ARRAY_2D_IS_INDEX_SAME([i, j - 1], dirFromPrev) && GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i, j - 1, "UNEXPLORED")) {
+                setCurrentCell([i, j - 1]);
+                return;
+            }
             setCurrentCell(stackContext[stackContext.length - 1].prevCell);
             setStackContext(stackContext.slice(0, stackContext.length - 1));
             return;

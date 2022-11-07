@@ -90,6 +90,13 @@ export const GRID_CELL_INDEX_HAS_STATUS = (arr: Cell[][], row: number, col: numb
 	)
 }
 
+export const ARRAY_2D_IS_INDEX_SAME = (c1: [number, number], c2: [number, number]) => {
+	if (c1[0] === c2[0] && c1[0] === c2[0]) {
+		return true;
+	}
+	return false;
+}
+
 /* Grid Slice Type Helpers */
 export type GridBeforeEachFunc = (state: RootState["grids"], action?: PayloadAction<any>) => boolean;
 export type GridDuringWithActionFunc = (state: RootState["grids"], action: PayloadAction<any>) => void
