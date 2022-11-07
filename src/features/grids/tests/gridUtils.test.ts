@@ -1,7 +1,7 @@
 import {
     ARRAY_2D_GET_NEXT_INDEX, 
     ARRAY_2D_INDEX_IS_VALID
-} from "./gridUtils"
+} from "../gridUtils"
 
 
 const defaultArray = [
@@ -65,8 +65,6 @@ describe('gridUtils tests', () => {
     test("if next cell of single cell grid will be itself", () => {
         const i = smol.length;
         const j = smol[0].length
-        console.log(i);
-        console.log(j);
         expect(ARRAY_2D_GET_NEXT_INDEX(smol, 0, 0)).toEqual([0, 0]);
     })
 })

@@ -19,7 +19,7 @@ import { useAppDispatch, useAppSelector } from "../../features/hooks";
 import { arrayBuffer } from "stream/consumers";
 import { addGrid, copyGrid, deleteGrid } from "../../features/sharedActions";
 import { GRID_417_BOOLEAN, GRID_417_PACIFIC_ATLANTIC_WATER_FLOW } from "../../features/grids/defaultGrids";
-import { GRID_GENERIC_CONTEXT } from "../../features/grids/gridTypes";
+import { GRID_CONTEXT } from "../../features/grids/gridTypes";
 
 
 const ARRAY_2D_INDEX_IS_VALID = <T,>(arr: T[][], row: number, col: number): boolean => {
@@ -53,9 +53,7 @@ export const Controls = () => {
     const [animationOn, setAnimationOn] = useState<boolean>(false);
     const [clearValue, setClearValue] = useState<number>(0);
     const [selectedRow, setSelectedRow] = useState<number>(0);
-    const [stackContext, setStackContext] = useState<GRID_GENERIC_CONTEXT[]>([])
-
-
+    const [stackContext, setStackContext] = useState<GRID_CONTEXT[]>([])
 
     const grids = useSelector(selectAllGrids);
     const dispatch = useAppDispatch();
@@ -390,6 +388,7 @@ export const Controls = () => {
         dispatch(changeGridLabels(0, ["Water Flow", "Pacific", "Atlantic"]));
         setCurrentCell([0, 0]);
         setPrevCells([]);
+        setStackContext([]);
     }
 
     const directToPacific = (i: number, j: number): boolean => {
@@ -413,16 +412,49 @@ export const Controls = () => {
         //3. Flood Fill Atlantic from Right Side, stop when we reach([grids.length - 1, grids[0].length - 1]])
         //4. Flood Fill Pacific From Top, stop when we reach ([0, grids[0].length - 1])
         //5. Flood Fill Atlantic from Bottom, stop when we reach ([0, grids[grids.length - 1].length - 1])
+
+        /* Set up current values */
         const waterFlowGrid = grids[0];
-        const pacificGrid = grids[1];
-        const atlanticGrid = grids[2];
-        if (directToPacific(currentCell[0], currentCell[1])) {
+        //const pacificGrid = grids[1];
+        //const atlanticGrid = grids[2];
+        const i = currentCell[0];
+        const j = currentCell[1];
+        const curTileValue = waterFlowGrid.cells[i][j].data;
+        if (
+            directToPacific(i, j) && 
+            grids[0].cells[i][j].status !== "UNEXPLORED" &&
+            stackContext.length === 0
+        ) {
+            //Set status of waterFlowGrid to explored
+            dispatch(changeGridCellStatus({
+                gridIndex: 0,
+                row: i, 
+                col: j,
+                status: "EXPLORED"
+            }))
+            //Change data in the pacific grid to true
             dispatch(changeGridCellData({
                 gridIndex: 1,
                 row: currentCell[0],
                 col: currentCell[1],
                 data: true
-            })) 
+            }));
+            if (ARRAY_2D_INDEX_IS_VALID(grids[0].cells, i + 1, j)) {
+
+            }
+            if (ARRAY_2D_INDEX_IS_VALID(grids[0].cells, i - 1, j)) {
+                
+            }
+            if (ARRAY_2D_INDEX_IS_VALID(grids[0].cells, i, j + 1)) {
+                
+            }
+            if (ARRAY_2D_INDEX_IS_VALID(grids[0].cells, i, j - 1)) {
+                
+            }
+            setStackContext([...stackContext, {
+                prevCell: [i, j],
+                prevTileValue: curTileValue
+            }]
         }
 
         if(directToAtlantic(currentCell[0], currentCell[1])) {

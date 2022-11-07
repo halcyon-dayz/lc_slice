@@ -1,6 +1,6 @@
 export type GRID_417_CONTEXT = {
     prevCell: [number, number]
-    prevTileNumber: number,
+    prevTileValue: number,
 }
 
 export type GRID_GENERIC_CONTEXT = {
