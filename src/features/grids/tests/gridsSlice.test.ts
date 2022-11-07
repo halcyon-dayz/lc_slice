@@ -1,7 +1,7 @@
 import { copyGrid, deleteGrid } from "../../sharedActions"
 import {store} from "../../store"
 import {GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_733_FLOOD_FILL} from "../defaultGrids"
-import { changeGridHeight, changeGridWidth, clearGridCells, copyGrids } from "../gridsSlice"
+import { changeGridHeight, changeGridLabel, changeGridWidth, clearGridCells, copyGrids } from "../gridsSlice"
 
 
 beforeEach(async () => {
@@ -86,6 +86,16 @@ describe('gridsSlice redux state tests', () => {
         expect(gridOne.width).toEqual(3);
         expect(gridOne.cells[0].length).toEqual(3);
         //TODO: Check that default value works
+    })
+
+    test("if changeWidth will not run with improper payload", async () => {
+        let result = await store.dispatch(copyGrids([
+            GRID_733_FLOOD_FILL
+        ]));
+        let resultTwo = await store.dispatch(changeGridWidth({gridIndex: 0, newWidth: 1}));
+        let grid = store.getState().grids[0];
+        expect(grid.cells[0].length).toEqual(5);
+        expect(grid.width).toEqual(5);
     })
 
     test("if changeHeight works adding rows", async () => {
@@ -217,5 +227,36 @@ describe('gridsSlice redux state tests', () => {
                 expect(gridZero.cells[i][j].status).toEqual("DEEP_OCEAN");
             }
         }
+    })
+
+    test("if changeGridLabel works", async () => {
+        let result = await store.dispatch(copyGrids([
+            GRID_733_FLOOD_FILL, GRID_733_FLOOD_FILL, GRID_733_FLOOD_FILL
+        ]))
+        let grids = store.getState().grids
+        expect(grids[0]).not.toBeUndefined();
+        expect(grids[1]).not.toBeUndefined();
+        expect(grids[2]).not.toBeUndefined();
+        //TODO: Need to change copy grid so grids have proper numbering
+        expect(grids[0].label).toEqual("Grid #1")
+        expect(grids[0].label).toEqual("Grid #1")
+        expect(grids[0].label).toEqual("Grid #1")
+        let resultTwo = await store.dispatch(changeGridLabel({
+            gridIndex: 0,
+            label: "The Host"
+        }));
+        expect(resultTwo.type).toEqual("grids/changeGridLabel");
+        resultTwo = await store.dispatch(changeGridLabel({
+            gridIndex: 1,
+            label: "Parasite"
+        }));
+        resultTwo = await store.dispatch(changeGridLabel({
+            gridIndex: 2,
+            label: "Snowpiercer"
+        }));
+        grids = store.getState().grids;
+        expect(grids[0].label).toEqual("The Host")
+        expect(grids[1].label).toEqual("Parasite")
+        expect(grids[2].label).toEqual("Snowpiercer")
     })
 })
