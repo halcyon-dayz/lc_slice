@@ -169,7 +169,6 @@ const gridsReducerObject = {
 		if (status === "START") {
 			state[gridIndex].startNodeRow = row;
 			state[gridIndex].startNodeCol = col;
-			console.log("start set")
 			return;
 		}
 		if (status === "END") {

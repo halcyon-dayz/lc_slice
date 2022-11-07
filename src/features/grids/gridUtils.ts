@@ -46,11 +46,22 @@ export const ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL = <T,>(
 	curCell: [number, number],
 	asString?: boolean
 ): DirectionString | [number, number] => {
-	const horDir = curCell[0] - prevCell[0];
-	const vertDir = curCell[1] - prevCell[1];
+	const vertDir = curCell[0] - prevCell[0];
+	const horDir = curCell[1] - prevCell[1];
 	if (!asString) {
 		return [horDir, vertDir];
 	} 
+	/*
+	----------------
+	|    |    |    |
+	----------------
+	----------------
+	|    |    |    |
+	----------------
+	----------------
+	|    |    |    |
+	----------------
+	*/
 	if (horDir === 0 && vertDir === 0) {
 		return "none";
 	}
@@ -97,18 +108,67 @@ export const ARRAY_2D_IS_INDEX_SAME = (c1: [number, number], c2: [number, number
 	return false;
 }
 
+export const GRID_CELL_ADD = (cells: [number, number][]): [number, number] => {
+	let partOne = 0;
+	let partTwo = 0;
+	for (let i = 0; i < cells.length; i++) {
+		partOne += cells[i][0];
+		partTwo += cells[i][1];
+	}
+	return [partOne, partTwo];
+}
+
+export const ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL = (
+	cell: [number, number]
+) : [number, number][] => {
+	//North->East->South->West
+	const north = GRID_CELL_ADD([cell, [-1, 0]]);
+	const east = GRID_CELL_ADD([cell, [0, 1]]);
+	const south = GRID_CELL_ADD([cell, [1, 0]]);
+	const west = GRID_CELL_ADD([cell, [0, - 1]]);
+	return [
+		north, east, south, west
+	];
+}
+
+export const ARRAY_2D_GET_EIGHT_DIRECTIONS_FROM_CELL = (
+	cell: [number, number]
+): [number, number][] => {
+	//North->NorthEast->East->SouthEast->South->SouthWest->West->NorthWest
+	const northDir: [number, number] = [-1, 0];
+	const eastDir: [number, number] = [0, 1];
+	const westDir: [number, number] = [0, -1];
+	const southDir: [number, number] = [1, 0]
+	const north = GRID_CELL_ADD([cell, northDir]);
+	const east = GRID_CELL_ADD([cell, eastDir]);
+	const south = GRID_CELL_ADD([cell, southDir]);
+	const west = GRID_CELL_ADD([cell, westDir]);
+	const northeast = GRID_CELL_ADD([cell, northDir, eastDir]);
+	const southeast = GRID_CELL_ADD([cell, southDir, eastDir]);
+	const southwest = GRID_CELL_ADD([cell, southDir, westDir]);
+	const northwest = GRID_CELL_ADD([cell, northDir, westDir]);
+	console.log(north, northeast, east, southeast, south);
+	return [
+		north,
+		northeast,
+		east,
+		southeast,
+		south,
+		southwest,
+		west,
+		northwest
+	]
+}
+
 /* Grid Slice Type Helpers */
 export type GridBeforeEachFunc = (state: RootState["grids"], action?: PayloadAction<any>) => boolean;
 export type GridDuringWithActionFunc = (state: RootState["grids"], action: PayloadAction<any>) => void
 export type GridDuringFunc = (state: RootState["grids"]) => void;
 
-
 /* Grid Slice Action Creators */
 export const createGridActionSA = (beforeEach: GridBeforeEachFunc, during: GridDuringWithActionFunc) => {
 	return (state: RootState["grids"], action: PayloadAction<any>) => {
 		const beforeTest = beforeEach(state, action);
-		console.log("before test ran")
-		console.log(state.length);
 		if (!beforeTest) {
 			return;
 		}
@@ -119,8 +179,6 @@ export const createGridActionSA = (beforeEach: GridBeforeEachFunc, during: GridD
 export const createGridActionS = (beforeEach: GridBeforeEachFunc, during: GridDuringFunc) => {
 	return (state: RootState["grids"]) => {
 		const beforeTest = beforeEach(state);
-		console.log("before test ran")
-		console.log("state.length");
 		if (!beforeTest) {
 			return;
 		}

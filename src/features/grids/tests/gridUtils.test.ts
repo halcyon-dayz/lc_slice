@@ -1,7 +1,9 @@
 import {
     ARRAY_2D_GET_NEXT_INDEX, 
     ARRAY_2D_IS_VALID_INDEX,
-    ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL
+    ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL,
+    ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL,
+    ARRAY_2D_GET_EIGHT_DIRECTIONS_FROM_CELL,
 } from "../gridUtils"
 
 
@@ -77,5 +79,38 @@ describe('gridUtils tests', () => {
     test("if ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL works northwest", () => {
         expect(ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL([4, 5], [0, 4])).toEqual([-4, -1]);
         expect(ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL([4, 5], [3, 4], true)).toEqual("northwest");
+    })
+
+    test("if ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL works", () => {
+        expect(ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL([5, 10])).toEqual([
+            //north
+            [4, 10],
+            //east
+            [5, 11],
+            //south
+            [6, 10],
+            //west
+            [5, 9]
+        ])
+    })
+    test("if ARRAY_2D_GET_EIGHT_DIRECTIONS_FROM_CELL works", () => {
+        expect(ARRAY_2D_GET_EIGHT_DIRECTIONS_FROM_CELL([5, 10])).toEqual([
+            //north
+            [4, 10],
+            //northeast
+            [4, 11],
+            //east
+            [5, 11],
+            //southeast
+            [6, 11],
+            //south
+            [6, 10],
+            //southwest
+            [6, 9],
+            //west
+            [5, 9],
+            //northwest
+            [4, 9]
+        ]);
     })
 })
