@@ -1,6 +1,7 @@
 import {
     ARRAY_2D_GET_NEXT_INDEX, 
-    ARRAY_2D_IS_VALID_INDEX
+    ARRAY_2D_IS_VALID_INDEX,
+    ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL
 } from "../gridUtils"
 
 
@@ -66,5 +67,15 @@ describe('gridUtils tests', () => {
         const i = smol.length;
         const j = smol[0].length
         expect(ARRAY_2D_GET_NEXT_INDEX(smol, 0, 0)).toEqual([0, 0]);
+    })
+    
+    test("if ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL works southeast", () => {
+        expect(ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL([4, 5], [5, 6])).toEqual([1, 1]);
+        expect(ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL([4, 5], [5, 6], true)).toEqual("southeast");
+    })
+
+    test("if ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL works northwest", () => {
+        expect(ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL([4, 5], [0, 4])).toEqual([-4, -1]);
+        expect(ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL([4, 5], [3, 4], true)).toEqual("northwest");
     })
 })

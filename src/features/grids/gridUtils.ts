@@ -37,6 +37,52 @@ export const ARRAY_2D_GET_NEXT_INDEX = <T,>(arr: T[][], row: number, col: number
     return [row, col + 1];
 }
 
+
+type DirectionString = "north" | "northeast" | "east" | "southeast" | "south" | "southwest" | "west" | "northwest" | "none" | "undefined"
+
+
+export const ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL = <T,>(
+	prevCell: [number, number],
+	curCell: [number, number],
+	asString?: boolean
+): DirectionString | [number, number] => {
+	const horDir = curCell[0] - prevCell[0];
+	const vertDir = curCell[1] - prevCell[1];
+	if (!asString) {
+		return [horDir, vertDir];
+	} 
+	if (horDir === 0 && vertDir === 0) {
+		return "none";
+	}
+	//CARDINAL DIRECTIONS
+	if (horDir === 0 && vertDir < 0) {
+		return "north"
+	}
+	if (horDir === 0 && vertDir > 0) {
+		return "south"
+	}
+	if (horDir > 0 && vertDir === 0) {
+		return "east"
+	}
+	if (horDir < 0 && vertDir === 0) {
+		return "west"
+	}
+	//WEIRDO DIRECTIONS
+	if (horDir > 0 && vertDir < 0) {
+		return "northeast"
+	}
+	if (horDir > 0 && vertDir > 0) {
+		return "southeast"
+	}
+	if (horDir < 0 && vertDir < 0) {
+		return "northwest"
+	}
+	if (horDir < 0 && vertDir > 0) {
+		return "southwest"
+	}
+	return "undefined";
+}
+
 export const GRID_CELL_INDEX_HAS_STATUS = (arr: Cell[][], row: number, col: number, status: CellStatus): boolean => {
 	return ( 
 		ARRAY_2D_IS_VALID_INDEX(arr, row, col) &&

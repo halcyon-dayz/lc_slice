@@ -20,7 +20,7 @@ import { useAppDispatch, useAppSelector } from "../../features/hooks";
 import { arrayBuffer } from "stream/consumers";
 import { addGrid, copyGrid, deleteGrid } from "../../features/sharedActions";
 import { GRID_417_BOOLEAN, GRID_417_PACIFIC_ATLANTIC_WATER_FLOW } from "../../features/grids/defaultGrids";
-import { GRID_CONTEXT } from "../../features/grids/gridTypes";
+import { GRID_417_CONTEXT, GRID_CONTEXT } from "../../features/grids/gridTypes";
 import { 
     ARRAY_2D_GET_NEXT_INDEX, 
     ARRAY_2D_IS_VALID_INDEX,
@@ -403,11 +403,12 @@ export const Controls = () => {
         const i = currentCell[0];
         const j = currentCell[1];
         const curTileValue = waterFlowGrid.cells[i][j].data;
+        console.log(stackContext.length);
         if (
             directToPacific(i, j) && 
-            grids[0].cells[i][j].status !== "UNEXPLORED" && 
             stackContext.length === 0
         ) {
+            console.log("Direct to Pacific")
             //Set status of waterFlowGrid to explored
             dispatch(changeGridCellStatus({
                 gridIndex: 0,
@@ -424,6 +425,57 @@ export const Controls = () => {
             }));
             if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i + 1, j, "UNEXPLORED")) {
                 setCurrentCell([i + 1, j])
+                console.log(`Moving to ${i + 1}, ${j}`);
+                setStackContext([{
+                    prevCell: [i, j],
+                    prevTileValue: curTileValue,
+                }]);
+                return;
+            }
+            if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i - 1, j, "UNEXPLORED")) {
+                setCurrentCell([i - 1, j])
+                console.log(`Moving to ${i - 1}, ${j}`);
+                setStackContext([{
+                    prevCell: [i, j],
+                    prevTileValue: curTileValue,
+                }]);
+                return;
+            }
+            if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i, j + 1, "UNEXPLORED")) {
+                setCurrentCell([i, j + 1])
+                console.log(`Moving to ${i}, ${j + 1}`);
+                setStackContext([{
+                    prevCell: [i, j],
+                    prevTileValue: curTileValue,
+                }]);
+                return;
+            }
+            if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i, j - 1, "UNEXPLORED")) {
+                setCurrentCell([i, j - 1]);
+                console.log(`Moving to ${i}, ${j - 1}`);
+                setStackContext([{
+                    prevCell: [i, j],
+                    prevTileValue: curTileValue,
+                }]);
+                return;
+            }
+        }
+        if (waterFlowGrid.cells[i][j].data <= (stackContext[stackContext.length - 1] as GRID_417_CONTEXT).prevTileValue + 1) {
+            console.log("Next dfs step");
+            dispatch(changeGridCellStatus({
+                gridIndex: 0,
+                row: i, 
+                col: j,
+                status: "EXPLORED"
+            }));
+            dispatch(changeGridCellData({
+                gridIndex: 1,
+                row: i,
+                col: j,
+                data: true
+            }));
+            if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i + 1, j, "UNEXPLORED")) {
+                setCurrentCell([i + 1, j])
             }
             if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i - 1, j, "UNEXPLORED")) {
                 setCurrentCell([i - 1, j])
@@ -434,24 +486,19 @@ export const Controls = () => {
             if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i, j - 1, "UNEXPLORED")) {
                 setCurrentCell([i, j - 1]);
             }
-            setStackContext([...stackContext, {
-                prevCell: [i, j],
-                prevTileValue: curTileValue
-            }]);
-        }
 
-        if(directToAtlantic(currentCell[0], currentCell[1])) {
-            dispatch(changeGridCellData({
-                gridIndex: 2,
-                row: currentCell[0],
-                col: currentCell[1],
-                data: true
-            })) 
+            setStackContext([...stackContext, {
+                prevTileValue: curTileValue, 
+                prevCell: [i, j]
+            }]);
+            return;
+        } else {
+            console.log("Return to prev cell")
+            setCurrentCell(stackContext[stackContext.length - 1].prevCell);
+            setStackContext(stackContext.slice(0, stackContext.length - 1));
+            return;
         }
-        const nextCell = ARRAY_2D_GET_NEXT_INDEX(
-            grids[0].cells, currentCell[0], currentCell[1]
-        );
-        setCurrentCell(nextCell);
+        setCurrentCell(ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j));
     }
 
     useEffect(() => {
@@ -492,7 +539,7 @@ export const Controls = () => {
         </div>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
             <button onClick={onClickSetUp417}>SetUp417</button>
-            <button onClick={onClickStep417}>Step 417</button>
+            <button onClick={() => onClickStep417()}>Step 417</button>
             <button>Complete 417</button>
         </div>
         <br></br>
