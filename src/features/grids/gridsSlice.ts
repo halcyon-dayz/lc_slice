@@ -29,7 +29,6 @@ import {
 import { ThunkAction} from "@reduxjs/toolkit";
 import { Action } from "@reduxjs/toolkit";
 import {defaultGrid} from "../../utils/defaultData";
-import { Root } from "react-dom/client"
 //Default Cell value
 
 const initialState: RootState["grids"] = [];
@@ -56,15 +55,24 @@ const gridsReducerObject = {
 			return;
 		}
 		if (newWidth > state[gridIndex].width) {
+			//Iterate through each row of the grid
 			for (let i = 0; i < state[gridIndex].height; i++) {
-				state[gridIndex].cells[i].push({
-					data: defaultValue ? defaultValue : 0,
-					status: "UNEXPLORED",
-				});
+				//Iterate through each newly added column
+				for (let newCols = 0; newCols < newWidth - state[gridIndex].width; newCols++) {
+					state[gridIndex].cells[i].push({
+						data: defaultValue ? defaultValue : 0,
+						status: "UNEXPLORED",
+					});
+				}
 			}
+
 		} else if (newWidth < state[gridIndex].width) {
+			//For each row
 			for (let i = 0; i < state[gridIndex].height; i++) {
-				state[gridIndex].cells[i].pop();
+				//for each destroyed column
+				for (let destroyedCols = 0; destroyedCols < state[gridIndex].width - newWidth; destroyedCols++) {
+					state[gridIndex].cells[i].pop();
+				}
 			}
 		}
 		state[gridIndex].width = newWidth;	
@@ -76,13 +84,13 @@ const gridsReducerObject = {
 		state, 
 		action: PayloadAction<GridPayloads.ChangeGridHeightPayload>
 	) => {
-		const {newHeight, defaultValue, gridIndex} = action.payload;
+		const {newHeight, defaultValue, defaultStatus, gridIndex} = action.payload;
 		if (!isValidIndex(state.length, gridIndex) || newHeight < 2) {
 			return;
 		}
 		const dummyCell: Cell = {
 			data: defaultValue ? defaultValue : 0,
-			status: "UNEXPLORED",
+			status: defaultStatus ? defaultStatus : "UNEXPLORED"
 		}
 
 		if (newHeight > state[gridIndex].height) {
@@ -367,6 +375,15 @@ export const copyGrids = (grids: Cell[][][]): AppThunk => {
 			dispatch(copyGrid({cells: grids[i]}));
 		}
 	}
+}
+
+export const changeGridWidths = (
+	startIndex: number, 
+	newWidths: number[], 
+	defaultValue: number
+) => {
+	return;
+
 }
 
 export const floodFill = (gridIndex: number): AppThunk => {

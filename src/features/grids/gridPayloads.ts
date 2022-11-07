@@ -4,13 +4,15 @@ import { CellStatus } from "../../utils/types"
 export type ChangeGridWidthPayload = {
     newWidth: number,
     gridIndex: number,
-    defaultValue?: number
+    defaultValue?: number,
+    defaultStatus?: CellStatus
 }
 
 export type ChangeGridHeightPayload = {
     newHeight: number,
     gridIndex: number,
-    defaultValue?: number
+    defaultValue?: number,
+    defaultStatus?: CellStatus
 }
 
 export type ChangeGridCellPayload = {
