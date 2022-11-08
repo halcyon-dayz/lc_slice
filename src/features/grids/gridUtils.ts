@@ -94,11 +94,41 @@ export const ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL = <T,>(
 	return "undefined";
 }
 
+
+/**
+* Query whether a cell in the grid exists and has the specified data.
+* @param {Cell[][]} arr 
+*  The array of cells
+* @param {number} row  
+*  The row of the cell.
+* @param {number} col 
+*  The column of the cell.
+* @param {any} status
+*  The status the user expects the cell to have.
+*/
 export const GRID_CELL_INDEX_HAS_STATUS = (arr: Cell[][], row: number, col: number, status: CellStatus): boolean => {
 	return ( 
 		ARRAY_2D_IS_VALID_INDEX(arr, row, col) &&
 		arr[row][col].status === status
 	)
+}
+
+/**
+* Query whether a cell in the grid exists and has the specified data.
+* @param {Cell[][]} arr 
+*  The array of cells
+* @param {number} row  
+*  The row of the cell.
+* @param {number} col 
+*  The column of the cell.
+* @param {any} data
+*  The data the user expects to exist in the cell.
+*/
+export const GRID_CELL_INDEX_HAS_DATA = (arr: Cell[][], row: number, col: number, data: any): boolean => {
+	return (
+		ARRAY_2D_IS_VALID_INDEX(arr, row, col) &&
+		arr[row][col].data === data
+	);
 }
 
 export const ARRAY_2D_IS_INDEX_SAME = (c1: [number, number], c2: [number, number]) => {

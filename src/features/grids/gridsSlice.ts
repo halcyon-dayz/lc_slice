@@ -264,7 +264,7 @@ const gridsSlice = createSlice({
 			   const newGrid: GridDS = {
 				   type: "GRID",
 				   indexInList: (prevLength - 1) + i,
-				   label: `Grid ${prevLength + i}`,
+				   label: `Grid #${prevLength + i}`,
 				   cells: defaultGrid,
 				   cellStyleHeight: 50,
 				   cellStyleWidth: 50,
