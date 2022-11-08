@@ -30,6 +30,7 @@ import {
     GRID_CELL_INDEX_HAS_STATUS,
     GRID_CELL_INDEX_HAS_DATA
 } from "../../features/grids/gridUtils";
+import { UtilitiesController } from "../Controllers/UtilitiesController";
 //#endregion
 
 
@@ -60,39 +61,6 @@ export const Controls = () => {
         const numVal = parseInt(e.currentTarget.value);
         setSelectedRow(numVal);
     }
-
-    const clickIncreaseRows = () => {
-        console.log("yo")
-        dispatch(changeGridWidth({gridIndex: inputGrid, newWidth: grids[inputGrid].width + 1}))
-    }
-
-    const clickDecreaseRows = () => {
-        if (grids[inputGrid].width - 1 >= 2) {
-            dispatch(changeGridWidth({
-                gridIndex: inputGrid, 
-                newWidth: grids[inputGrid].width - 1
-            }))
-        }
-    }
-
-    const clickIncreaseColumns = () => {
-        if (grids.length === 0) {
-            return;
-        }
-        dispatch(changeGridHeight({
-            gridIndex: inputGrid, 
-            newHeight: grids[inputGrid].height + 1
-        }))
-    }
-
-    const clickDecreaseColumns = () => {
-        if (grids.length === 0) {
-            return;
-        }
-        if (grids[inputGrid].height - 1 >= 2) {
-            dispatch(changeGridHeight({gridIndex: inputGrid, newHeight: grids[inputGrid].height - 1}))
-        }  
-    } 
 
     const clickFloodFill = () => {
         if (grids.length === 0) {
@@ -142,25 +110,6 @@ export const Controls = () => {
         const backCell = prevCells[prevCells.length - 1];
         setPrevCells([...prevCells.slice(0, prevCells.length - 1)]);
         setCurrentCell(backCell);
-    }
-
-
-    const setUpMonkeyIsland = () => {
-        if (grids.length === 0) {
-            return;
-        }
-        setCurrentCell([0, 0]);
-        for (let i = 0; i < grids[inputGrid].cells.length; i++) {
-            for (let j = 0; j < grids[inputGrid].cells[0].length; j++) {
-                dispatch(changeGridCell({
-                    gridIndex: inputGrid,
-                    row: i,
-                    col: j,
-                    data: 2,
-                    status: "MONKEY_ISLAND"
-                }))
-            }
-        }
     }
 
     const setUp200 = () => {
@@ -259,27 +208,7 @@ export const Controls = () => {
         setCurrentCell([row, col + 1]);
 
     }
-
-    const clearSelectedRow = () => {
-        if (grids.length === 0) {
-            return;
-        }
-        dispatch(clearGridRow({
-            gridIndex: inputGrid,
-            row: selectedRow,
-            data: clearValue,
-            status: "ISLAND"
-        }))
-    }
-
-    const onClearCells = () => {
-        if (grids.length === 0) {
-            return;
-        }
-        setAnimationOn(false);
-        dispatch(clearGridCells({gridIndex: inputGrid, defaultValue: 0}));
-    }
-
+    
     const onClickFindPathsToCells = () => {
         if (grids.length === 0) {
             return;
@@ -366,10 +295,6 @@ export const Controls = () => {
         setPrevCells([[nextRow - 1, nextCol], [nextRow, nextCol - 1]])
     }
 
-    const onClickAddGrid = () => {
-        dispatch(addGrid({num: 1}));
-    }
-
     const onClickSetUp417 = () => {
         dispatch(deleteGrid({num: grids.length}));
         dispatch(copyGrids([GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_417_BOOLEAN, GRID_417_BOOLEAN]))
@@ -400,8 +325,7 @@ export const Controls = () => {
         //3. Flood Fill Atlantic from Right Side, stop when we reach([grids.length - 1, grids[0].length - 1]])
         //4. Flood Fill Pacific From Top, stop when we reach ([0, grids[0].length - 1])
         //5. Flood Fill Atlantic from Bottom, stop when we reach ([0, grids[grids.length - 1].length - 1])
-
-        GRID_CELL_INDEX_HAS_DATA    
+    
         /* Set up current values */
         const waterFlowGrid = grids[0];
         const pacificGrid = grids[1];
@@ -649,12 +573,7 @@ export const Controls = () => {
 
     return (
     <ControlsContainer>
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
-            <button onClick={() => clickDecreaseRows()}>Remove Width</button>
-            <button onClick={() => clickIncreaseRows()}>Add Width</button>
-            <button onClick={() => clickDecreaseColumns()}>Remove Height</button>
-            <button onClick={() => clickIncreaseColumns()}>Add Height</button>
-        </div>
+        <UtilitiesController inputGrid={inputGrid} selectedRow={selectedRow} clearValue={clearValue}/>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
             <button onClick={clickFloodFill}>Flood Fill From Start</button>
             <button onClick={clickStepDFS}>StepDFS Right</button>
@@ -669,13 +588,7 @@ export const Controls = () => {
             <button>Complete Num Islands</button>
         </div>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
-            <button onClick={setUpMonkeyIsland}>Money Islandize</button>
-            <button onClick={clearSelectedRow}>Clear Selected Row</button>
-        </div>
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
-            <button onClick={onClearCells}>Mone</button>
             <button onClick={onClickFindPathsToCells}>Paths to Cells</button>
-            <button onClick={onClickAddGrid}>Add Grid</button>
         </div>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
             <button onClick={onClickSetUp417}>SetUp417</button>
