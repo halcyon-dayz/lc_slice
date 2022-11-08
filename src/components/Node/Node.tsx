@@ -85,6 +85,12 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth}: NodeProps) => {
         
     }
 
+
+    //TODO: It can't be explored and current at the same time
+                //We need to differentiate between status and visual updates
+                // at some point.
+                //TOOD: Ideally status is only for visual updates, and real status is inferred
+                //from the data in the cells. Semantic issue with current naming scheme
     return (
         <div
             className={

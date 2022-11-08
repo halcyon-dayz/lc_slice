@@ -113,6 +113,10 @@ export const GRID_CELL_INDEX_HAS_STATUS = (arr: Cell[][], row: number, col: numb
 	)
 }
 
+export const GRID_CELL_INDEX_GET_STATUS = (arr: Cell[][], row: number, col: number): CellStatus => {
+	return arr[row][col].status;
+
+}
 /**
 * Query whether a cell in the grid exists and has the specified data.
 * @param {Cell[][]} arr 
@@ -129,6 +133,10 @@ export const GRID_CELL_INDEX_HAS_DATA = (arr: Cell[][], row: number, col: number
 		ARRAY_2D_IS_VALID_INDEX(arr, row, col) &&
 		arr[row][col].data === data
 	);
+}
+
+export const GRID_CELL_INDEX_GET_DATA = (arr: Cell[][], row: number, col: number): any => {
+	return arr[row][col].data;
 }
 
 export const ARRAY_2D_IS_INDEX_SAME = (c1: [number, number], c2: [number, number]) => {

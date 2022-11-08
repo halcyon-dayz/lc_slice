@@ -8,6 +8,7 @@ import {
     clearGridRow
 } from "../../features/grids/gridsSlice";
 import { selectAllGrids } from "../../features/grids/gridsSlice";
+import { useAppDispatch } from "../../features/hooks";
 import {addGrid, deleteGrid} from "../../features/sharedActions"
 
 
@@ -19,7 +20,7 @@ type UtilitiesControllerType = {
 
 export const UtilitiesController = ({inputGrid, selectedRow, clearValue}: UtilitiesControllerType) => {
     const grids = useSelector(selectAllGrids);
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const clickIncreaseRows = () => {
         dispatch(changeGridWidth({gridIndex: inputGrid, newWidth: grids[inputGrid].width + 1}))
