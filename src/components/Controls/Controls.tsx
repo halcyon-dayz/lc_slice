@@ -344,56 +344,82 @@ export const Controls = () => {
                 GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, northOfCur[0], northOfCur[1], false) && 
                 GRID_CELL_INDEX_GET_DATA(waterFlowGrid.cells, northOfCur[0], northOfCur[1]) >= curTileValue
             ) {
-                setStackContext([...stackContext, {prevCell: cell, prevTileValue: curTileValue}])
-                setCurrentCell(northOfCur);
+                //Indicate that current cell has been explored...
+                dispatch(changeGridCellStatus({
+                    gridIndex: 0,
+                    row: cell[0],
+                    col: cell[1],
+                    status: "EXPLORED"
+                }))
+                //Indicate that next cell is current
                 dispatch(changeGridCellStatus({
                     gridIndex: 0,
                     row: northOfCur[0],
                     col: northOfCur[1],
                     status: "CURRENT"
                 }))
+                setStackContext([...stackContext, {prevCell: cell, prevTileValue: curTileValue}])
+                setCurrentCell(northOfCur);
                 return true;
             }
             if (
                 GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, eastOfCur[0], eastOfCur[1], false) &&
                 GRID_CELL_INDEX_GET_DATA(waterFlowGrid.cells, eastOfCur[0], eastOfCur[1]) >= curTileValue
             ) {
-                setStackContext([...stackContext, {prevCell: cell, prevTileValue: curTileValue}])
-                setCurrentCell(eastOfCur);
+                dispatch(changeGridCellStatus({
+                    gridIndex: 0,
+                    row: cell[0],
+                    col: cell[1],
+                    status: "EXPLORED"
+                }))
                 dispatch(changeGridCellStatus({
                     gridIndex: 0,
                     row: eastOfCur[0],
                     col: eastOfCur[1],
                     status: "CURRENT"
                 }))
+                setStackContext([...stackContext, {prevCell: cell, prevTileValue: curTileValue}])
+                setCurrentCell(eastOfCur); 
                 return true;
             }
             if (
                 GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, southOfCur[0], southOfCur[1], false) &&
                 GRID_CELL_INDEX_GET_DATA(waterFlowGrid.cells, southOfCur[0], southOfCur[1]) >= curTileValue
             ) {
-                setStackContext([...stackContext, {prevCell: cell, prevTileValue: curTileValue}])
-                setCurrentCell(southOfCur);
+                dispatch(changeGridCellStatus({
+                    gridIndex: 0,
+                    row: cell[0],
+                    col: cell[1],
+                    status: "EXPLORED"
+                }))
                 dispatch(changeGridCellStatus({
                     gridIndex: 0,
                     row: southOfCur[0],
                     col: southOfCur[1],
                     status: "CURRENT"
                 }))
+                setStackContext([...stackContext, {prevCell: cell, prevTileValue: curTileValue}])
+                setCurrentCell(southOfCur);
                 return true;
             }
             if (
                 GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, westOfCur[0], westOfCur[1], false) &&
                 GRID_CELL_INDEX_GET_DATA(waterFlowGrid.cells, westOfCur[0], westOfCur[1]) >= curTileValue
             ) {
-                setStackContext([...stackContext, {prevCell: cell, prevTileValue: curTileValue}])
-                setCurrentCell(westOfCur);
+                dispatch(changeGridCellStatus({
+                    gridIndex: 0,
+                    row: cell[0],
+                    col: cell[1],
+                    status: "EXPLORED"
+                }))
                 dispatch(changeGridCellStatus({
                     gridIndex: 0,
                     row: westOfCur[0],
                     col: westOfCur[1],
                     status: "CURRENT"
                 }))
+                setStackContext([...stackContext, {prevCell: cell, prevTileValue: curTileValue}])
+                setCurrentCell(westOfCur);
                 return true;
             }
             return false;
@@ -424,6 +450,7 @@ export const Controls = () => {
                 status: "CURRENT"
             }))
             setStackContext(stackContext.slice(0, stackContext.length - 1));
+            return;
         }
         if (directToPacific(i, j)) {
             console.log("Direct to Pacific")
@@ -444,9 +471,44 @@ export const Controls = () => {
             if (dfsPacific(currentCell) === true) {
                 return;
             } else {
+                const nextCell = ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j);
+                dispatch(changeGridCellStatus({
+                    gridIndex: 0,
+                    row: nextCell[0],
+                    col: nextCell[1],
+                    status: "CURRENT"
+                }));
                 setCurrentCell(ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j));
             }
+            return;
         }
+        const nextCell = ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j);
+        if (nextCell[0] === 0 && nextCell[1] === 0) {
+            
+
+        }
+        if (grids[1].cells[i][j].data === true) {
+            dispatch(changeGridCellStatus({
+                gridIndex: 0,
+                row: i, 
+                col: j,
+                status: "EXPLORED"
+            }));
+        } else {
+            dispatch(changeGridCellStatus({
+                gridIndex: 0,
+                row: i, 
+                col: j,
+                status: "UNEXPLORED"
+            }));
+        }
+        dispatch(changeGridCellStatus({
+            gridIndex: 0,
+            row: nextCell[0],
+            col: nextCell[1],
+            status: "CURRENT"
+        }));
+        setCurrentCell(ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j));
     }
 
     useEffect(() => {
