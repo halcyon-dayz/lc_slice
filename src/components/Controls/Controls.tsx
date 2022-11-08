@@ -4,21 +4,15 @@ import React, {useState, useEffect} from "react"
 import { useSelector} from "react-redux";
 import { 
     changeGridCell, 
-    changeGridHeight, 
-    changeGridWidth, 
     selectAllGrids,
     changeGridCellStatus,
-    clearGridRow,
-    clearGridCells,
     changeGridCellData,
-    changeGridLabel,
     changeGridLabels,
     copyGrids
 } from "../../features/grids/gridsSlice";
 import { floodFill} from "../../features/grids/gridsSlice";
 import { useAppDispatch, useAppSelector } from "../../features/hooks";
-import { arrayBuffer } from "stream/consumers";
-import { addGrid, copyGrid, deleteGrid } from "../../features/sharedActions";
+import { deleteGrid } from "../../features/sharedActions";
 import { GRID_417_BOOLEAN, GRID_417_PACIFIC_ATLANTIC_WATER_FLOW } from "../../features/grids/defaultGrids";
 import { GRID_417_CONTEXT, GRID_CONTEXT } from "../../features/grids/gridTypes";
 import { 
@@ -303,6 +297,12 @@ export const Controls = () => {
         dispatch(copyGrids([GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_417_BOOLEAN, GRID_417_BOOLEAN]))
         dispatch(changeGridLabels(0, ["Water Flow", "Pacific", "Atlantic"]));
         setCurrentCell([0, 0]);
+        dispatch(changeGridCellStatus({
+            gridIndex: 0,
+            row: currentCell[0],
+            col: currentCell[1],
+            status: "CURRENT"
+        }))
         setStackContext([]);
     }
 
@@ -327,7 +327,9 @@ export const Controls = () => {
     //4. Flood Fill Pacific From Top, stop when we reach ([0, grids[0].length - 1])
     //5. Flood Fill Atlantic from Bottom, stop when we reach ([0, grids[grids.length - 1].length - 1])
 
-    const onClick417 = () => {
+    //TODO: Make it clear as a design goal that we want to manipulate the stack as little as possible,
+    //As such, attempt to invalidate any cells checked by dfs before going to them
+    const onClickStep417 = () => {
         const waterFlowGrid = grids[0];
         const pacificGrid = grids[1];
         const atlanticGrid = grids[2];
@@ -335,16 +337,14 @@ export const Controls = () => {
         const j = currentCell[1];
         const curTileValue = waterFlowGrid.cells[currentCell[0]][currentCell[1]].data;
 
-        const dfsPacific = () => {
+        const dfsPacific = (cell: [number, number]) => {
             const [northOfCur, eastOfCur, southOfCur, westOfCur] = 
-                ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(currentCell);
-            //In order to go to a cell, the cell has to be false on the pacific grid and must have a value that is greater than or equal
-            //to the value of the current cell
+                ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(cell);
             if (
                 GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, northOfCur[0], northOfCur[1], false) && 
                 GRID_CELL_INDEX_GET_DATA(waterFlowGrid.cells, northOfCur[0], northOfCur[1]) >= curTileValue
             ) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
+                setStackContext([...stackContext, {prevCell: cell, prevTileValue: curTileValue}])
                 setCurrentCell(northOfCur);
                 dispatch(changeGridCellStatus({
                     gridIndex: 0,
@@ -354,8 +354,11 @@ export const Controls = () => {
                 }))
                 return true;
             }
-            if (GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, eastOfCur[0], eastOfCur[1], false)) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
+            if (
+                GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, eastOfCur[0], eastOfCur[1], false) &&
+                GRID_CELL_INDEX_GET_DATA(waterFlowGrid.cells, eastOfCur[0], eastOfCur[1]) >= curTileValue
+            ) {
+                setStackContext([...stackContext, {prevCell: cell, prevTileValue: curTileValue}])
                 setCurrentCell(eastOfCur);
                 dispatch(changeGridCellStatus({
                     gridIndex: 0,
@@ -365,8 +368,11 @@ export const Controls = () => {
                 }))
                 return true;
             }
-            if (GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, southOfCur[0], southOfCur[1], false)) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
+            if (
+                GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, southOfCur[0], southOfCur[1], false) &&
+                GRID_CELL_INDEX_GET_DATA(waterFlowGrid.cells, southOfCur[0], southOfCur[1]) >= curTileValue
+            ) {
+                setStackContext([...stackContext, {prevCell: cell, prevTileValue: curTileValue}])
                 setCurrentCell(southOfCur);
                 dispatch(changeGridCellStatus({
                     gridIndex: 0,
@@ -376,8 +382,11 @@ export const Controls = () => {
                 }))
                 return true;
             }
-            if (GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, westOfCur[0], westOfCur[1], false)) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
+            if (
+                GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, westOfCur[0], westOfCur[1], false) &&
+                GRID_CELL_INDEX_GET_DATA(waterFlowGrid.cells, westOfCur[0], westOfCur[1]) >= curTileValue
+            ) {
+                setStackContext([...stackContext, {prevCell: cell, prevTileValue: curTileValue}])
                 setCurrentCell(westOfCur);
                 dispatch(changeGridCellStatus({
                     gridIndex: 0,
@@ -390,365 +399,9 @@ export const Controls = () => {
             return false;
         }
         if (stackContext.length !== 0) {
-            //Set stack context specific values
-            const prevTileValue = (stackContext[stackContext.length - 1] as GRID_417_CONTEXT).prevTileValue;
-            const prevCell = (stackContext[stackContext.length - 1] as GRID_417_CONTEXT).prevCell;
-            if (pacificGrid.cells[i][j].data === true) {
-                //First make sure the current cell registers as explored
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: i,
-                    col: j,
-                    status: "EXPLORED"
-                }));
-                //Are there still cells we can attempt to visit from this cell?
-                if (dfsPacific() === true) {
-                    return;
-                }
-                //Then if not, go to the previous cell in the stack and pop the stack
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: prevCell[0],
-                    col: prevCell[1],
-                    status: "CURRENT"
-                }));
-                setCurrentCell(prevCell);
-                setStackContext(stackContext.slice(0, stackContext.length - 1));
-                return;
-            }
-            if (curTileValue < prevTileValue) {
-                //Make the current cell register as unexplored
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: currentCell[0],
-                    col: currentCell[1],
-                    status: "UNEXPLORED"
-                }));
-                    
-                //Make the previous cell register as the current cell
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: prevCell[0],
-                    col: prevCell[1],
-                    status: "CURRENT"
-                }));
-                setCurrentCell(prevCell);
-                setStackContext(stackContext.slice(0, stackContext.length - 1));
-                return;
-            }
             dispatch(changeGridCellStatus({
                 gridIndex: 0,
-                status: "EXPLORED",
                 row: i,
-                col: j
-            }))
-            dispatch(changeGridCellData({
-                gridIndex: 1,
-                data: true,
-                row: i,
-                col: j,
-            }))
-            const [northOfCur, eastOfCur, southOfCur, westOfCur] = 
-                ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(currentCell);
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, northOfCur[0], northOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(northOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: northOfCur[0],
-                    col: northOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, eastOfCur[0], eastOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(eastOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: eastOfCur[0],
-                    col: eastOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, southOfCur[0], southOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(southOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: southOfCur[0],
-                    col: southOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, westOfCur[0], westOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(westOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: westOfCur[0],
-                    col: westOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-        }
-        if (directToPacific(i, j)) {
-            console.log("Direct to Pacific")
-            //Set status of waterFlowGrid to explored
-            dispatch(changeGridCellStatus({
-                gridIndex: 0,
-                row: i, 
-                col: j,
-                status: "EXPLORED"
-            }));
-            //Change data in the pacific grid to true
-            dispatch(changeGridCellData({
-                gridIndex: 1,
-                row: currentCell[0],
-                col: currentCell[1],
-                data: true
-            }));
-            const [northOfCur, eastOfCur, southOfCur, westOfCur] = 
-                ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(currentCell);
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, northOfCur[0], northOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(northOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: northOfCur[0],
-                    col: northOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, eastOfCur[0], eastOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(eastOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: eastOfCur[0],
-                    col: eastOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, southOfCur[0], southOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(southOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: southOfCur[0],
-                    col: southOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, westOfCur[0], westOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(westOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: westOfCur[0],
-                    col: westOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-        }
-
-        setCurrentCell(ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j));
-    }
-    }
-    /*const onClickStep417 = () => {
-        //Set up current values 
-        const waterFlowGrid = grids[0];
-        const pacificGrid = grids[1];
-        //const atlanticGrid = grids[2];
-        const i = currentCell[0];
-        const j = currentCell[1];
-        const curTileValue = waterFlowGrid.cells[i][j].data;
-        
-        if (stackContext.length !== 0) {
-            //Set stack context specific values
-            const prevTileValue = (stackContext[stackContext.length - 1] as GRID_417_CONTEXT).prevTileValue;
-            const prevCell = (stackContext[stackContext.length - 1] as GRID_417_CONTEXT).prevCell;
-            if (pacificGrid.cells[i][j].data === true) {
-                //First make sure the current cell registers as explored
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: i,
-                    col: j,
-                    status: "EXPLORED"
-                }));
-                //Perhaps we have reverted back from a completion of a stack frame. Are there are dfs cells we can visit?
-                if (GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, i + 1, j, false))
-                //Make the previous cell register as the current cell
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: prevCell[0],
-                    col: prevCell[1],
-                    status: "CURRENT"
-                }));
-
-                setCurrentCell(prevCell);
-                //TODO: It can't be explored and current at the same time
-                //We need to differentiate between status and visual updates
-                // at some point.
-                //TOOD: Ideally status is only for visual updates, and real status is inferred
-                //from the data in the cells. Semantic issue with current naming scheme
-                setStackContext(stackContext.slice(0, stackContext.length - 1));
-                return;
-            }
-            if (curTileValue < prevTileValue) {
-                //Make the current cell register as unexplored
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: currentCell[0],
-                    col: currentCell[1],
-                    status: "UNEXPLORED"
-                }));
-                    
-                //Make the previous cell register as the current cell
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: prevCell[0],
-                    col: prevCell[1],
-                    status: "CURRENT"
-                }));
-                setCurrentCell(prevCell);
-                setStackContext(stackContext.slice(0, stackContext.length - 1));
-                return;
-            }
-            dispatch(changeGridCellStatus({
-                gridIndex: 0,
-                status: "EXPLORED",
-                row: i,
-                col: j
-            }))
-            dispatch(changeGridCellData({
-                gridIndex: 1,
-                data: true,
-                row: i,
-                col: j,
-            }))
-            const [northOfCur, eastOfCur, southOfCur, westOfCur] = 
-                ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(currentCell);
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, northOfCur[0], northOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(northOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: northOfCur[0],
-                    col: northOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, eastOfCur[0], eastOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(eastOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: eastOfCur[0],
-                    col: eastOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, southOfCur[0], southOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(southOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: southOfCur[0],
-                    col: southOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, westOfCur[0], westOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(westOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: westOfCur[0],
-                    col: westOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-        }
-        if (directToPacific(i, j)) {
-            console.log("Direct to Pacific")
-            //Set status of waterFlowGrid to explored
-            dispatch(changeGridCellStatus({
-                gridIndex: 0,
-                row: i, 
-                col: j,
-                status: "EXPLORED"
-            }));
-            //Change data in the pacific grid to true
-            dispatch(changeGridCellData({
-                gridIndex: 1,
-                row: currentCell[0],
-                col: currentCell[1],
-                data: true
-            }));
-            const [northOfCur, eastOfCur, southOfCur, westOfCur] = 
-                ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(currentCell);
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, northOfCur[0], northOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(northOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: northOfCur[0],
-                    col: northOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, eastOfCur[0], eastOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(eastOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: eastOfCur[0],
-                    col: eastOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, southOfCur[0], southOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(southOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: southOfCur[0],
-                    col: southOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-            if (ARRAY_2D_IS_VALID_INDEX(waterFlowGrid.cells, westOfCur[0], westOfCur[1])) {
-                setStackContext([...stackContext, {prevCell: currentCell, prevTileValue: curTileValue}])
-                setCurrentCell(westOfCur);
-                dispatch(changeGridCellStatus({
-                    gridIndex: 0,
-                    row: westOfCur[0],
-                    col: westOfCur[1],
-                    status: "CURRENT"
-                }))
-                return;
-            }
-        }
-        if (curTileValue <= (stackContext[stackContext.length - 1] as GRID_417_CONTEXT).prevTileValue + 1) {
-            console.log("Next dfs step");
-            dispatch(changeGridCellStatus({
-                gridIndex: 0,
-                row: i, 
                 col: j,
                 status: "EXPLORED"
             }));
@@ -758,51 +411,43 @@ export const Controls = () => {
                 col: j,
                 data: true
             }));
-            if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i + 1, j, "UNEXPLORED")) {
-                setCurrentCell([i + 1, j])
+            if (dfsPacific(currentCell) === true) {
+                return;
             }
-            if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i - 1, j, "UNEXPLORED")) {
-                setCurrentCell([i - 1, j])
-            }
-            if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i, j + 1, "UNEXPLORED")) {
-                setCurrentCell([i, j + 1])
-            }
-            if (GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i, j - 1, "UNEXPLORED")) {
-                setCurrentCell([i, j - 1]);
-            }
-
-            setStackContext([...stackContext, {
-                prevTileValue: curTileValue, 
-                prevCell: [i, j]
-            }]);
-            return;
-        } else {
-            console.log("Return to prev cell");
+            //Pop stack and set currentCell to prevcell
             const prevCell = stackContext[stackContext.length - 1].prevCell;
-            const dirFromPrev: [number, number] = (ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL(prevCell, currentCell) as [number, number]);
-            //TODO: FIX THIS HEINOUS CODE, don't use i and j for indices here
-            if (!ARRAY_2D_IS_INDEX_SAME([i + 1, j], dirFromPrev) && GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i + 1, j, "UNEXPLORED")) {
-                setCurrentCell([i + 1, j]);
-                return;
-            }
-            if (!ARRAY_2D_IS_INDEX_SAME([i - 1, j], dirFromPrev) && GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i - 1, j, "UNEXPLORED")) {
-                setCurrentCell([i - 1, j]);
-                return;
-            }
-            if (!ARRAY_2D_IS_INDEX_SAME([i, j + 1], dirFromPrev) && GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i, j + 1, "UNEXPLORED")) {
-                setCurrentCell([i, j + 1])
-                return;
-            }
-            if (!ARRAY_2D_IS_INDEX_SAME([i, j - 1], dirFromPrev) && GRID_CELL_INDEX_HAS_STATUS(grids[0].cells, i, j - 1, "UNEXPLORED")) {
-                setCurrentCell([i, j - 1]);
-                return;
-            }
-            setCurrentCell(stackContext[stackContext.length - 1].prevCell);
+            setCurrentCell(prevCell);
+            dispatch(changeGridCellStatus({
+                gridIndex: 0,
+                row: prevCell[0],
+                col: prevCell[1],
+                status: "CURRENT"
+            }))
             setStackContext(stackContext.slice(0, stackContext.length - 1));
-            return;
         }
-        setCurrentCell(ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j));
-    } */
+        if (directToPacific(i, j)) {
+            console.log("Direct to Pacific")
+            //Set status of waterFlowGrid to explored
+            dispatch(changeGridCellStatus({
+                gridIndex: 0,
+                row: i, 
+                col: j,
+                status: "EXPLORED"
+            }));
+            //Change data in the pacific grid to true
+            dispatch(changeGridCellData({
+                gridIndex: 1,
+                row: currentCell[0],
+                col: currentCell[1],
+                data: true
+            }));
+            if (dfsPacific(currentCell) === true) {
+                return;
+            } else {
+                setCurrentCell(ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j));
+            }
+        }
+    }
 
     useEffect(() => {
         if (animationOn) {
