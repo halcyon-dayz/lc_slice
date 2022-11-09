@@ -43,7 +43,7 @@
     align-items: center;
     padding: 0px;
     animation-name: exploredAnimation;
-    animation-duration: 0.5s;
+    animation-duration: 0.3s;
     animation-timing-function: ease-out;
     animation-delay: 0;
     animation-direction: alternate;
@@ -146,4 +146,81 @@
       transform: scale(1);
       background-color: rgba(0, 190, 218, 0.75);
     }
+}
+
+.node_explored_left {
+    width: 50px;
+    height: 50px;
+    outline: 1px solid gray;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    animation-name: floodFromLeft;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-out;
+    animation-delay: 0;
+    animation-direction: alternate;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
+}
+
+@property --flood_water {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%
+}
+
+@keyframes floodFromTop {
+  0% {
+    --flood_water: 0%;
+    background: linear-gradient(180deg, rgba(0, 190, 218, 0.75) var(--flood_water), rgba(240,240,240,1) var(--flood_empty));
   }
+
+
+  100% {
+    --flood_water:100%;
+    background: linear-gradient(180deg, rgba(0, 190, 218, 0.75) var(--flood_water), rgba(240,240,240,1) var(--flood_water));
+  }
+}
+
+@keyframes floodFromRight {
+  0% {
+    --flood_water: 0%;
+    background: linear-gradient(270deg, rgba(0, 190, 218, 0.75) var(--flood_water), rgba(240,240,240,1) var(--flood_empty));
+  }
+
+
+  100% {
+    --flood_water:100%;
+    background: linear-gradient(270deg, rgba(0, 190, 218, 0.75) var(--flood_water), rgba(240,240,240,1) var(--flood_water));
+  }
+}
+
+@keyframes floodFromBelow {
+  0% {
+    --flood_water: 0%;
+    background: linear-gradient(0deg, rgba(0, 190, 218, 0.75) var(--flood_water), rgba(240,240,240,1) var(--flood_empty));
+  }
+
+
+  100% {
+    --flood_water:100%;
+    background: linear-gradient(0deg, rgba(0, 190, 218, 0.75) var(--flood_water), rgba(240,240,240,1) var(--flood_water));
+  }
+}
+
+@keyframes floodFromLeft {
+  0% {
+    --flood_water: 0%;
+    background: linear-gradient(90deg, rgba(0, 190, 218, 0.75) var(--flood_water), rgba(240,240,240,1) var(--flood_empty));
+  }
+
+
+  100% {
+    --flood_water:100%;
+    background: linear-gradient(90deg, rgba(0, 190, 218, 0.75) var(--flood_water), rgba(240,240,240,1) var(--flood_water));
+  }
+}
+
