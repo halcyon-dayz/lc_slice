@@ -1,6 +1,6 @@
 //#region Imports
 import {createSlice} from "@reduxjs/toolkit"
-import {RootState, Cell, GridDS} from "../../utils/types"
+import {RootState, Cell, GridDS, CellStatus} from "../../utils/types"
 import { PayloadAction } from "@reduxjs/toolkit"
 import * as GridPayloads from "./gridPayloads"
 
@@ -379,6 +379,31 @@ export const copyGrids = (grids: Cell[][][]): AppThunk => {
 	) => {
 		for (let i = 0; i < grids.length; i++) {
 			dispatch(copyGrid({cells: grids[i]}));
+		}
+	}
+}
+
+export const changeMultiGridSameCellStatus = (
+	gridIndices: number[], 
+	row: number, 
+	col: number, 
+	status: CellStatus
+): AppThunk => {
+	return (
+		dispatch,
+		getState
+	) => {
+		let grids = getState().grids;
+		for (let i = 0; i < gridIndices.length; i++) {
+			if (gridIndices[i] < 0 || gridIndices[i] >= grids.length) {
+				continue;
+			}
+			dispatch(changeGridCellStatus({
+				gridIndex: gridIndices[i],
+				row: row,
+				col: col,
+				status: status
+			}));	
 		}
 	}
 }

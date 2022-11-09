@@ -1,16 +1,46 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../../utils/types"
 import { addArray, AddArrayPayload, deleteArray, DeleteArrayPayload} from "../sharedActions";
+import { ArrayBeforeEachFunc, createArrayActionSA, indexExistsOnArray } from "./arrayUtils";
+import { isValidIndex, isStateValid} from "../featureUtils"
 
 import * as ArrayPayloads from "./arrayPayloads"
 
 
 const initialState: RootState["arrays"] = [];
 
+
+const checkArrayExists: ArrayBeforeEachFunc = (state: RootState["arrays"], action?: PayloadAction<any>) => {
+	return action ? ( isValidIndex(state.length, action.payload.gridIndex) ) : (isStateValid(state.length))
+}
+
+const checkIndexExists: ArrayBeforeEachFunc = (state: RootState["arrays"], action?: PayloadAction<any>) => {
+    return action ? ( indexExistsOnArray(state[action.payload.gridIndex].data, action.payload.index) ) : false;
+}
+
+
+const arrayReducerObject = {
+    addDataAtIndex: createArrayActionSA(
+        [checkArrayExists, checkIndexExists], 
+        (state, action: PayloadAction<ArrayPayloads.AddDataAtIndexPayload>) => 
+    {
+        const {arrayIndex, index, data} = action.payload;
+        state[arrayIndex].data[index].data = data;
+    }),
+    addData: createArrayActionSA(
+        [checkArrayExists],
+        (state, action: PayloadAction<ArrayPayloads.AddDataPayload>) => 
+    {
+        const {arrayIndex, data} = action.payload;
+        state[arrayIndex].data.push({data: data, status: "UNEXPLORED"})
+    }),
+    
+}
+
 const arraysSlice = createSlice({
     name: "arrays",
     initialState,
-    reducers: {},
+    reducers: arrayReducerObject,
     extraReducers: (builder) => {
         builder.addCase(deleteArray, (state, action: PayloadAction<DeleteArrayPayload>) => {
             const {num} = action.payload;
