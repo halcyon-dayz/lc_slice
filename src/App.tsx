@@ -101,7 +101,7 @@ function App() {
       <HeaderLayout leftList={NavItemLeftList}/>
       <Main>
         <Container style={{position: "relative", height: `${height}px`}}>
-        <Section style={{ overflow: "scroll", background: 'rgb(240, 240, 240)' }} minSize={100}>
+        <Section style={{background: 'rgb(240, 240, 240)' }} minSize={100}>
           <Controls />
         </Section>
         <Bar size={10} style={{ background: '#738228', cursor: 'col-resize' }} />
@@ -111,7 +111,7 @@ function App() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          overflow: "scroll"
+          overflow: "auto"
           }} minSize={100}
         >
           <PathFindingVisualizer />
