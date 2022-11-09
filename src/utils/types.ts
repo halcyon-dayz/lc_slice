@@ -31,10 +31,6 @@ export type GridDS = {
     height: number,
     cellStyleWidth: number,
     cellStyleHeight: number,
-    startNodeRow?: number,
-    startNodeCol?: number,
-    endNodeRow?: number,
-    endNodeCol?: number
 }
 
 

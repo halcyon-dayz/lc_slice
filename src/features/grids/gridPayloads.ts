@@ -1,4 +1,4 @@
-import { CellStatus } from "../../utils/types"
+import { Cell, CellStatus } from "../../utils/types"
 
 
 export type ChangeGridWidthPayload = {
@@ -35,6 +35,11 @@ export type ClearGridCellsPayload = {
     gridIndex: number
     defaultValue?: any
     defaultStatus?: CellStatus
+}
+
+export type ClearGridCellsStatusPayload = {
+    gridIndex: number, 
+    defaultStatus: CellStatus
 }
 
 export type ChangeGridLabelPayload = {

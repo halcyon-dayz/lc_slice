@@ -45,11 +45,9 @@ const gridBeforeEach: GridBeforeEachFunc = (state: RootState["grids"], action?: 
 const gridsReducerObject = {
 	/**
 	 * Changes the width of the grid, adding a new column to each row.
-	 * @param {RootState} state The current state of the Redux store.
-	 * @param {PayloadAction<ChangeGridWidthPayload>} action  Redux PayloadAction containing the params below.
-	 * @param {number} action.payload.gridIndex The grid in the grid list to be operated on.
-	 * @param {number} action.payload.newWidth The new width (num. columns) of the grid.
-	 * @param {number} [action.payload.defaultValue] The value that will populate the newly created column.
+	 * @param {number} gridIndex The grid in the grid list to be operated on.
+	 * @param {number} newWidth The new width (num. columns) of the grid.
+	 * @param {number} [defaultValue] The value that will populate the newly created column.
 	 */
 	changeGridWidth: createGridActionSA(gridBeforeEach, (
 		state,
@@ -112,15 +110,11 @@ const gridsReducerObject = {
 	}),
 	/**
 	 * Replace the data in each cell with default data and status values.
-	 * @param {RootState} state 
-	 *  The current state of the Redux store
-	 * @param {PayloadAction<ClearGridCellsPayload>} action  
-	 *  Redux PayloadAction containing the params below.
-	 * @param {number} action.payload.gridIndex 
+	 * @param {number} gridIndex 
 	 *  The grid in the grid list to be operated on.
-	 * @param {number} [action.payload.defaultValue] 
+	 * @param {number} [defaultValue] 
 	 *  Value that will replace existing values in each cell.
-	 * @param {CellStatus} [action.payload.defaultStatus] 
+	 * @param {CellStatus} [defaultStatus] 
 	 *  Cell Status that will replace existing cell status in each cell.
 	 */
 	clearGridCells: (
@@ -141,20 +135,34 @@ const gridsReducerObject = {
 		}
 	},
 	/**
-	 * Replace the data in each cell with default data and status values.
-	 * @param {RootState} state 
-	 *  The current state of the Redux store
-	 * @param {PayloadAction<ChangeGridCellPayload>} action  
-	 *  Redux PayloadAction containing the params below.
-	 * @param {number} action.payload.gridIndex 
+	 * Replace the data in each cell with a new status value.
+	 * @param {number} gridIndex 
 	 *  The grid in the grid list to be operated on.
-	 * @param {number} [action.payload.row] 
+	 * @param {CellStatus} defaultStatus
+	 *  Cell Status that will replace existing cell status in each cell.
+	 */
+	clearGridCellsStatus: createGridActionSA(
+		gridBeforeEach, 
+		(state: RootState["grids"], action: PayloadAction<GridPayloads.ClearGridCellsStatusPayload>) => {
+			const {gridIndex, defaultStatus} = action.payload;
+			for (let i = 0; i < state[gridIndex].cells.length; i++) {
+				for (let j = 0; j < state[gridIndex].cells[0].length; j++) {
+					state[gridIndex].cells[i][j].status = defaultStatus;
+				}
+			}
+		}
+	),
+	/**
+	 * Replace the data in each cell with default data and status values.
+	 * @param {number} gridIndex 
+	 *  The grid in the grid list to be operated on.
+	 * @param {number} [row] 
 	 *  Row in the grid to operate on.
-	 * @param {number} [action.payload.col] 
+	 * @param {number} [col] 
 	 *  Column in the grid to operate on.
-	 * @param {data} [action.payload.data]
+	 * @param {data} [data]
 	 *  Data to put in the selected cell.
-	 * @param {status} [action.payload.status]
+	 * @param {status} [status]
 	 *  Status to apply to the selected cell.
 	 */
 	changeGridCell: (state: RootState["grids"], action: PayloadAction<GridPayloads.ChangeGridCellPayload>) => {
@@ -166,15 +174,6 @@ const gridsReducerObject = {
 			return;
 		}
 		state[gridIndex].cells[row][col] = {data: data, status: status}
-		if (status === "START") {
-			state[gridIndex].startNodeRow = row;
-			state[gridIndex].startNodeCol = col;
-			return;
-		}
-		if (status === "END") {
-			state[gridIndex].endNodeRow = row;
-			state[gridIndex].endNodeCol = col; 
-		}
 	},
 	clearGridRow: (state: RootState["grids"], action: PayloadAction<GridPayloads.ClearGridRowPayload>) => {
 		const {gridIndex, row, data, status} = action.payload;
@@ -190,17 +189,13 @@ const gridsReducerObject = {
 	},
 	/**
 	 * Replace the data in each cell with default data and status values.
-	 * @param {RootState} state 
-	 *  The current state of the Redux store
-	 * @param {PayloadAction<ChangeGridCellPayload>} action  
-	 *  Redux PayloadAction containing the params below.
-	 * @param {number} action.payload.gridIndex 
+	 * @param {number} gridIndex 
 	 *  The grid in the grid list to be operated on.
-	 * @param {number} [action.payload.row] 
+	 * @param {number} [row] 
 	 *  Row in the grid to operate on.
-	 * @param {number} [action.payload.col] 
+	 * @param {number} [col] 
 	 *  Column in the grid to operate on.
-	 * @param {status} [action.payload.status]
+	 * @param {status} [status]
 	 *  Status to apply to the selected cell.
 	 */
 	changeGridCellStatus: (state: RootState["grids"], action: PayloadAction<GridPayloads.ChangeGridCellStatusPayload>) => {
@@ -219,13 +214,9 @@ const gridsReducerObject = {
 	},
 	/**
 	 * Replace the data in each cell with default data and status values.
-	 * @param {RootState} state 
-	 *  The current state of the Redux store
-	 * @param {PayloadAction<ChangeGridLabelPayload>} action  
-	 *  Redux PayloadAction containing the params below.
-	 * @param {number} action.payload.gridIndex
+	 * @param {number} gridIndex
 	 *  The grid in the grid list to be operated on.
-	 * @param {string} action.payload.label 
+	 * @param {string} label 
 	 *  New label for the selected grid data structure.
 	 */
 	changeGridLabel: (state: RootState["grids"], action: PayloadAction<GridPayloads.ChangeGridLabelPayload>) => {
@@ -235,6 +226,15 @@ const gridsReducerObject = {
 		}
 		state[gridIndex].label = label;
 	},
+	/**
+	 * Change the css size of a cell.
+	 * @param {number} gridIndex
+	 * The grid in the grid list to operate on.
+	 * @param {number} width
+	 *  The new style width of the cell.
+	 * @param {number} height 
+	 *  The new style height of the cell.
+	 */
 	changeGridCellSize: (state: RootState["grids"], action: PayloadAction<GridPayloads.ChangeGridCellSizePayload>) => {
 		const {width, height, gridIndex} = action.payload;
 		if (!isValidIndex(state.length, gridIndex)) {
