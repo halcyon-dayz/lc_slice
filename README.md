@@ -1,3 +1,9 @@
+LC Slice is a Work in Progress Website visually demonstrating common coding interview algorithms. It's purpose is to help new or developing programmers better visualize how to approach a problem, without explicitly giving them the code to solve it.
+
+Currently, LC Slice only contains a limited number of problems, mainly based on common grid search and path-finding algorithms. However, the goal is to one day support multiple data structure visualization tools. 
+
+While contributions are appreciated, one should caution themselves against adding new problems before solving them oneself. Although LC Slice can help with visualization, solving questions a priori with LC Slice adds additional complications to the problem such as having to reference and maintain a stack. 
+
 Guidelines for creating a problem controller: 
 
 1. Create a setup function: 
