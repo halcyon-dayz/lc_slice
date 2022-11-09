@@ -13,7 +13,8 @@ import {
 import { 
     ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL,
     GRID_CELL_INDEX_HAS_DATA,
-    GRID_CELL_INDEX_GET_DATA
+    GRID_CELL_INDEX_GET_DATA,
+    ARRAY_2D_GET_NEXT_INDEX
 } from "../../features/grids/gridUtils";
 import { 
     deleteGrid
@@ -23,6 +24,7 @@ import {
     GRID_417_BOOLEAN
 } from "../../features/grids/defaultGrids";
 import { useAppDispatch } from "../../features/hooks";
+import {Cell} from "../../utils/types"
 
 //#endregion
 
@@ -38,25 +40,45 @@ type P417_STACK_CONTEXT_UNIT_TYPE = {
 type P417_GLOBALS = "PACIFIC" | "ATLANTIC"
 
 export const Problem417Controller = () => {
-
+    /* Access the Global State */
     const dispatch = useAppDispatch();
     const grids = useSelector(selectAllGrids);
 
-    //Equivalent to current cell
+    /* Set local state variables */
     const [currentCell, setCurrentCell] = useState<P417_CURRENT_CONTEXT_TYPE>([0, 0])
     const [stackContext, setStackContext] = useState<P417_STACK_CONTEXT_UNIT_TYPE[]>([]);
     const [globals, setGlobals] = useState<P417_GLOBALS>("PACIFIC");
+
+    const directToPacific = (i: number, j: number): boolean => {
+        if (i === 0 || j === 0) {
+            return true;
+        }
+        return false;
+    }
+
+    const directToAtlantic = (i: number, j: number): boolean => {
+        if (i === grids[0].cells.length - 1 || j === grids[0].cells[0].length - 1) {
+            return true;
+        }
+        return false;
+    }
 
 
     const clickSetUp417 = () => {
         dispatch(deleteGrid({num: grids.length}));
         dispatch(copyGrids([GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_417_BOOLEAN, GRID_417_BOOLEAN]))
         dispatch(changeGridLabels(0, ["Water Flow", "Pacific", "Atlantic"]));
+        dispatch(changeGridCellStatus({
+            gridIndex: 0,
+            row: 0,
+            col: 0,
+            status: "CURRENT",
+        }));
         setCurrentCell([0, 0]);
         setStackContext([]);
     }
 
-    const onClickStep417 = () => {
+    const clickStep417 = () => {
         const waterFlowGrid = grids[0];
         const pacificGrid = grids[1];
         const atlanticGrid = grids[2];
@@ -64,13 +86,32 @@ export const Problem417Controller = () => {
         const j = currentCell[1];
         const curTileValue = waterFlowGrid.cells[currentCell[0]][currentCell[1]].data;
 
+        const dfsCellIsValid = (flowGrid: Cell[][], oceanGrid: Cell[][], cell: [number, number]): boolean => {
+            return (
+                //Check if pacific/atlantic grid has false in cell
+                GRID_CELL_INDEX_HAS_DATA(oceanGrid, cell[0], cell[1], false) &&
+                //Check if flow gird cell is greater/equal to current cell value
+                GRID_CELL_INDEX_GET_DATA(flowGrid, cell[0], cell[1]) >= curTileValue
+            );
+        }
+
         const dfsPacific = (cell: [number, number]) => {
             const [northOfCur, eastOfCur, southOfCur, westOfCur] = 
                 ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(cell);
-            if (
-                GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, northOfCur[0], northOfCur[1], false) && 
-                GRID_CELL_INDEX_GET_DATA(waterFlowGrid.cells, northOfCur[0], northOfCur[1]) >= curTileValue
-            ) {
+            console.log("dfs");
+            if (dfsCellIsValid(waterFlowGrid.cells, pacificGrid.cells, northOfCur)) {
+                console.log("North valid")
+            }
+            if (dfsCellIsValid(waterFlowGrid.cells, pacificGrid.cells, eastOfCur)) {
+                console.log("East valid");
+            }
+            if (dfsCellIsValid(waterFlowGrid.cells, pacificGrid.cells, southOfCur)) {
+                console.log("South valid")
+            }
+            if (dfsCellIsValid(waterFlowGrid.cells, pacificGrid.cells, westOfCur)) {
+                console.log("West is valid");
+            }
+            if (dfsCellIsValid(waterFlowGrid.cells, pacificGrid.cells, northOfCur)) {
                 //Indicate that current cell has been explored...
                 dispatch(changeGridCellStatus({
                     gridIndex: 0,
@@ -238,10 +279,10 @@ export const Problem417Controller = () => {
         setCurrentCell(ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j));
     }
 
-    <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
+    return (<div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
         <button onClick={() => clickSetUp417()}>Set Up 417</button>
         <button onClick={() => clickStep417()}>Step 417</button>
         <button>Complete 417</button>
-    </div>
+    </div>);
 
 }
