@@ -292,27 +292,12 @@ export const Controls = () => {
         {totalStructs}
         <UtilitiesController inputGrid={inputGrid} selectedRow={selectedRow} clearValue={clearValue}/>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
-            <button onClick={clickFloodFill}>Flood Fill From Start</button>
-            <button onClick={clickStepDFS}>StepDFS Right</button>
-            <button onClick={() => {
-                setAnimationOn(true);
-                clickStepDFS();
-            }}>DFS Complete</button>
-        </div>
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
-            <button onClick={setUp200}>Set up Num Islands</button>
-            <button onClick={step200}>Step Num Islands</button>
-            <button>Complete Num Islands</button>
-        </div>
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
             <button onClick={onClickFindPathsToCells}>Paths to Cells</button>
         </div>
         <Problem417Controller 
             animationOn={animationOn}
             switchAnimationOn={switchAnimationOn}
         />
-        <Problem1091Controller />
-        <Problem695Controller />
         <br></br>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
             Selected Grid: 
