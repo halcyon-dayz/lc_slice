@@ -1,16 +1,18 @@
 import {createAction} from "@reduxjs/toolkit"
-import { Cell } from "../utils/types"
+import { Cell, DataStructureType } from "../utils/types"
 
 export type AddArrayPayload = {
     num: number
 }
 
 export type DeleteArrayPayload = {
-    num: number
+    num: number,
+    arraysLength: number,
 }
 
 export type DeleteGridPayload = {
-    num: number
+    num: number,
+    gridsLength: number,
 }
 
 export type CopyArrayPayload = {
@@ -33,6 +35,19 @@ export type CopyGridPayload = {
     cells: Cell[][],
 }
 
+export type AddDataStructurePayload = {
+    type: DataStructureType
+    num?: number
+}
+
+/**
+ * Add data structure of specific type to its corresponding list
+ * @param {DataStructureType} type
+ * The type of data structure to add
+ * @param {number} [num]
+ * The number of data structures of the specified type to add.
+ */
+export const addDataStructure = createAction<AddDataStructurePayload>("addDataStructure");
 /**
  * Add arrays to the array list
  * @param {number} num
@@ -52,11 +67,15 @@ export const deleteArray = createAction<DeleteArrayPayload>("deleteArray");
  */
 export const deleteArrayAt = createAction<DeleteArrayAtPayload>("deleteArrayAt")
 /**
+ * Copy existing array
+ * @param {any[]} data
+ */
+export const copyArray = createAction<CopyArrayPayload>("copyArray");
+/**
  * Add grids to the grid list
  * @param {number} num
  * The number of grids to add.
  */
-export const copyArray = createAction<CopyArrayPayload>("copyArray");
 export const addGrid = createAction<AddGridPayload>("addGrid");
 /**
  * 

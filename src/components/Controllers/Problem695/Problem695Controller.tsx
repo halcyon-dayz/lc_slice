@@ -20,7 +20,7 @@ export const Problem695Controller = () => {
 
     const clickSetUp695 = () => {
         //Clear all previous ds
-        dispatch(deleteGrid({num: grids.length}));
+        dispatch(deleteGrid({num: grids.length, gridsLength: grids.length}));
         //Get new grid
         const data = DEFAULT_695_GRIDS[defaultGridIndex];
         const newGrid: Cell[][] = data.map((row, rowIdx) => {

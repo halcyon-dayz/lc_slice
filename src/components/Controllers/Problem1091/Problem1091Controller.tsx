@@ -49,7 +49,7 @@ export const Problem1091Controller = () => {
 
     const clickSetUp1091 = () => {
         //Clear all previous ds
-        dispatch(deleteGrid({num: grids.length}));
+        dispatch(deleteGrid({num: grids.length, gridsLength: grids.length}));
         //Get new grid
         const selectedGrid = DEFAULT_1091_GRIDS[defaultGridIndex];
         dispatch(copyGrid({cells: selectedGrid}));

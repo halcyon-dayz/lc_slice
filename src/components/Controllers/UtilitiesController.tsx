@@ -8,9 +8,9 @@ import {
     clearGridRow
 } from "../../features/grids/gridsSlice";
 import { selectAllGrids } from "../../features/grids/gridsSlice";
-import { useAppDispatch } from "../../features/hooks";
-import {addGrid, deleteGrid} from "../../features/sharedActions"
-
+import { useAppDispatch, useAppSelector } from "../../features/hooks";
+import {addArray, addGrid, deleteArray, deleteGrid} from "../../features/sharedActions"
+import {RootState} from "../../utils/types"
 
 type UtilitiesControllerType = {
     inputGrid: number,
@@ -20,6 +20,7 @@ type UtilitiesControllerType = {
 
 export const UtilitiesController = ({inputGrid, selectedRow, clearValue}: UtilitiesControllerType) => {
     const grids = useSelector(selectAllGrids);
+    const arraysLength = useAppSelector(state => state.arrays.length);
     const dispatch = useAppDispatch();
 
     const clickIncreaseRows = () => {
@@ -59,7 +60,7 @@ export const UtilitiesController = ({inputGrid, selectedRow, clearValue}: Utilit
     }
 
     const clickDeleteGrid = () => {
-        dispatch(deleteGrid({num: 1}))
+        dispatch(deleteGrid({num: 1, gridsLength: grids.length}))
     }
 
     const clickClearSelectedGrid = () => {
@@ -81,13 +82,21 @@ export const UtilitiesController = ({inputGrid, selectedRow, clearValue}: Utilit
         }))
     }
 
+    const clickAddArray = () => {
+        dispatch(addArray({num: 1}));
+    }
+
+    const clickDeleteArray = () => {
+        dispatch(deleteArray({num: 1, arraysLength: arraysLength}));
+    }
+
     return (
         <div>
             <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
-                <button onClick={() => clickDecreaseRows()}>Remove Width</button>
-                <button onClick={() => clickIncreaseRows()}>Add Width</button>
-                <button onClick={() => clickDecreaseColumns()}>Remove Height</button>
-                <button onClick={() => clickIncreaseColumns()}>Add Height</button>
+                <button onClick={() => clickDecreaseRows()}>Remove Grid Width</button>
+                <button onClick={() => clickIncreaseRows()}>Add Grid Width</button>
+                <button onClick={() => clickDecreaseColumns()}>Remove Grid Height</button>
+                <button onClick={() => clickIncreaseColumns()}>Add Grid Height</button>
             </div>
             <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
                 <button onClick={() => clickClearSelectedGrid()}>Clear Selected Grid</button>
@@ -96,6 +105,8 @@ export const UtilitiesController = ({inputGrid, selectedRow, clearValue}: Utilit
             <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
                 <button onClick={() => clickAddGrid()}>Add Grid</button>
                 <button onClick={() => clickDeleteGrid()}>Delete Grid</button>
+                <button onClick={() => clickAddArray()}>Add Array</button>
+                <button onClick={() => clickDeleteArray()}>Delete Array</button>
             </div>
         </div>
     );

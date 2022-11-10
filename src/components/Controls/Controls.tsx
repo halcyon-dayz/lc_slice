@@ -17,6 +17,7 @@ import { UtilitiesController } from "../Controllers/UtilitiesController";
 import { Problem417Controller } from "../Controllers/Problem417/Problem417Controller";
 import { Problem1091Controller } from "../Controllers/Problem1091";
 import { Problem695Controller } from "../Controllers/Problem695";
+import { selectTotalStructs } from "../../features/totalStructs/totalStructsSlice";
 //#endregion
 
 
@@ -31,6 +32,7 @@ export const Controls = () => {
     const [animationOn, setAnimationOn] = useState<boolean>(false);
 
     const grids = useSelector(selectAllGrids);
+    const totalStructs = useSelector(selectTotalStructs);
     const dispatch = useAppDispatch();
 
     const onChangeSelectedGrid = (e: React.FormEvent<HTMLInputElement>) => {
@@ -289,6 +291,7 @@ export const Controls = () => {
 
     return (
     <ControlsContainer>
+        {totalStructs}
         <UtilitiesController inputGrid={inputGrid} selectedRow={selectedRow} clearValue={clearValue}/>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
             <button onClick={clickFloodFill}>Flood Fill From Start</button>

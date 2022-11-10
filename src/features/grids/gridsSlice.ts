@@ -4,7 +4,6 @@ import {RootState, Cell, GridDS, CellStatus} from "../../utils/types"
 import { PayloadAction } from "@reduxjs/toolkit"
 import * as GridPayloads from "./gridPayloads"
 
-import { GRID_GENERIC_CONTEXT } from "./gridTypes"
 
 import {
 	addGrid,
@@ -14,16 +13,15 @@ import {
 	deleteGridAt,
 	DeleteGridAtPayload,
 	copyGrid,
-	CopyGridPayload
+	CopyGridPayload,
+	addDataStructure,
+	AddDataStructurePayload
 } from "../sharedActions"
 
 import {
 	isValidIndex,
 	isStateValid,
 	GridBeforeEachFunc,
-	GridDuringFunc,
-	GridDuringWithActionFunc,
-	createGridActionS,
 	createGridActionSA
 } from "./gridUtils"
 
@@ -291,37 +289,60 @@ const gridsSlice = createSlice({
 		   state: RootState["grids"], 
 		   action: PayloadAction<DeleteGridAtPayload>
 	   ) => {
-		   const {idx} = action.payload;
-		   if (idx >= state.length || idx < (state.length * - 1)) {
-			   return;
-		   }
-		   const effectiveIndex = idx >= 0 ? idx : state.length - (idx * -1);
-		   if (effectiveIndex === state.length - 1) {
-			   state = [...state.slice(0, state.length - 1)]
-			   return;
-		   } else {
-			   state[effectiveIndex + 1].indexInList -= 1;
-			   state = [...state.slice(0, effectiveIndex), ...state.slice(effectiveIndex + 1)];
-			   return;    
-		   }
+			const {idx} = action.payload;
+		   	if (idx >= state.length || idx < (state.length * - 1)) {
+				return;
+		   	}
+		   	const effectiveIndex = idx >= 0 ? idx : state.length - (idx * -1);
+		   	if (effectiveIndex === state.length - 1) {
+				state = [...state.slice(0, state.length - 1)]
+			   	return;
+		   	} else {
+				state[effectiveIndex + 1].indexInList -= 1;
+			   	state = [...state.slice(0, effectiveIndex), ...state.slice(effectiveIndex + 1)];
+			   	return;    
+		   	}
 	   }).addCase(copyGrid, (
-		state: RootState["grids"],
-		action: PayloadAction<CopyGridPayload>
+			state: RootState["grids"],
+			action: PayloadAction<CopyGridPayload>
 	   ) => {
-		const {cells} = action.payload;
-		let prevLength = state.length;
-		const newGrid: GridDS = {
-			type: "GRID",
-			indexInList: (prevLength),
-			label: `Grid #${prevLength + 1}`,
-			cells: cells,
-			cellStyleHeight: 50,
-			cellStyleWidth: 50,
-			width: cells[0].length,
-			height: cells.length
-		};
-		state.push(newGrid);
-	   })
+			const {cells} = action.payload;
+			let prevLength = state.length;
+			const newGrid: GridDS = {
+				type: "GRID",
+				indexInList: (prevLength),
+				label: `Grid #${prevLength + 1}`,
+				cells: cells,
+				cellStyleHeight: 50,
+				cellStyleWidth: 50,
+				width: cells[0].length,
+				height: cells.length
+			};
+			state.push(newGrid);
+	   	}).addCase(addDataStructure, (
+			state: RootState["grids"],
+			action: PayloadAction<AddDataStructurePayload>
+		) => {
+			const {type, num} = action.payload;
+			if (type !== "GRID") {
+				return;
+			}
+			let prevLength = state.length;
+		   	for (let i = 0; i < (num ? num : 1); i++) {
+			   	prevLength += 1;
+			   	const newGrid: GridDS = {
+				   	type: "GRID",
+				   	indexInList: (prevLength - 1) + i,
+				   	label: `Grid #${prevLength + i}`,
+				   	cells: defaultGrid,
+				   	cellStyleHeight: 50,
+				   	cellStyleWidth: 50,
+				   	width: defaultGrid[0].length,
+				   	height: defaultGrid.length
+			   	};
+			   	state.push(newGrid);
+		   	}
+		})
 	}
 }) 
 

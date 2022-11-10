@@ -25,24 +25,18 @@ const NavItemLeftList: NavItemProps[] = [
     text: "",
     href:"http://www.leetcode.com",
     imageProps: {
-      imageURLs: ["/orange-slice.svg", "/leetcode.svg"],
+      imageURLs: ["/orange-slice.svg"],
       height: 35,
       width: 35,
       margin: "7px 0px 0px 0px"
     }
   },
   {
-    text: "Explore"
+    text: "Grid Problems"
   },
   {
-    text: "Problems"
-  },
-  {
-    text: "Interview"
-  },
-  {
-    text: "Contest"
-  },
+    text: "Tree Problems"
+  }
   //Try to maintain width height ratio of sv
 ]
 

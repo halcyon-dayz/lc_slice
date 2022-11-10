@@ -11,16 +11,6 @@ import {
     gridsReducer
 } from "./grids/gridsSlice"
 
-//Custom Middleware uses the Middleware type and passes generic arguments 
-//for dispatch and state
-/* export const exampleMiddleware: Middleware<
-    {},
-    RootState
-> = storeApi => next => action => {
-    const state = storeApi.getState()
-} */
-
-
 export const store = configureStore({
     reducer: {
         arrays: arraysReducer,

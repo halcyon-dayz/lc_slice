@@ -1,5 +1,8 @@
 export const isValidIndex = (stateLength: number, index: number): boolean => {
-    return (stateLength > 0 && index >= 0 && index < stateLength)
+    if (stateLength <= 0 || index < 0 || index >= stateLength) {
+        return false;
+    }
+    return true;
 }
 
 export const isStateValid = (stateLength: number): boolean => {

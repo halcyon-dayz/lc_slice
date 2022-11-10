@@ -19,3 +19,9 @@ Guidelines for creating a problem controller:
 
 3. Create a complete function: 
     This function should run through each step of the problem automatically, calling upon the step function for each iteration. 
+
+TODO: 
+    Make UI more pleasant and interactive.
+    Complete questions exactly.
+    Prevent editing of questions depending on question parameters.
+    Add text and action log for each question.

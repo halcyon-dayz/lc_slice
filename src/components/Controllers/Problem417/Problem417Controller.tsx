@@ -69,7 +69,7 @@ export const Problem417Controller = () => {
     }
 
     const clickSetUp417 = () => {
-        dispatch(deleteGrid({num: grids.length}));
+        dispatch(deleteGrid({num: grids.length, gridsLength: grids.length}));
         dispatch(copyGrids([GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_417_BOOLEAN, GRID_417_BOOLEAN]))
         dispatch(changeGridLabels(0, ["Water Flow", "Pacific", "Atlantic"]));
         dispatch(changeGridCellStatus({

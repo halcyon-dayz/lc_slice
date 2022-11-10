@@ -1,20 +1,40 @@
-import { copyGrid, deleteGrid } from "../../sharedActions"
+import { copyGrid, deleteGrid, addGrid} from "../../sharedActions"
 import {store} from "../../store"
 import {GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_733_FLOOD_FILL} from "../defaultGrids"
 import { changeGridHeight, changeGridLabel, changeGridWidth, clearGridCells, copyGrids } from "../gridsSlice"
 
 
+
 beforeEach(async () => {
     const grids = store.getState().grids;
     let length = grids.length;
-    let result = await store.dispatch(deleteGrid({num: length}));
+    let result = await store.dispatch(deleteGrid({num: length, gridsLength: length}));
 })
 
 describe('gridsSlice redux state tests', () => {
+
     test('if initial state is empty', () => {
         const grids = store.getState().grids
         expect(grids).toEqual([]);
     })
+
+    test("if addGrid works", async () => {
+        let grids = store.getState().grids;
+        expect(grids.length).toEqual(0);
+        let result = await store.dispatch(addGrid({num: 1}));
+        grids = store.getState().grids;
+        expect(grids.length).toEqual(1);
+        expect(grids).not.toEqual([]);
+        expect(grids[0]).not.toBeUndefined();
+    })
+    test("if delete Grid works", async () => {
+        let result = await store.dispatch(addGrid({num: 1}));
+        result = await store.dispatch(deleteGrid({num: 1, gridsLength: 1}));
+        let grids = store.getState().grids;
+        expect(grids).toEqual([]);
+        expect(grids.length).toEqual(0);
+    })
+    
 
     test('if copyGrid works', async () => {
         const result = await store.dispatch(copyGrid({
