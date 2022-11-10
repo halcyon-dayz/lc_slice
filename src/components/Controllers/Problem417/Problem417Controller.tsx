@@ -1,5 +1,5 @@
 //#region Imports
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
 import {
      useSelector 
 } from "react-redux";
@@ -10,6 +10,8 @@ import {
     changeGridCellStatus,
     changeGridCellData,
     changeMultiGridSameCellStatus,
+    clearGridCells,
+    clearGridCellsStatus
 } from "../../../features/grids/gridsSlice";
 import { 
     ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL,
@@ -44,7 +46,14 @@ enum gL {
 //Designates whether to flood fill pacific or atlantic
 type P417_GLOBALS = "PACIFIC" | "ATLANTIC"
 
-export const Problem417Controller = () => {
+//Ideally only one question at a time should be displayed, 
+//so this shouldn't trigger multiple animations at once
+type P417_PROPS = {
+    animationOn: boolean,
+    switchAnimationOn: () => void;
+}
+
+export const Problem417Controller = ({animationOn, switchAnimationOn}: P417_PROPS) => {
     /* Access the Global State */
     const dispatch = useAppDispatch();
     const grids = useSelector(selectAllGrids);
@@ -53,6 +62,13 @@ export const Problem417Controller = () => {
     const [currentCell, setCurrentCell] = useState<P417_CURRENT_CONTEXT_TYPE>([0, 0])
     const [stackContext, setStackContext] = useState<P417_STACK_CONTEXT_UNIT_TYPE[]>([]);
     const [globals, setGlobals] = useState<P417_GLOBALS>("PACIFIC");
+
+
+    useEffect(() => {
+        if (animationOn) {
+            clickStep417();
+        }
+    }, [])
 
     const directToPacific = (i: number, j: number): boolean => {
         if (i === 0 || j === 0) {
@@ -115,8 +131,10 @@ export const Problem417Controller = () => {
         const j = currentCell[1];
         const curTileValue = waterFlowGrid.cells[currentCell[0]][currentCell[1]].data;
 
+        const isPacific = globals === "PACIFIC";
+
         const dfsCellIsValid = (cell: [number, number]): boolean => {
-            if (globals === "PACIFIC") {
+            if (isPacific) {
                 return (
                     //Check if pacific/atlantic grid has false in cell
                     GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, cell[0], cell[1], false) &&
@@ -133,7 +151,7 @@ export const Problem417Controller = () => {
             }
         }
 
-        const dfsPacific = (cell: [number, number]) => {
+        const dfs = (cell: [number, number]) => {
             const [northOfCur, eastOfCur, southOfCur, westOfCur] = 
                 ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(cell);
             if (dfsCellIsValid(northOfCur)) {
@@ -157,14 +175,14 @@ export const Problem417Controller = () => {
 
         if (stackContext.length !== 0) {
             //Always set current cell back to explored just in case dfs returns no new paths
-            dispatch(changeMultiGridSameCellStatus([0, 1], i, j, "EXPLORED"));
+            dispatch(changeMultiGridSameCellStatus(isPacific ? [0, 1] : [0, 2], i, j, "EXPLORED"));
             dispatch(changeGridCellData({
-                gridIndex: 1,
+                gridIndex: isPacific ? 1 : 2,
                 row: i,
                 col: j,
                 data: true
             }));
-            if (dfsPacific([i, j]) === true) {
+            if (dfs([i, j]) === true) {
                 return;
             }
             //Pop stack and set currentCell to prevcell
@@ -179,23 +197,18 @@ export const Problem417Controller = () => {
             setStackContext(stackContext.slice(0, stackContext.length - 1));
             return;
         }
-        if (directToPacific(i, j)) {
-            console.log("Direct to Pacific")
-            //Set status of waterFlowGrid to explored
-            dispatch(changeGridCellStatus({
-                gridIndex: 0,
-                row: i, 
-                col: j,
-                status: "EXPLORED"
-            }));
+        const directTo = isPacific ? directToPacific : directToAtlantic
+        if (directTo(i, j) ) {
+            //Set status of cell in flowGrid and pacificGrid to explored
+            dispatch(changeMultiGridSameCellStatus(isPacific ? [0, 1] : [0, 2], i, j, "EXPLORED"));
             //Change data in the pacific grid to true
             dispatch(changeGridCellData({
-                gridIndex: 1,
+                gridIndex: isPacific ? 1 : 2,
                 row: currentCell[0],
                 col: currentCell[1],
                 data: true
             }));
-            if (dfsPacific(currentCell) === true) {
+            if (dfs(currentCell) === true) {
                 return;
             } else {
                 const nextCell = ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j);
@@ -207,13 +220,11 @@ export const Problem417Controller = () => {
                 }));
                 setCurrentCell(ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j));
             }
+            //Reconsider this return statement
             return;
         }
-        const nextCell = ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j);
-        if (nextCell[0] === 0 && nextCell[1] === 0) {
-            
-        }
-        if (grids[1].cells[i][j].data === true) {
+        //Change the current cell back to it's previous status if no new paths found
+        if (grids[isPacific ? 1 : 2].cells[i][j].data === true) {
             dispatch(changeGridCellStatus({
                 gridIndex: 0,
                 row: i, 
@@ -228,20 +239,45 @@ export const Problem417Controller = () => {
                 status: "UNEXPLORED"
             }));
         }
+        const nextCell = ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j);
+        if (nextCell[0] === 0 && nextCell[1] === 0) {
+            console.log("Next is start")
+            //Iterate through atlantic if last pacific cell reached
+            if (globals === "PACIFIC") {
+                console.log("Completed Pacific Search");
+                setGlobals("ATLANTIC");
+                dispatch(clearGridCellsStatus({gridIndex: 0, defaultStatus: "UNEXPLORED"}));
+            //Find mountains if last atlantic cell reached
+            } else {
+                console.log("Completed Atlantic Search");
+                dispatch(clearGridCellsStatus({gridIndex: 0, defaultStatus: "UNEXPLORED"}));
+                for (let i = 0; i < grids[0].cells.length; i++) {
+                    for (let j = 0; j < grids[0].cells[0].length; j++) {
+                        if (pacificGrid.cells[i][j].data === true && atlanticGrid.cells[i][j].data === true) {
+                            dispatch(changeGridCellStatus({gridIndex: 0, row: i, col: j, status: "ISLAND"}));
+                        }
+                    }
+                }
+            }
+        }
         dispatch(changeGridCellStatus({
             gridIndex: 0,
             row: nextCell[0],
             col: nextCell[1],
             status: "CURRENT"
         }));
-        setCurrentCell(ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j));
+        setCurrentCell(nextCell);
     }
 
+    const clickComplete417 = () => {
+        switchAnimationOn();
+    }
+    
     return (
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
             <button onClick={() => clickSetUp417()}>Set Up 417</button>
             <button onClick={() => clickStep417()}>Step 417</button>
-            <button>Complete 417</button>
+            <button onClick={() => clickComplete417()}>Complete 417</button>
         </div>
     );
 

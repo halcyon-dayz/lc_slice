@@ -283,11 +283,9 @@ export const Controls = () => {
         setPrevCells([[nextRow - 1, nextCol], [nextRow, nextCol - 1]])
     }
 
-    useEffect(() => {
-        if (animationOn) {
-            setTimeout(() => clickStepDFS(), 500)
-        }
-    }, [currentCell])
+    const switchAnimationOn = () => {
+        setAnimationOn(!animationOn);
+    }
 
     return (
     <ControlsContainer>
@@ -309,7 +307,10 @@ export const Controls = () => {
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
             <button onClick={onClickFindPathsToCells}>Paths to Cells</button>
         </div>
-        <Problem417Controller />
+        <Problem417Controller 
+            animationOn={animationOn}
+            switchAnimationOn={switchAnimationOn}
+        />
         <Problem1091Controller />
         <Problem695Controller />
         <br></br>
