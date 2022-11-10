@@ -16,6 +16,7 @@ import {
 import { UtilitiesController } from "../Controllers/UtilitiesController";
 import { Problem417Controller } from "../Controllers/Problem417/Problem417Controller";
 import { Problem1091Controller } from "../Controllers/Problem1091";
+import { Problem695Controller } from "../Controllers/Problem695";
 //#endregion
 
 
@@ -307,6 +308,7 @@ export const Controls = () => {
         </div>
         <Problem417Controller />
         <Problem1091Controller />
+        <Problem695Controller />
         <br></br>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
             Selected Grid: 
