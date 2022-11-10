@@ -15,7 +15,9 @@ import {
     DeleteGridPayload,
     deleteGrid,
     copyGrid,
-    CopyGridPayload
+    CopyGridPayload,
+    addDataStructure,
+    AddDataStructurePayload
 } from "../sharedActions";
 
 //#endregion
@@ -33,23 +35,30 @@ const totalStructsSlice = createSlice({
             const {num} = action.payload;
             return state + num;
         }).addCase(deleteArray, (state, action: PayloadAction<DeleteArrayPayload>) => {
-            const {num} = action.payload;
-            if (num >= state) {
-                state = 0;
-                return;
+            const {num, arraysLength} = action.payload;
+            if (num <= 0) {
+                return state;
             }
-            state -= num;
+            if (num >= arraysLength) {
+                return state - arraysLength
+            }
+            return state - num;
         }).addCase(addGrid, (state, action: PayloadAction<AddGridPayload>) => {
             const {num} = action.payload;
             return state + num;
         }).addCase(deleteGrid, (state, action: PayloadAction<DeleteGridPayload>) => {
-            const {num} = action.payload;
-            if (num >= state) {
-                return 0;
+            const {num, gridsLength} = action.payload;
+            if (num <= 0) {
+                return state;
             }
-            return state -= num;
+            if (num >= gridsLength) {
+                return state - gridsLength;
+            }
+            return state - num;
         }).addCase(copyGrid, (state, action: PayloadAction<CopyGridPayload>) => {
             return state + 1;
+        }).addCase(addDataStructure, (state, action: PayloadAction<AddDataStructurePayload>) => {
+            return state + (action.payload.num ? action.payload.num : 1);
         })
     }
 }) 
@@ -64,9 +73,8 @@ export const deleteAllStructs = (): AppThunk => {
     ) => {
         let grids = getState().grids;
         let arrays = getState().arrays;
-        dispatch(deleteGrid({num: grids.length}));
-        dispatch(deleteArray({num: arrays.length}));
-
+        dispatch(deleteGrid({num: grids.length, gridsLength: grids.length}));
+        dispatch(deleteArray({num: arrays.length, arraysLength: arrays.length}));
     }
 }
 
