@@ -14,7 +14,7 @@ import {
     ARRAY_2D_GET_NEXT_INDEX, 
 } from "../../features/grids/gridUtils";
 import { UtilitiesController } from "../Controllers/UtilitiesController";
-import { Problem417Controller } from "../Controllers/Problem417Controller";
+import { Problem417Controller } from "../Controllers/Problem417/Problem417Controller";
 //#endregion
 
 

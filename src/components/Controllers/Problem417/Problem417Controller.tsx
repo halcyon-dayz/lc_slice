@@ -10,22 +10,21 @@ import {
     changeGridCellStatus,
     changeGridCellData,
     changeMultiGridSameCellStatus,
-} from "../../features/grids/gridsSlice";
+} from "../../../features/grids/gridsSlice";
 import { 
     ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL,
     GRID_CELL_INDEX_HAS_DATA,
     GRID_CELL_INDEX_GET_DATA,
     ARRAY_2D_GET_NEXT_INDEX
-} from "../../features/grids/gridUtils";
+} from "../../../features/grids/gridUtils";
 import { 
     deleteGrid
-} from "../../features/sharedActions";
+} from "../../../features/sharedActions";
 import { 
     GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, 
     GRID_417_BOOLEAN
-} from "../../features/grids/defaultGrids";
-import { useAppDispatch } from "../../features/hooks";
-import {Cell} from "../../utils/types"
+} from "../../../features/grids/defaultGrids";
+import { useAppDispatch } from "../../../features/hooks";
 
 //#endregion
 
