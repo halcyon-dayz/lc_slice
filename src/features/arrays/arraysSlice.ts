@@ -1,14 +1,14 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {RootState} from "../../utils/types"
-import { addArray, AddArrayPayload, deleteArray, DeleteArrayPayload} from "../sharedActions";
+import {CellStatus, RootState} from "../../utils/types"
+import { addArray, AddArrayPayload, copyArray, CopyArrayPayload, deleteArray, DeleteArrayPayload} from "../sharedActions";
 import { ArrayBeforeEachFunc, createArrayActionSA, indexExistsOnArray } from "./arrayUtils";
 import { isValidIndex, isStateValid} from "../featureUtils"
+import { Cell, ArrDS} from "../../utils/types";
 
 import * as ArrayPayloads from "./arrayPayloads"
 
 
 const initialState: RootState["arrays"] = [];
-
 
 const checkArrayExists: ArrayBeforeEachFunc = (state: RootState["arrays"], action?: PayloadAction<any>) => {
 	return action ? ( isValidIndex(state.length, action.payload.gridIndex) ) : (isStateValid(state.length))
@@ -20,20 +20,50 @@ const checkIndexExists: ArrayBeforeEachFunc = (state: RootState["arrays"], actio
 
 
 const arrayReducerObject = {
-    addDataAtIndex: createArrayActionSA(
+    pushDataAtIndex: createArrayActionSA(
         [checkArrayExists, checkIndexExists], 
-        (state, action: PayloadAction<ArrayPayloads.AddDataAtIndexPayload>) => 
+        (state, action: PayloadAction<ArrayPayloads.PushDataAtIndexPayload>) => 
     {
-        const {arrayIndex, index, data} = action.payload;
-        state[arrayIndex].data[index].data = data;
+        const {arrayIndex, index, data, replaceAtIndex} = action.payload;
+        const newData: Cell[] = data.map((d) => {
+            return {data: d, status: "UNEXPLORED"}
+        })
+        state[arrayIndex].data = [
+            ...state[arrayIndex].data.slice(0, index), 
+            ...newData,
+            ...state[arrayIndex].data.slice(replaceAtIndex ? index : index + 1)
+        ]
+        return;
     }),
-    addData: createArrayActionSA(
+    pushData: createArrayActionSA(
         [checkArrayExists],
-        (state, action: PayloadAction<ArrayPayloads.AddDataPayload>) => 
+        (state, action: PayloadAction<ArrayPayloads.PushDataPayload>) => 
     {
         const {arrayIndex, data} = action.payload;
-        state[arrayIndex].data.push({data: data, status: "UNEXPLORED"})
+        const pushArray: Cell[] = data.map((D) => {
+            return {data: D, status: "UNEXPLORED"}
+        })
+        
+        state[arrayIndex].data.push(...pushArray);
+        return;
     }),
+    popData: createArrayActionSA(
+        [checkArrayExists],
+        (state, action: PayloadAction<ArrayPayloads.PopDataPayload>) => 
+    {
+        const {arrayIndex, num} = action.payload;
+        if (num <= 0) {
+            return;
+        }
+        if (num >= state[arrayIndex].data.length) {
+            state[arrayIndex].data = [];
+            return;
+        }
+        for (let i = 0; i < num; i++) {
+            state[arrayIndex].data.pop();
+        }
+        return;
+    })
     
 }
 
@@ -84,10 +114,30 @@ const arraysSlice = createSlice({
                     type: "ARRAY",
                 });
             }
+        }).addCase(copyArray, (state, action: PayloadAction<CopyArrayPayload>) => {
+            const {data} = action.payload;
+            const dataArr: Cell[] = data.map((ele) => {
+                return {data: ele, status: "UNEXPLORED"}
+            })
+            const prevLength = state.length;
+            const newArrDS: ArrDS = {
+                type: "ARRAY",
+                label: `Array #${prevLength + 1}`,
+                width: data.length,
+                data: dataArr,
+                pointerLocations: []
+            }
+            state.push(newArrDS);
         })
     }
 })
 
 export const arraysReducer = arraysSlice.reducer
+
+export const {
+    pushData,
+    pushDataAtIndex,
+    popData
+} = arraysSlice.actions
 
 export const selectAllArrays = (state: RootState) => state.arrays;

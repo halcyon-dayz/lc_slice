@@ -9,6 +9,7 @@ import { arrowManager } from "../../utils/arrows";
 
 export const PathFindingVisualizer = () => {
     const gridsLength = useAppSelector((state: RootState) => state.grids.length);
+    const arraysLength = useAppSelector((state: RootState) => state.arrays.length);
 
     useEffect(() => {
         const nodeList = document.querySelectorAll(".grid");
@@ -25,6 +26,12 @@ export const PathFindingVisualizer = () => {
                 <Grid 
                     key={`Grid_${idx}`}
                     gridIndex={idx}
+                />
+            ))}
+            {[...Array(arraysLength)].map((array, idx) => (
+                <PointedArray 
+                    pointerLocations={array.pointerLocations}
+                    cells={array.data}
                 />
             ))}
         </div>

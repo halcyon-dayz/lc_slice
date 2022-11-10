@@ -13,6 +13,10 @@ export type DeleteGridPayload = {
     num: number
 }
 
+export type CopyArrayPayload = {
+    data: any[],
+}
+
 export type AddGridPayload = {
     num: number
 }
@@ -52,6 +56,7 @@ export const deleteArrayAt = createAction<DeleteArrayAtPayload>("deleteArrayAt")
  * @param {number} num
  * The number of grids to add.
  */
+export const copyArray = createAction<CopyArrayPayload>("copyArray");
 export const addGrid = createAction<AddGridPayload>("addGrid");
 /**
  * 

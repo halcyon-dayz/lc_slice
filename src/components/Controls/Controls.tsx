@@ -15,6 +15,7 @@ import {
 } from "../../features/grids/gridUtils";
 import { UtilitiesController } from "../Controllers/UtilitiesController";
 import { Problem417Controller } from "../Controllers/Problem417/Problem417Controller";
+import { Problem1091Controller } from "../Controllers/Problem1091";
 //#endregion
 
 
@@ -305,6 +306,7 @@ export const Controls = () => {
             <button onClick={onClickFindPathsToCells}>Paths to Cells</button>
         </div>
         <Problem417Controller />
+        <Problem1091Controller />
         <br></br>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
             Selected Grid: 
