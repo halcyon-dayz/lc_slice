@@ -1,0 +1,12 @@
+.controller_buttons_container {
+    display: flex;
+    max-width: 600px;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.controller_button {
+    margin-right: 10px;
+}

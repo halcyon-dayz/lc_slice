@@ -28,6 +28,8 @@ import {
 } from "../../../features/grids/defaultGrids";
 import { useAppDispatch } from "../../../features/hooks";
 
+import "../controller.css"
+
 //#endregion
 
 //Equivalent to currentCell
@@ -280,18 +282,25 @@ export const Problem417Controller = ({animationOn, switchAnimationOn, animationS
         setCurrentCell(nextCell);
     }
 
-    const clickComplete417 = () => {
+    const clickPlay417 = () => {
         if (!buildFinished) {
             clickSetUp417();
         }
         switchAnimationOn();
     }
+
+    const clickPause417 = () => {
+        if (animationOn) {
+            switchAnimationOn();
+        }
+    }
     
     return (
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
-            <button onClick={() => clickSetUp417()}>Set Up 417</button>
-            <button onClick={() => clickStep417()}>Step 417</button>
-            <button onClick={() => clickComplete417()}>Complete 417</button>
+        <div className={"controller_buttons_container"}>
+            <button className={"controller_button"} onClick={() => clickSetUp417()}>Set Up 417</button>
+            <button className={"controller_button"} onClick={() => clickStep417()}>Step 417</button>
+            <button className={"controller_button"} onClick={() => clickPause417()}>Pause 417</button>
+            <button className={"controller_button"} onClick={() => clickPlay417()}>Play 417</button>
         </div>
     );
 

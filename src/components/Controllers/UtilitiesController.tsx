@@ -11,6 +11,7 @@ import { selectAllGrids } from "../../features/grids/gridsSlice";
 import { useAppDispatch, useAppSelector } from "../../features/hooks";
 import {addArray, addGrid, deleteArray, deleteGrid} from "../../features/sharedActions"
 import {RootState} from "../../utils/types"
+import "./controller.css"
 
 type UtilitiesControllerType = {
     inputGrid: number,
@@ -92,21 +93,25 @@ export const UtilitiesController = ({inputGrid, selectedRow, clearValue}: Utilit
 
     return (
         <div>
-            <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
-                <button onClick={() => clickDecreaseRows()}>Remove Grid Width</button>
-                <button onClick={() => clickIncreaseRows()}>Add Grid Width</button>
-                <button onClick={() => clickDecreaseColumns()}>Remove Grid Height</button>
-                <button onClick={() => clickIncreaseColumns()}>Add Grid Height</button>
+            <div className={"controller_buttons_container"}>
+                <button className={"controller_button"} onClick={() => clickDecreaseRows()}>
+                    Remove Grid Width
+                </button>
+                <button className={"controller_button"} onClick={() => clickIncreaseRows()}>
+                    Add Grid Width
+                </button>
+                <button className={"controller_button"} onClick={() => clickDecreaseColumns()}>Remove Grid Height</button>
+                <button className={"controller_button"} onClick={() => clickIncreaseColumns()}>Add Grid Height</button>
             </div>
-            <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
-                <button onClick={() => clickClearSelectedGrid()}>Clear Selected Grid</button>
-                <button onClick={() => clickClearSelectedRow()}>Clear Selected Row</button>
+            <div className={"controller_buttons_container"}>
+                <button className={"controller_button"} onClick={() => clickClearSelectedGrid()}>Clear Selected Grid</button>
+                <button className={"controller_button"} onClick={() => clickClearSelectedRow()}>Clear Selected Row</button>
             </div>
-            <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
-                <button onClick={() => clickAddGrid()}>Add Grid</button>
-                <button onClick={() => clickDeleteGrid()}>Delete Grid</button>
-                <button onClick={() => clickAddArray()}>Add Array</button>
-                <button onClick={() => clickDeleteArray()}>Delete Array</button>
+            <div className={"controller_buttons_container"}>
+                <button className={"controller_button"} onClick={() => clickAddGrid()}>Add Grid</button>
+                <button className={"controller_button"} onClick={() => clickDeleteGrid()}>Delete Grid</button>
+                <button className={"controller_button"} onClick={() => clickAddArray()}>Add Array</button>
+                <button className={"controller_button"} onClick={() => clickDeleteArray()}>Delete Array</button>
             </div>
         </div>
     );
