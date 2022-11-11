@@ -51,14 +51,16 @@ type P417_GLOBALS = "PACIFIC" | "ATLANTIC"
 type P417_PROPS = {
     animationOn: boolean,
     switchAnimationOn: () => void;
+    animationSpeed: number
 }
 
-export const Problem417Controller = ({animationOn, switchAnimationOn}: P417_PROPS) => {
+export const Problem417Controller = ({animationOn, switchAnimationOn, animationSpeed}: P417_PROPS) => {
     /* Access the Global State */
     const dispatch = useAppDispatch();
     const grids = useSelector(selectAllGrids);
 
     /* Set local state variables */
+    const [buildFinished, setBuildFinished] = useState<boolean>(false);
     const [currentCell, setCurrentCell] = useState<P417_CURRENT_CONTEXT_TYPE>([0, 0])
     const [stackContext, setStackContext] = useState<P417_STACK_CONTEXT_UNIT_TYPE[]>([]);
     const [globals, setGlobals] = useState<P417_GLOBALS>("PACIFIC");
@@ -66,9 +68,9 @@ export const Problem417Controller = ({animationOn, switchAnimationOn}: P417_PROP
 
     useEffect(() => {
         if (animationOn) {
-            clickStep417();
+            setTimeout(() => clickStep417(), animationSpeed);
         }
-    }, [])
+    }, [currentCell, animationOn]);
 
     const directToPacific = (i: number, j: number): boolean => {
         if (i === 0 || j === 0) {
@@ -96,6 +98,7 @@ export const Problem417Controller = ({animationOn, switchAnimationOn}: P417_PROP
         }));
         setCurrentCell([0, 0]);
         setStackContext([]);
+        setBuildFinished(true);
     }
 
     const exploreAndPushStack = (
@@ -123,7 +126,29 @@ export const Problem417Controller = ({animationOn, switchAnimationOn}: P417_PROP
         setCurrentCell(nextCell);
     }
 
+    const handleReturnToStart = (isPacific: boolean) => {
+        if (isPacific) {
+            setGlobals("ATLANTIC");
+            dispatch(clearGridCellsStatus({gridIndex: 0, defaultStatus: "UNEXPLORED"}));
+        //Find mountains if last atlantic cell reached
+        } else {
+            setGlobals("PACIFIC");
+            dispatch(clearGridCellsStatus({gridIndex: 0, defaultStatus: "UNEXPLORED"}));
+            for (let i = 0; i < grids[0].cells.length; i++) {
+                for (let j = 0; j < grids[0].cells[0].length; j++) {
+                    if (grids[1].cells[i][j].data === true && grids[2].cells[i][j].data === true) {
+                        dispatch(changeGridCellStatus({gridIndex: 0, row: i, col: j, status: "ISLAND"}));
+                    }
+                }
+            }
+            switchAnimationOn();
+        }
+    }
+
     const clickStep417 = () => {
+        if (!buildFinished) {
+            clickSetUp417();
+        }
         const waterFlowGrid = grids[0];
         const pacificGrid = grids[1];
         const atlanticGrid = grids[2];
@@ -212,6 +237,9 @@ export const Problem417Controller = ({animationOn, switchAnimationOn}: P417_PROP
                 return;
             } else {
                 const nextCell = ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j);
+                if (nextCell[0] === 0 && nextCell[1] === 0) {
+                    handleReturnToStart(isPacific);
+                }
                 dispatch(changeGridCellStatus({
                     gridIndex: 0,
                     row: nextCell[0],
@@ -241,24 +269,7 @@ export const Problem417Controller = ({animationOn, switchAnimationOn}: P417_PROP
         }
         const nextCell = ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j);
         if (nextCell[0] === 0 && nextCell[1] === 0) {
-            console.log("Next is start")
-            //Iterate through atlantic if last pacific cell reached
-            if (globals === "PACIFIC") {
-                console.log("Completed Pacific Search");
-                setGlobals("ATLANTIC");
-                dispatch(clearGridCellsStatus({gridIndex: 0, defaultStatus: "UNEXPLORED"}));
-            //Find mountains if last atlantic cell reached
-            } else {
-                console.log("Completed Atlantic Search");
-                dispatch(clearGridCellsStatus({gridIndex: 0, defaultStatus: "UNEXPLORED"}));
-                for (let i = 0; i < grids[0].cells.length; i++) {
-                    for (let j = 0; j < grids[0].cells[0].length; j++) {
-                        if (pacificGrid.cells[i][j].data === true && atlanticGrid.cells[i][j].data === true) {
-                            dispatch(changeGridCellStatus({gridIndex: 0, row: i, col: j, status: "ISLAND"}));
-                        }
-                    }
-                }
-            }
+           handleReturnToStart(isPacific);
         }
         dispatch(changeGridCellStatus({
             gridIndex: 0,
@@ -270,6 +281,9 @@ export const Problem417Controller = ({animationOn, switchAnimationOn}: P417_PROP
     }
 
     const clickComplete417 = () => {
+        if (!buildFinished) {
+            clickSetUp417();
+        }
         switchAnimationOn();
     }
     

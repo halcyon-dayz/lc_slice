@@ -30,6 +30,7 @@ export const Controls = () => {
     const [prevCells, setPrevCells] = useState<[number, number][]>([]);
     const [currentCell, setCurrentCell] = useState<[number, number]>([0, 0])
     const [animationOn, setAnimationOn] = useState<boolean>(false);
+    const [animationSpeed, setAnimationSpeed] = useState<number>(500);
 
     const grids = useSelector(selectAllGrids);
     const totalStructs = useSelector(selectTotalStructs);
@@ -283,6 +284,11 @@ export const Controls = () => {
         setPrevCells([[nextRow - 1, nextCol], [nextRow, nextCol - 1]])
     }
 
+    const onChangeAnimationSpeed = (e: React.FormEvent<HTMLInputElement>) => {
+        const numVal = parseInt(e.currentTarget.value);
+        setAnimationSpeed(numVal);
+    }
+
     const switchAnimationOn = () => {
         setAnimationOn(!animationOn);
     }
@@ -297,6 +303,7 @@ export const Controls = () => {
         <Problem417Controller 
             animationOn={animationOn}
             switchAnimationOn={switchAnimationOn}
+            animationSpeed={animationSpeed}
         />
         <br></br>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
@@ -323,6 +330,17 @@ export const Controls = () => {
                 max={grids.length >= 1 ? grids[inputGrid].cells.length - 1 : 0}
                 onChange={onChangeSelectedRow}
                 ></input>
+        </div>
+        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
+            {"Animation Speed: "}
+            <input
+                type="number"
+                min={50}
+                max={1000}
+                step={50}
+                onChange={onChangeAnimationSpeed}
+            >
+            </input>
         </div>
 
     </ControlsContainer>);
