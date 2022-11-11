@@ -106,6 +106,7 @@ export const Controls = () => {
             return;
         }
         setCurrentCell([0, 0]);
+        
         for (let i = 0; i < grids[inputGrid].cells.length; i++) {
             for (let j = 0; j < grids[inputGrid].cells[0].length; j++) {
                 if (grids[inputGrid].cells[i][j].data === 1) {
