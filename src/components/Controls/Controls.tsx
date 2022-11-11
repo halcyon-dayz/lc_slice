@@ -295,11 +295,6 @@ export const Controls = () => {
 
     return (
     <ControlsContainer>
-        {totalStructs}
-        <UtilitiesController inputGrid={inputGrid} selectedRow={selectedRow} clearValue={clearValue}/>
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
-            <button onClick={onClickFindPathsToCells}>Paths to Cells</button>
-        </div>
         <Problem417Controller 
             animationOn={animationOn}
             switchAnimationOn={switchAnimationOn}
@@ -339,6 +334,7 @@ export const Controls = () => {
                 max={1000}
                 step={50}
                 onChange={onChangeAnimationSpeed}
+                value={animationSpeed}
             >
             </input>
         </div>
