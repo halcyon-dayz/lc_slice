@@ -1,4 +1,4 @@
-https://cmhhelgeson.github.io/leetcode_slice/
+https://cmhhelgeson.github.io/lc_slice/
 
 LC Slice is a Work in Progress Website visually demonstrating common coding interview algorithms. It's purpose is to help new or developing programmers better visualize how to approach a problem, without explicitly giving them the code to solve it.
 

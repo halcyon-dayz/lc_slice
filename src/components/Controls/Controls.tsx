@@ -23,7 +23,6 @@ import { selectTotalStructs } from "../../features/totalStructs/totalStructsSlic
 
 export const Controls = () => {
     //Controls Specific Variables
-    const [inputGrid, setInputGrid] = useState<number>(0);
     const [clearValue, setClearValue] = useState<number>(0);
     const [selectedRow, setSelectedRow] = useState<number>(0);
     //Individual Problem Variables
@@ -33,13 +32,8 @@ export const Controls = () => {
     const [animationSpeed, setAnimationSpeed] = useState<number>(500);
 
     const grids = useSelector(selectAllGrids);
-    const totalStructs = useSelector(selectTotalStructs);
     const dispatch = useAppDispatch();
 
-    const onChangeSelectedGrid = (e: React.FormEvent<HTMLInputElement>) => {
-        const numVal = parseInt(e.currentTarget.value);
-        setInputGrid(numVal);
-    }
 
     const onChangeClearValue = (e: React.FormEvent<HTMLInputElement>) => {
         const numVal = parseInt(e.currentTarget.value);
@@ -51,7 +45,7 @@ export const Controls = () => {
         setSelectedRow(numVal);
     }
 
-    const clickFloodFill = () => {
+    /* const clickFloodFill = () => {
         if (grids.length === 0) {
             return;
         }
@@ -106,7 +100,7 @@ export const Controls = () => {
             return;
         }
         setCurrentCell([0, 0]);
-        
+
         for (let i = 0; i < grids[inputGrid].cells.length; i++) {
             for (let j = 0; j < grids[inputGrid].cells[0].length; j++) {
                 if (grids[inputGrid].cells[i][j].data === 1) {
@@ -197,7 +191,7 @@ export const Controls = () => {
         }
         setCurrentCell([row, col + 1]);
 
-    }
+    } 
 
     const onClickFindPathsToCells = () => {
         if (grids.length === 0) {
@@ -283,7 +277,7 @@ export const Controls = () => {
             status: "PREV_EVALUATE"
         }));
         setPrevCells([[nextRow - 1, nextCol], [nextRow, nextCol - 1]])
-    }
+    } */
 
     const onChangeAnimationSpeed = (e: React.FormEvent<HTMLInputElement>) => {
         const numVal = parseInt(e.currentTarget.value);
@@ -302,31 +296,6 @@ export const Controls = () => {
             animationSpeed={animationSpeed}
         />
         <br></br>
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
-            Selected Grid: 
-            <input 
-                type="number" 
-                value={inputGrid}
-                min={0} 
-                max={grids.length >= 1 ? grids.length - 1 : 0}
-                onChange={onChangeSelectedGrid}
-                ></input>
-
-            Clear Value: <input 
-                type="number" 
-                value={clearValue}
-                min={0} 
-                max={3}
-                onChange={onChangeClearValue}
-                ></input>
-            Selected Row: <input 
-                type="number" 
-                value={selectedRow}
-                min={0} 
-                max={grids.length >= 1 ? grids[inputGrid].cells.length - 1 : 0}
-                onChange={onChangeSelectedRow}
-                ></input>
-        </div>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
             {"Animation Speed: "}
             <input
