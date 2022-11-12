@@ -10,12 +10,16 @@ import {
 import {
     gridsReducer
 } from "./grids/gridsSlice"
+import { 
+    problemReducer 
+} from "./problemInfo/problemSlice";
 
 export const store = configureStore({
     reducer: {
         arrays: arraysReducer,
         grids: gridsReducer,
-        totalStructs: totalStructsReducer
+        totalStructs: totalStructsReducer,
+        problem: problemReducer
     },
     devTools: true, 
 })

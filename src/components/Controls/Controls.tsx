@@ -315,6 +315,12 @@ export const Controls = () => {
             pause={pause}
             animationSpeed={animationSpeed}
         />
+        <Problem695Controller 
+            animationOn={animationOn}
+            play={play}
+            pause={pause}
+            animationSpeed={animationSpeed}
+        />
         <br></br>
         <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
             {"Animation Speed: "}

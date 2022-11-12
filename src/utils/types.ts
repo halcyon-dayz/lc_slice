@@ -42,9 +42,14 @@ export type ArrDS = {
     pointerLocations?: number[],
 }
 
+export type ProblemInfo = {
+    problemNumber: number,
+    problemTitle: string,
+    problemDescription: string,
+}
+
 export type RootState = {
-    questionNumber: number
-    questionText: string
+    problem: ProblemInfo,
     grids: GridDS[],
     arrays: ArrDS[],
     totalStructs: number

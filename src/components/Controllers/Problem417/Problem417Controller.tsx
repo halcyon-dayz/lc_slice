@@ -19,6 +19,7 @@ import {
     ARRAY_2D_GET_NEXT_INDEX
 } from "../../../features/grids/gridUtils";
 import { 
+    deleteAllStructs,
     deleteGrid
 } from "../../../features/sharedActions";
 import { 
@@ -26,10 +27,10 @@ import {
     GRID_417_BOOLEAN
 } from "../../../features/grids/defaultGrids";
 import { useAppDispatch } from "../../../features/hooks";
-import { RootState } from "../../../utils/types";
 
 import "../controller.css"
-
+import { changeProblemNumber, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
+import { BasicController } from "../BasicController";
 //#endregion
 
 //Equivalent to currentCell
@@ -40,10 +41,6 @@ type P417_STACK_CONTEXT_UNIT_TYPE = {
     prevCell: [number, number]
 }
 
-enum gL {
-    PACIFIC = 1,
-    ATLANTIC = 2
-}
 
 //Designates whether to flood fill pacific or atlantic
 type P417_GLOBALS = "PACIFIC" | "ATLANTIC"
@@ -61,6 +58,7 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
     /* Access the Global State */
     const dispatch = useAppDispatch();
     const grids = useSelector(selectAllGrids);
+    const problemNumber = useSelector(selectProblemNumber);
 
     /* Set local state variables */
     const [buildFinished, setBuildFinished] = useState<boolean>(false);
@@ -68,9 +66,8 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
     const [stackContext, setStackContext] = useState<P417_STACK_CONTEXT_UNIT_TYPE[]>([]);
     const [globals, setGlobals] = useState<P417_GLOBALS>("PACIFIC");
 
-
     useEffect(() => {
-        if (animationOn) {
+        if (animationOn && problemNumber === 417) {
             setTimeout(() => clickStep417(), animationSpeed);
         }
     }, [currentCell, animationOn]);
@@ -90,6 +87,8 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
     }
 
     const clickSetUp417 = () => {
+        dispatch(deleteAllStructs());
+        dispatch(changeProblemNumber({problemNumber: 417}));
         dispatch(deleteGrid({num: grids.length, gridsLength: grids.length}));
         dispatch(copyGrids([GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_417_BOOLEAN, GRID_417_BOOLEAN]))
         dispatch(changeGridLabels(0, ["Water Flow", "Pacific", "Atlantic"]));
@@ -284,17 +283,13 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
     }
     
     return (
-        <div className={"controller"}>
-            <div className={"controller_contents_container"}>
-                <b>Pacific Atlantic Waterflow:</b>
-                <div className={"controller_buttons_container"}>
-                    <button className={"controller_button"} onClick={() => clickSetUp417()}>Set Up</button>
-                    <button className={"controller_button"} onClick={() => clickStep417()}>Step</button>
-                    <button className={"controller_button"} onClick={() => pause()}>Pause</button>
-                    <button className={"controller_button"} onClick={() => play()}>Play</button>
-                </div>
-            </div>
-        </div>
+        <BasicController
+            label={"Pacific Atlantic Waterflow:"}
+            setup={clickSetUp417}
+            step={clickStep417}
+            pause={pause}
+            play={play}
+        />
     );
 
 }

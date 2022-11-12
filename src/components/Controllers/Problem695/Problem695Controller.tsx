@@ -1,50 +1,192 @@
-import { useAppDispatch } from "../../../features/hooks";
-import { useSelector} from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 import { deleteGrid, copyGrid } from "../../../features/sharedActions";
-import { selectAllGrids } from "../../../features/grids/gridsSlice";
-import { DEFAULT_1091_GRIDS } from "../Problem1091/1091Defaults";
-import React, {useState} from "react"
+import { changeGridCellData, changeGridCellStatus } from "../../../features/grids/gridsSlice";
+import React, {useState, useEffect} from "react"
 import { DEFAULT_695_GRIDS } from "./695Defaults";
 import {Cell} from "../../../utils/types"
+import { changeProblemNumber, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
+import { BasicController } from "../BasicController";
+import {GRID_CELL_INDEX_HAS_DATA, ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL, GRID_CELL_INDEX_GET_DATA, ARRAY_2D_GET_NEXT_INDEX} from "../../../features/grids/gridUtils"
 
 
 type P695_CONTEXT = [number, number][]
 
-export const Problem695Controller = () => {
+type P617_PROPS = {
+    animationOn: boolean,
+    play: () => void,
+    pause: () => void,
+    animationSpeed: number
+}
+
+export const Problem695Controller = ({animationOn, play, pause, animationSpeed}: P617_PROPS) => {
     /* Access the Global State */
     const dispatch = useAppDispatch();
-    const grids = useSelector(selectAllGrids);
+    const grid = useAppSelector(state => state.grids[0]);
+    const gridsLength = useAppSelector(state => state.grids.length);
+    const problemNumber = useAppSelector(selectProblemNumber);
 
+    /* Create Local State */
     const [defaultGridIndex, setDefaultGridIndex] = useState<number>(0);
-    const [stackContext, setStackContext] = useState<P695_CONTEXT>([]);
+    const [currentCell, setCurrentCell] = useState<[number, number]>([0, 0]);
+    const [stack, setStack] = useState<P695_CONTEXT>([]);
+
+    useEffect(() => {
+        if (animationOn && problemNumber === 417) {
+            setTimeout(() => clickStep695(), animationSpeed);
+        }
+    }, [currentCell, animationOn]);
+
 
     const clickSetUp695 = () => {
         //Clear all previous ds
-        dispatch(deleteGrid({num: grids.length, gridsLength: grids.length}));
+        dispatch(deleteGrid({num: gridsLength, gridsLength: gridsLength}));
+        //Set problem to 695
+        dispatch(changeProblemNumber({problemNumber: 695}))
         //Get new grid
         const data = DEFAULT_695_GRIDS[defaultGridIndex];
+        //Set index to next grid
+        setDefaultGridIndex((defaultGridIndex + 1) % DEFAULT_695_GRIDS.length);
+        //Generate cells
         const newGrid: Cell[][] = data.map((row, rowIdx) => {
             return row.map((col, colIdx) => {
                 return {data: data[rowIdx][colIdx], status: "UNEXPLORED"}
             })
         })
+        //Copy grid into ui
         dispatch(copyGrid({cells: newGrid}));
-        setDefaultGridIndex((defaultGridIndex + 1) % DEFAULT_695_GRIDS.length);
+        //Dispatch proper statuses
+        for (let i = 0; i < newGrid.length; i++) {
+            for (let j = 0; j < newGrid[0].length; j++) {
+                if (data[i][j] === 1) {
+                    dispatch(changeGridCellStatus({
+                        gridIndex: 0,
+                        row: i,
+                        col: j,
+                        status: "ISLAND"
+                    }))
+                } else {
+                    dispatch(changeGridCellStatus({
+                        gridIndex: 0,
+                        row: i,
+                        col: j,
+                        status: "WATER"
+                    }))
+                }
+            }
+        }
+        dispatch(changeGridCellStatus({
+            gridIndex: 0,
+            row: 0, 
+            col: 0, 
+            status: "CURRENT"
+        }))
+        setCurrentCell([0, 0]);
+        setStack([]);
+    }
+
+    const dfsCellIsValid = (cell: [number, number]): boolean => {
+        return GRID_CELL_INDEX_HAS_DATA(grid.cells, cell[0], cell[1], 1);
+    }
+
+    const exploreAndPushStack = (
+        cell: [number, number], 
+        nextCell: [number, number]
+    ) => {
+        //Indicate that the current cell is explored
+        dispatch(changeGridCellStatus({
+            gridIndex: 0,
+            row: cell[0],
+            col: cell[1],
+            status: "WATER"
+        }))
+        //Indicate that next cell is current
+        dispatch(changeGridCellStatus({
+            gridIndex: 0,
+            row: nextCell[0],
+            col: nextCell[1],
+            status: "CURRENT"
+        }))
+        //Add the current context to the stack
+        setStack([...stack, cell])
+        //Set current cell to next cell
+        setCurrentCell(nextCell);
+    }
+
+    const dfs = (cell: [number, number]) => {
+        const [northOfCur, eastOfCur, southOfCur, westOfCur] = 
+            ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(cell);
+        if (dfsCellIsValid(northOfCur)) {
+            exploreAndPushStack(cell, northOfCur);
+            return true;
+        }
+        if (dfsCellIsValid(eastOfCur)) {
+            exploreAndPushStack(cell, eastOfCur);
+            return true;
+        }
+        if (dfsCellIsValid(southOfCur)) {
+            exploreAndPushStack(cell, southOfCur);
+            return true;
+        }
+        if (dfsCellIsValid(westOfCur)) {
+            exploreAndPushStack(cell, westOfCur);
+            return true;
+        }
     }
 
     const clickStep695 = () => {
+        dispatch(changeGridCellStatus({
+            gridIndex: 0,
+            row: currentCell[0],
+            col: currentCell[1],
+            status: "WATER"
+        }))
 
-        
+        //If cell equals zero, do nothing and move.
+        if (GRID_CELL_INDEX_GET_DATA(grid.cells, currentCell[0], currentCell[1]) === 0) {
+            console.log("Cell is zero");
+            const nextCell = ARRAY_2D_GET_NEXT_INDEX(grid.cells, currentCell[0], currentCell[1]);
+            dispatch(changeGridCellStatus({
+                gridIndex: 0,
+                row: nextCell[0],
+                col: nextCell[1],
+                status: "CURRENT"
+            }))
+            setCurrentCell(nextCell);
+            return;
+        } 
 
+        //TODO: Change this won't work because it will backtrack and find that what was once 1 is 0
+        dispatch(changeGridCellData({
+            gridIndex: 0, 
+            row: currentCell[0],
+            col: currentCell[1],
+            data: 0,
+        }))
 
+        //Increment area count here.
+        if (dfs(currentCell) === true) {
+            console.log("Can dfs");
+            return;
+        }
+
+        if (stack.length) {
+            setCurrentCell(stack[stack.length - 1]);
+            setStack(stack.slice(0, stack.length - 1));
+            return;
+        }
+
+        const nextCell = ARRAY_2D_GET_NEXT_INDEX(grid.cells, currentCell[0], currentCell[1]);
+        setCurrentCell(nextCell);
     }
 
     return (
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px", marginTop: "10px"}}>
-            <button onClick={() => clickSetUp695()}>Set Up 695</button>
-            <button onClick={() => clickStep695()}>Step 695</button>
-            <button>Complete 695</button>
-        </div>
+        <BasicController 
+            label={"Max Area of Island"}
+            setup={clickSetUp695}
+            step={clickStep695}
+            pause={pause}
+            play={play}
+        />
     );
 
 } 
