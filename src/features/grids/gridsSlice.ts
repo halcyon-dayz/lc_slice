@@ -14,7 +14,8 @@ import {
 	copyGrid,
 	CopyGridPayload,
 	addDataStructure,
-	AddDataStructurePayload
+	AddDataStructurePayload,
+	deleteAllStructs
 } from "../sharedActions"
 
 import {
@@ -276,7 +277,7 @@ const gridsSlice = createSlice({
 		   if (num <= 0) {
 			   return state;
 		   }
-		   if (num >= state.length) {
+		   if (num > state.length) {
 				return [];
 		   }
 		   for (let i = 0; i < num; i++) {
@@ -339,6 +340,11 @@ const gridsSlice = createSlice({
 			   	};
 			   	state.push(newGrid);
 		   	}
+		}).addCase(deleteAllStructs, (
+			state: RootState["grids"]
+		) => {
+			console.log("deleting all grids")
+			return [];
 		})
 	}
 	//#endregion

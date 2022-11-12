@@ -1,6 +1,5 @@
 import { addGrid, deleteArray, deleteGrid } from "../../sharedActions";
 import {store} from "../../store"
-import { deleteAllStructs } from "../totalStructsSlice";
 
 beforeEach(async () => {
     //Get all structs

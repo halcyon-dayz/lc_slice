@@ -17,7 +17,8 @@ import {
     copyGrid,
     CopyGridPayload,
     addDataStructure,
-    AddDataStructurePayload
+    AddDataStructurePayload,
+    deleteAllStructs
 } from "../sharedActions";
 
 //#endregion
@@ -59,24 +60,13 @@ const totalStructsSlice = createSlice({
             return state + 1;
         }).addCase(addDataStructure, (state, action: PayloadAction<AddDataStructurePayload>) => {
             return state + (action.payload.num ? action.payload.num : 1);
+        }).addCase(deleteAllStructs, (state) => {
+            return 0;
         })
     }
 }) 
 
-//#endregion
 
-type AppThunk = ThunkAction<void, any, unknown, Action<string>>
-export const deleteAllStructs = (): AppThunk => {
-    return (
-        dispatch,
-        getState
-    ) => {
-        let grids = getState().grids;
-        let arrays = getState().arrays;
-        dispatch(deleteGrid({num: grids.length, gridsLength: grids.length}));
-        dispatch(deleteArray({num: arrays.length, arraysLength: arrays.length}));
-    }
-}
 
 export const totalStructsReducer = totalStructsSlice.reducer
 export const selectTotalStructs = (state: RootState) => state.totalStructs;

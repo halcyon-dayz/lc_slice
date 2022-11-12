@@ -18,6 +18,7 @@ import { Problem417Controller } from "../Controllers/Problem417/Problem417Contro
 import { Problem1091Controller } from "../Controllers/Problem1091";
 import { Problem695Controller } from "../Controllers/Problem695";
 import { selectTotalStructs } from "../../features/totalStructs/totalStructsSlice";
+import { Problem733Controller } from "../Controllers/Problem733";
 //#endregion
 
 
@@ -292,6 +293,10 @@ export const Controls = () => {
     <ControlsContainer>
         <Problem417Controller 
             animationOn={animationOn}
+            switchAnimationOn={switchAnimationOn}
+            animationSpeed={animationSpeed}
+        />
+        <Problem733Controller animationOn={animationOn}
             switchAnimationOn={switchAnimationOn}
             animationSpeed={animationSpeed}
         />

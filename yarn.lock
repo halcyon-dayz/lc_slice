@@ -8500,9 +8500,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"leetcode_slice@workspace:.":
+"lc_slice@workspace:.":
   version: 0.0.0-use.local
-  resolution: "leetcode_slice@workspace:."
+  resolution: "lc_slice@workspace:."
   dependencies:
     "@reduxjs/toolkit": ^1.9.0
     "@testing-library/jest-dom": ^5.16.5

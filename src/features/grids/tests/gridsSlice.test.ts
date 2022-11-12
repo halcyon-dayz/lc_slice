@@ -27,6 +27,7 @@ describe('gridsSlice redux state tests', () => {
         expect(grids).not.toEqual([]);
         expect(grids[0]).not.toBeUndefined();
     })
+    
     test("if delete Grid works", async () => {
         let result = await store.dispatch(addGrid({num: 1}));
         result = await store.dispatch(deleteGrid({num: 1, gridsLength: 1}));

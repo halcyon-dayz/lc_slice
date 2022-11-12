@@ -1,6 +1,6 @@
 {
   "homepage": "http://cmhhelgeson.github.io/lc_slice",
-  "name": "leetcode_slice",
+  "name": "lc_slice",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

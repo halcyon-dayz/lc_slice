@@ -96,3 +96,8 @@ export const deleteGrid = createAction<DeleteGridPayload>("deleteGrid");
  * The index of the grid to remove from the grid list.
  */
 export const deleteGridAt = createAction<DeleteGridAtPayload>("deleteGridAt");
+
+/**
+ * Delete all data structures.
+ */
+export const deleteAllStructs = createAction("deleteAllStructs");

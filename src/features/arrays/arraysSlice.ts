@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {CellStatus, RootState} from "../../utils/types"
-import { addArray, AddArrayPayload, copyArray, CopyArrayPayload, deleteArray, DeleteArrayPayload} from "../sharedActions";
+import { addArray, AddArrayPayload, copyArray, CopyArrayPayload, deleteAllStructs, deleteArray, DeleteArrayPayload} from "../sharedActions";
 import { ArrayBeforeEachFunc, createArrayActionSA, indexExistsOnArray } from "./arrayUtils";
 import { isValidIndex, isStateValid} from "../featureUtils"
 import { Cell, ArrDS} from "../../utils/types";
@@ -138,6 +138,11 @@ const arraysSlice = createSlice({
                 pointerLocations: []
             }
             state.push(newArrDS);
+        }).addCase(deleteAllStructs, (
+            state: RootState["arrays"]
+        ) => {
+            console.log("Deleting all arrays");
+            return [];
         })
     }
 })

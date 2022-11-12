@@ -36,6 +36,14 @@ describe('arraysSlice redux state tests', () => {
         expect(arrays[5]).toBeUndefined();
     })
 
+    test("if adding then deleting all arrays works", async () => {
+        await store.dispatch(addArray({num: 5}));
+        await store.dispatch(deleteArray({num: 5, arraysLength: 5}))
+        let arrays = store.getState().arrays;
+        expect(arrays.length).toEqual(0);
+        expect(arrays).toEqual([]);
+    })
+
     test("if copyArray works", async () => {
         let result = await store.dispatch(copyArray({data: [1, 2, 3, 4, 5]}))
         expect(result.type).toEqual("copyArray");
