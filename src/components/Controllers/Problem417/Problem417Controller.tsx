@@ -10,7 +10,6 @@ import {
     changeGridCellStatus,
     changeGridCellData,
     changeMultiGridSameCellStatus,
-    clearGridCells,
     clearGridCellsStatus
 } from "../../../features/grids/gridsSlice";
 import { 
