@@ -23,7 +23,8 @@ export const Grid = ({gridIndex}: GridProps) => {
                             key={`Grid_${gridIndex}_Cell_${rowIdx}_${nodeIdx}`}
                             rowIdx={rowIdx}
                             colIdx={nodeIdx}
-                            styleWidth={50}
+                            styleWidth={grid.cellStyleWidth}
+                            styleHeight={grid.cellStyleHeight}
                         />
                     ))}
                 </div>

@@ -289,15 +289,30 @@ export const Controls = () => {
         setAnimationOn(!animationOn);
     }
 
+    const play = () => {
+        if (!animationOn) {
+            setAnimationOn(true);
+        }
+    }
+
+    const pause = () => {
+        if (animationOn) {
+            setAnimationOn(false);
+        }
+    }
+
     return (
     <ControlsContainer>
         <Problem417Controller 
             animationOn={animationOn}
-            switchAnimationOn={switchAnimationOn}
+            play={play}
+            pause={pause}
             animationSpeed={animationSpeed}
         />
-        <Problem733Controller animationOn={animationOn}
-            switchAnimationOn={switchAnimationOn}
+        <Problem733Controller 
+            animationOn={animationOn}
+            play={play}
+            pause={pause}
             animationSpeed={animationSpeed}
         />
         <br></br>

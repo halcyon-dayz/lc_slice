@@ -52,11 +52,12 @@ type P417_GLOBALS = "PACIFIC" | "ATLANTIC"
 //so this shouldn't trigger multiple animations at once
 type P417_PROPS = {
     animationOn: boolean,
-    switchAnimationOn: () => void;
+    play: () => void;
+    pause: () => void;
     animationSpeed: number
 }
 
-export const Problem417Controller = ({animationOn, switchAnimationOn, animationSpeed}: P417_PROPS) => {
+export const Problem417Controller = ({animationOn, play, pause, animationSpeed}: P417_PROPS) => {
     /* Access the Global State */
     const dispatch = useAppDispatch();
     const grids = useSelector(selectAllGrids);
@@ -143,7 +144,7 @@ export const Problem417Controller = ({animationOn, switchAnimationOn, animationS
                     }
                 }
             }
-            switchAnimationOn();
+            pause();
         }
     }
 
@@ -281,26 +282,18 @@ export const Problem417Controller = ({animationOn, switchAnimationOn, animationS
         }));
         setCurrentCell(nextCell);
     }
-
-    const clickPlay417 = () => {
-        if (!buildFinished) {
-            clickSetUp417();
-        }
-        switchAnimationOn();
-    }
-
-    const clickPause417 = () => {
-        if (animationOn) {
-            switchAnimationOn();
-        }
-    }
     
     return (
-        <div className={"controller_buttons_container"}>
-            <button className={"controller_button"} onClick={() => clickSetUp417()}>Set Up 417</button>
-            <button className={"controller_button"} onClick={() => clickStep417()}>Step 417</button>
-            <button className={"controller_button"} onClick={() => clickPause417()}>Pause 417</button>
-            <button className={"controller_button"} onClick={() => clickPlay417()}>Play 417</button>
+        <div className={"controller"}>
+            <div className={"controller_contents_container"}>
+                <b>Pacific Atlantic Waterflow:</b>
+                <div className={"controller_buttons_container"}>
+                    <button className={"controller_button"} onClick={() => clickSetUp417()}>Set Up</button>
+                    <button className={"controller_button"} onClick={() => clickStep417()}>Step</button>
+                    <button className={"controller_button"} onClick={() => pause()}>Pause</button>
+                    <button className={"controller_button"} onClick={() => play()}>Play</button>
+                </div>
+            </div>
         </div>
     );
 

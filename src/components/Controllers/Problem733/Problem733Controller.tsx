@@ -19,11 +19,12 @@ import {
 
 type P733_PROPS = {
     animationOn: boolean,
-    switchAnimationOn: () => void;
+    play: () => void,
+    pause: () => void,
     animationSpeed: number
 }
 
-export const Problem733Controller = ({animationOn, switchAnimationOn, animationSpeed}: P733_PROPS) => {
+export const Problem733Controller = ({animationOn, play, pause, animationSpeed}: P733_PROPS) => {
     /* Access the Global State */
     const dispatch = useAppDispatch();
     const grids = useSelector(selectAllGrids);
@@ -33,6 +34,12 @@ export const Problem733Controller = ({animationOn, switchAnimationOn, animationS
     const [currentCell, setCurrentCell] = useState<[number, number]>([0, 0]);
     const [stack, setStack] = useState<[number, number][]>([]);
     const [isEnd, setIsEnd] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (animationOn) {
+            setTimeout(() => clickStep733(), animationSpeed);
+        }
+    }, [currentCell, animationOn])
 
     /* Change Input Values */
     const onChangeToReplace = (e: React.FormEvent<HTMLInputElement>) => {
@@ -45,6 +52,7 @@ export const Problem733Controller = ({animationOn, switchAnimationOn, animationS
 
     /* Problem Functions */
     const clickSetUp733 = () => {
+        pause();
         dispatch(deleteAllStructs());
         dispatch(copyGrid({cells: GRID_733_FLOOD_FILL}));
         dispatch(changeGridCellStatus({
@@ -136,48 +144,42 @@ export const Problem733Controller = ({animationOn, switchAnimationOn, animationS
         setStack(stack.slice(0, stack.length - 1));
     }
 
-    const clickPause733 = () => {
-
-    }
-
-    const clickPlay733 = () => {
-
-    }
-
     const zilch = () => {
         return;
     }
 
-    
     return (
-        <div>
-            <div className={"controller_buttons_container"}>
-                <button className={"controller_button"} onClick={() => clickSetUp733()}>Set Up 733</button>
-                <button className={"controller_button"} onClick={() => {isEnd ? zilch() : clickStep733()}}>Step 733</button>
-                <button className={"controller_button"} onClick={() => clickPause733()}>Pause 733</button>
-                <button className={"controller_button"} onClick={() => clickPlay733()}>Play 733</button>
-            </div>
-            <div className={"controller_buttons_container"}>
-                {"Number to Replace:"}
-                <input 
-                    type="number"
-                    min={0}
-                    max={9}
-                    step={1}
-                    value={toReplace}
-                    onChange={onChangeToReplace}
-                    style={{"marginLeft": "5px", "width": "40px", "marginRight": "5px"}}
-                />
-                Flood Fill {toReplace} With: 
-                <input 
-                    type="number"
-                    min={0}
-                    max={9}
-                    step={1}
-                    value={replaceWith}
-                    onChange={onChangeReplaceWith}
-                    style={{"width": "40px", "marginLeft": "5px"}}
-                />
+        <div className={"controller"}>
+            <div className={"controller_contents_container"}>
+            <b>Flood Fill:</b>
+                <div className={"controller_buttons_container"}>
+                    <button className={"controller_button"} onClick={() => clickSetUp733()}>Set Up</button>
+                    <button className={"controller_button"} onClick={() => {isEnd ? zilch() : clickStep733()}}>Step</button>
+                    <button className={"controller_button"} onClick={() => pause()}>Pause</button>
+                    <button className={"controller_button"} onClick={() => play()}>Play</button>  
+                </div>
+                <div className={"controller_buttons_container"}>
+                    Replace:
+                    <input 
+                        type="number"
+                        min={0}
+                        max={9}
+                        step={1}
+                        value={toReplace}
+                        onChange={onChangeToReplace}
+                        style={{"marginLeft": "5px", "width": "40px", "marginRight": "5px"}}
+                    />
+                    With: 
+                    <input 
+                        type="number"
+                        min={0}
+                        max={9}
+                        step={1}
+                        value={replaceWith}
+                        onChange={onChangeReplaceWith}
+                        style={{"width": "40px", "marginLeft": "5px"}}
+                    />
+                </div>
             </div>
         </div>
     );

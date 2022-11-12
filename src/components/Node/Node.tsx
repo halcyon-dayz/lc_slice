@@ -9,6 +9,7 @@ type NodeProps = {
     rowIdx: number,
     colIdx: number,
     styleWidth: number,
+    styleHeight: number,
     gridIndex: number
 }
 
@@ -53,7 +54,7 @@ const parseCellData = (data: any) => {
     return data;
 }
 
-export const Node = ({gridIndex, rowIdx, colIdx, styleWidth}: NodeProps) => {
+export const Node = ({gridIndex, rowIdx, colIdx, styleWidth, styleHeight}: NodeProps) => {
     //TODO: Select individual cells
     const [stateIndex, setStateIndex] = useState<number>(0);
     const cellData = useSelector((state: RootState) => state.grids[gridIndex].cells[rowIdx][colIdx].data);
@@ -104,7 +105,8 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth}: NodeProps) => {
                 cellStatus === "CURRENT" ? "node_current" :
                 cellStatus === "PREV_EVALUATE" ? "node_prev_evaluate" :
                 "node"
-            } 
+            }
+            style={{"width": `${styleWidth}px`, "height": `${styleHeight}px`}}
             contentEditable={true}
             onInput={onEditData}
             suppressContentEditableWarning={true}

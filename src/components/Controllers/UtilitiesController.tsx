@@ -5,7 +5,8 @@ import {
     changeGridWidth, 
     changeGridHeight, 
     clearGridCells, 
-    clearGridRow
+    clearGridRow,
+    changeGridCellSize
 } from "../../features/grids/gridsSlice";
 import { selectAllGrids } from "../../features/grids/gridsSlice";
 import { useAppDispatch, useAppSelector } from "../../features/hooks";
@@ -19,6 +20,8 @@ type UtilitiesControllerType = {
     clearValue: number
 }
 
+
+//TODO: Make inputGrid, selectedRow, and clearValue native to the Utilities Controller
 export const UtilitiesController = ({inputGrid, selectedRow, clearValue}: UtilitiesControllerType) => {
     const grids = useSelector(selectAllGrids);
     const arraysLength = useAppSelector(state => state.arrays.length);
@@ -94,12 +97,8 @@ export const UtilitiesController = ({inputGrid, selectedRow, clearValue}: Utilit
     return (
         <div>
             <div className={"controller_buttons_container"}>
-                <button className={"controller_button"} onClick={() => clickDecreaseRows()}>
-                    Remove Grid Width
-                </button>
-                <button className={"controller_button"} onClick={() => clickIncreaseRows()}>
-                    Add Grid Width
-                </button>
+                <button className={"controller_button"} onClick={() => clickDecreaseRows()}>Remove Grid Width</button>
+                <button className={"controller_button"} onClick={() => clickIncreaseRows()}>Add Grid Width</button>
                 <button className={"controller_button"} onClick={() => clickDecreaseColumns()}>Remove Grid Height</button>
                 <button className={"controller_button"} onClick={() => clickIncreaseColumns()}>Add Grid Height</button>
             </div>
@@ -112,6 +111,14 @@ export const UtilitiesController = ({inputGrid, selectedRow, clearValue}: Utilit
                 <button className={"controller_button"} onClick={() => clickDeleteGrid()}>Delete Grid</button>
                 <button className={"controller_button"} onClick={() => clickAddArray()}>Add Array</button>
                 <button className={"controller_button"} onClick={() => clickDeleteArray()}>Delete Array</button>
+            </div>
+            <div className={"controller_buttons_container"}>
+                <button 
+                    className={"controller_button"} 
+                    onClick={() => dispatch(changeGridCellSize({gridIndex: 0, width: 100, height: 100}))}
+                >
+                    Change Grid Cell Size
+                </button>
             </div>
         </div>
     );
