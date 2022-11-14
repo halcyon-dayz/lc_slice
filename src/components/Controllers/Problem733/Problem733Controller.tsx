@@ -15,6 +15,7 @@ import {
     ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL,
     GRID_CELL_INDEX_HAS_DATA,
 } from "../../../features/grids/gridUtils"
+import { changeProblemNumber, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
 //#endregion
 
 type P733_PROPS = {
@@ -28,6 +29,7 @@ export const Problem733Controller = ({animationOn, play, pause, animationSpeed}:
     /* Access the Global State */
     const dispatch = useAppDispatch();
     const grids = useSelector(selectAllGrids);
+    const problemNumber = useSelector(selectProblemNumber);
     /* Local State */
     const [toReplace, setToReplace] = useState<number>(0);
     const [replaceWith, setReplaceWith] = useState<number>(2);
@@ -36,7 +38,7 @@ export const Problem733Controller = ({animationOn, play, pause, animationSpeed}:
     const [isEnd, setIsEnd] = useState<boolean>(false);
 
     useEffect(() => {
-        if (animationOn) {
+        if (animationOn && problemNumber === 733) {
             setTimeout(() => clickStep733(), animationSpeed);
         }
     }, [currentCell, animationOn])
@@ -52,8 +54,12 @@ export const Problem733Controller = ({animationOn, play, pause, animationSpeed}:
 
     /* Problem Functions */
     const clickSetUp733 = () => {
+        //Stop any animations
         pause();
+        //Delete all structs
         dispatch(deleteAllStructs());
+        //Change Problem Number
+        dispatch(changeProblemNumber({problemNumber: 733}));
         dispatch(copyGrid({cells: GRID_733_FLOOD_FILL}));
         dispatch(changeGridCellStatus({
             gridIndex: 0,
@@ -156,7 +162,12 @@ export const Problem733Controller = ({animationOn, play, pause, animationSpeed}:
                     <button className={"controller_button"} onClick={() => clickSetUp733()}>Set Up</button>
                     <button className={"controller_button"} onClick={() => {isEnd ? zilch() : clickStep733()}}>Step</button>
                     <button className={"controller_button"} onClick={() => pause()}>Pause</button>
-                    <button className={"controller_button"} onClick={() => play()}>Play</button>  
+                    <button className={"controller_button"} onClick={() => {
+                        if (problemNumber !== 733) {
+                            clickSetUp733();
+                        }
+                        play()}
+                    }>Play</button>  
                 </div>
                 <div className={"controller_buttons_container"}>
                     Replace:

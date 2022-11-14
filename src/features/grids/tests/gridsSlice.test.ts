@@ -1,4 +1,4 @@
-import { copyGrid, deleteGrid, addGrid} from "../../sharedActions"
+import { copyGrid, deleteGrid, addGrid, deleteAllStructs} from "../../sharedActions"
 import {store} from "../../store"
 import {GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_733_FLOOD_FILL} from "../defaultGrids"
 import { changeGridHeight, changeGridLabel, changeGridWidth, clearGridCells, copyGrids } from "../gridsSlice"
@@ -6,9 +6,7 @@ import { changeGridHeight, changeGridLabel, changeGridWidth, clearGridCells, cop
 
 
 beforeEach(async () => {
-    const grids = store.getState().grids;
-    let length = grids.length;
-    let result = await store.dispatch(deleteGrid({num: length, gridsLength: length}));
+    await store.dispatch(deleteAllStructs());
 })
 
 describe('gridsSlice redux state tests', () => {

@@ -12,8 +12,6 @@ const initialState: RootState["arrays"] = [];
 
 const checkArrayExists: ArrayBeforeEachFunc = (state: RootState["arrays"], action?: PayloadAction<any>) => {
 	const result = action ? ( isValidIndex(state.length, action.payload.gridIndex) ) : (isStateValid(state.length))
-    console.log("Check Array exists Result: ")
-    console.log(result);
     return result;
 }
 
@@ -141,7 +139,6 @@ const arraysSlice = createSlice({
         }).addCase(deleteAllStructs, (
             state: RootState["arrays"]
         ) => {
-            console.log("Deleting all arrays");
             return [];
         })
     }

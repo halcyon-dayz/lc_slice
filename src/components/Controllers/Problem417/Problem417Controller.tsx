@@ -87,10 +87,12 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
     }
 
     const clickSetUp417 = () => {
+        //Clear previous problem
         dispatch(deleteAllStructs());
+        //Change Problem Number
         dispatch(changeProblemNumber({problemNumber: 417}));
-        dispatch(deleteGrid({num: grids.length, gridsLength: grids.length}));
-        dispatch(copyGrids([GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_417_BOOLEAN, GRID_417_BOOLEAN]))
+        //Copy relevant grids
+        dispatch(copyGrids([GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_417_BOOLEAN, GRID_417_BOOLEAN]));
         dispatch(changeGridLabels(0, ["Water Flow", "Pacific", "Atlantic"]));
         dispatch(changeGridCellStatus({
             gridIndex: 0,
@@ -288,7 +290,12 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
             setup={clickSetUp417}
             step={clickStep417}
             pause={pause}
-            play={play}
+            play={() => {
+                if (problemNumber !== 417) {
+                    clickSetUp417();
+                }
+                play();
+            }}
         />
     );
 

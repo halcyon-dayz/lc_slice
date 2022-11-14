@@ -199,6 +199,18 @@ export const ARRAY_2D_GET_EIGHT_DIRECTIONS_FROM_CELL = (
 	]
 }
 
+export const ARRAY_2D_CONVERT_TO_CELL = <T>(arr: T[][]): Cell[][] => {
+	let cellArray: Cell[][] = [];
+	for (let i = 0; i < arr.length; i++) {
+		let innerArr: Cell[] = [];
+		for (let j = 0; j < arr[0].length; j++) {
+			innerArr.push({data: arr[i][j], status: "UNEXPLORED"});
+		}
+		cellArray.push(innerArr);
+	}
+	return cellArray;
+}
+
 /* Grid Slice Type Helpers */
 export type GridBeforeEachFunc = (state: RootState["grids"], action?: PayloadAction<any>) => boolean;
 export type GridDuringWithActionFunc = (state: RootState["grids"], action: PayloadAction<any>) => void

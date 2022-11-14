@@ -1,12 +1,13 @@
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 import { deleteGrid, copyGrid } from "../../../features/sharedActions";
-import { changeGridCellData, changeGridCellStatus } from "../../../features/grids/gridsSlice";
+import { changeGridCell, changeGridCellData, changeGridCellStatus } from "../../../features/grids/gridsSlice";
 import React, {useState, useEffect} from "react"
 import { DEFAULT_695_GRIDS } from "./695Defaults";
 import {Cell} from "../../../utils/types"
 import { changeProblemNumber, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
 import { BasicController } from "../BasicController";
 import {GRID_CELL_INDEX_HAS_DATA, ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL, GRID_CELL_INDEX_GET_DATA, ARRAY_2D_GET_NEXT_INDEX} from "../../../features/grids/gridUtils"
+import { current } from "@reduxjs/toolkit";
 
 
 type P695_CONTEXT = [number, number][]
@@ -31,7 +32,7 @@ export const Problem695Controller = ({animationOn, play, pause, animationSpeed}:
     const [stack, setStack] = useState<P695_CONTEXT>([]);
 
     useEffect(() => {
-        if (animationOn && problemNumber === 417) {
+        if (animationOn && problemNumber === 695) {
             setTimeout(() => clickStep695(), animationSpeed);
         }
     }, [currentCell, animationOn]);
@@ -92,13 +93,6 @@ export const Problem695Controller = ({animationOn, play, pause, animationSpeed}:
         cell: [number, number], 
         nextCell: [number, number]
     ) => {
-        //Indicate that the current cell is explored
-        dispatch(changeGridCellStatus({
-            gridIndex: 0,
-            row: cell[0],
-            col: cell[1],
-            status: "WATER"
-        }))
         //Indicate that next cell is current
         dispatch(changeGridCellStatus({
             gridIndex: 0,
@@ -134,17 +128,23 @@ export const Problem695Controller = ({animationOn, play, pause, animationSpeed}:
     }
 
     const clickStep695 = () => {
-        dispatch(changeGridCellStatus({
+        //Explore the current cell
+        dispatch(changeGridCell({
             gridIndex: 0,
             row: currentCell[0],
             col: currentCell[1],
-            status: "WATER"
-        }))
+            status: "WATER",
+            data: 0,
+        }));
 
-        //If cell equals zero, do nothing and move.
-        if (GRID_CELL_INDEX_GET_DATA(grid.cells, currentCell[0], currentCell[1]) === 0) {
-            console.log("Cell is zero");
-            const nextCell = ARRAY_2D_GET_NEXT_INDEX(grid.cells, currentCell[0], currentCell[1]);
+        if (stack.length) {
+            if (dfs(currentCell) === true) {
+                return;
+            }
+            let nextCell = stack[stack.length - 1];
+            if (stack.length === 1) {
+                nextCell = ARRAY_2D_GET_NEXT_INDEX(grid.cells, nextCell[0], nextCell[1]);
+            }
             dispatch(changeGridCellStatus({
                 gridIndex: 0,
                 row: nextCell[0],
@@ -152,30 +152,23 @@ export const Problem695Controller = ({animationOn, play, pause, animationSpeed}:
                 status: "CURRENT"
             }))
             setCurrentCell(nextCell);
-            return;
-        } 
-
-        //TODO: Change this won't work because it will backtrack and find that what was once 1 is 0
-        dispatch(changeGridCellData({
-            gridIndex: 0, 
-            row: currentCell[0],
-            col: currentCell[1],
-            data: 0,
-        }))
-
-        //Increment area count here.
-        if (dfs(currentCell) === true) {
-            console.log("Can dfs");
-            return;
-        }
-
-        if (stack.length) {
-            setCurrentCell(stack[stack.length - 1]);
             setStack(stack.slice(0, stack.length - 1));
             return;
         }
 
+        //Increment area count here.
+        if (dfs(currentCell) === true) {
+            console.log("New dfs started")
+            return;
+        }
+
         const nextCell = ARRAY_2D_GET_NEXT_INDEX(grid.cells, currentCell[0], currentCell[1]);
+        dispatch(changeGridCellStatus({
+            gridIndex: 0,
+            row: nextCell[0],
+            col: nextCell[1],
+            status: "CURRENT"
+        }))
         setCurrentCell(nextCell);
     }
 
@@ -185,7 +178,12 @@ export const Problem695Controller = ({animationOn, play, pause, animationSpeed}:
             setup={clickSetUp695}
             step={clickStep695}
             pause={pause}
-            play={play}
+            play={() => {
+                if (problemNumber !== 695) {
+                    clickSetUp695()
+                }
+                play()
+            }}
         />
     );
 

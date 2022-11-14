@@ -57,7 +57,9 @@ const problemSlice = createSlice({
 export const problemReducer = problemSlice.reducer 
 
 export const {
-	changeProblemNumber
+	changeProblemNumber,
+	changeProblemDescription,
+	changeProblemTitle
 } = problemSlice.actions
 
 export const selectProblem = (state: RootState) => state.problem

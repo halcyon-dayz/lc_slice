@@ -343,7 +343,6 @@ const gridsSlice = createSlice({
 		}).addCase(deleteAllStructs, (
 			state: RootState["grids"]
 		) => {
-			console.log("deleting all grids")
 			return [];
 		})
 	}
