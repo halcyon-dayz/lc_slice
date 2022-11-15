@@ -23,7 +23,7 @@ const checkIndexExists: ArrayBeforeEachFunc = (state: RootState["arrays"], actio
 const arraysReducerObject = {
     pushDataAtIndex: createArrayActionSA(
         [checkArrayExists, checkIndexExists], 
-        (state, action: PayloadAction<ArrayPayloads.PushDataAtIndexPayload>) => 
+        (state: RootState["arrays"], action: PayloadAction<ArrayPayloads.PushDataAtIndexPayload>) => 
     {
         const {arrayIndex, index, data, replaceAtIndex} = action.payload;
         const newData: Cell[] = data.map((d) => {
@@ -46,7 +46,7 @@ const arraysReducerObject = {
 	 */
     pushData: createArrayActionSA(
         [checkArrayExists],
-        (state, action: PayloadAction<ArrayPayloads.PushDataPayload>) => 
+        (state: RootState["arrays"], action: PayloadAction<ArrayPayloads.PushDataPayload>) => 
     {
         const {arrayIndex, data} = action.payload;
         const pushArray: Cell[] = data.map((D) => {
@@ -65,7 +65,7 @@ const arraysReducerObject = {
 	 */
     popData: createArrayActionSA(
         [checkArrayExists],
-        (state, action: PayloadAction<ArrayPayloads.PopDataPayload>) => 
+        (state: RootState["arrays"], action: PayloadAction<ArrayPayloads.PopDataPayload>) => 
     {
         const {arrayIndex, num} = action.payload;
         if (num <= 0) {
@@ -80,8 +80,35 @@ const arraysReducerObject = {
             state[arrayIndex].data.pop();
         }
         return;
-    })
-    
+    }),
+    addPointer: createArrayActionSA(
+        [checkArrayExists],
+        (state: RootState["arrays"], action: PayloadAction<ArrayPayloads.AddPointerPayload>) => {
+            const {arrayIndex, location} = action.payload;
+            if (location && location > 0 && location < state[arrayIndex].data.length) {
+                state[arrayIndex].pointerLocations.push(location);
+            } else {
+                console.log(state[arrayIndex].pointerLocations);
+                state[arrayIndex].pointerLocations.push(0);
+            }
+        }
+    ),
+    movePointer: createArrayActionSA(
+        [checkArrayExists],
+        (state: RootState["arrays"], action: PayloadAction<ArrayPayloads.MovePointerPayload>) => {
+            const {arrayIndex, pointerIndex, newLocation} = action.payload;
+            if (state[arrayIndex].pointerLocations.length <= 0) {
+                return;
+            }
+            if (pointerIndex < 0 || pointerIndex >= state[arrayIndex].pointerLocations.length) {
+                return;
+            }
+            if (newLocation < 0 || newLocation >= state[arrayIndex].data.length) {
+                return;
+            }
+            state[arrayIndex].pointerLocations[pointerIndex] = newLocation;
+        }
+    ) 
 }
 
 const arraysSlice = createSlice({
@@ -118,7 +145,9 @@ const arraysSlice = createSlice({
             if (num <= 0) {
                 return state;
             }
-            return state.slice(0, state.length - num);
+            for (let i = 0; i < num; i++) {
+                state.pop();
+            }
         }).addCase(copyArray, (
             state: RootState["arrays"], 
             action: PayloadAction<CopyArrayPayload>
@@ -150,6 +179,8 @@ export const {
     pushData,
     pushDataAtIndex,
     popData,
+    movePointer,
+    addPointer,
 } = arraysSlice.actions
 
 export const selectAllArrays = (state: RootState) => state.arrays;

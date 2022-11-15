@@ -39,7 +39,7 @@ export type ArrDS = {
     label?: string,
     data: Cell[]
     width: number,
-    pointerLocations?: number[],
+    pointerLocations: number[],
 }
 
 export type ProblemInfo = {
