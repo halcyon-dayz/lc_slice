@@ -9,3 +9,7 @@ export type ChangeProblemDescriptionPayload = {
 export type ChangeProblemTitlePayload = {
     title: string
 }
+
+export type PushJSXPayload = {
+    element: JSX.Element
+}

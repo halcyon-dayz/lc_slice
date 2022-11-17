@@ -7,7 +7,8 @@ import * as ProblemPayloads from "./problemPayloads"
 const initialState: RootState["problem"] = {
 	problemNumber: 0, 
 	problemTitle: "Default Title",
-	problemDescription: "Default Description"
+	problemDescription: "Default Description",
+	problemLog: [],
 }    
 
 
@@ -47,6 +48,22 @@ const problemSlice = createSlice({
 		) => {
 			const {title} = action.payload;
 			state.problemTitle = title;
+		}, 
+		clearLog: (
+			state: RootState["problem"],
+		) => {
+			state.problemLog = [];
+		},
+		pushJSXToLog: (
+			state: RootState["problem"],
+			action: PayloadAction<ProblemPayloads.PushJSXPayload>
+		) => {
+			state.problemLog.push(action.payload.element);
+		},
+		popJSXToLog: (
+			state: RootState["problem"],
+		) => {
+			state.problemLog.pop();
 		}
 	},
 
@@ -59,7 +76,10 @@ export const problemReducer = problemSlice.reducer
 export const {
 	changeProblemNumber,
 	changeProblemDescription,
-	changeProblemTitle
+	changeProblemTitle,
+	clearLog,
+	pushJSXToLog,
+	popJSXToLog
 } = problemSlice.actions
 
 export const selectProblem = (state: RootState) => state.problem

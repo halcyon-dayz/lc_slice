@@ -1,8 +1,17 @@
+import { deleteAllStructs } from "../../sharedActions";
 import {store} from "../../store"
-import { changeProblemDescription, changeProblemNumber, changeProblemTitle } from "../problemSlice";
+import { changeProblemDescription, changeProblemNumber, changeProblemTitle, clearLog, pushJSXToLog } from "../problemSlice";
+import {element, elementTwo} from "./jsxEle"
 
+
+beforeEach(async () => {
+    //Get all structs
+    await store.dispatch(deleteAllStructs());
+    await store.dispatch(clearLog());
+})
 
 describe('problemSlice redux state tests', () => {
+
 
     test('if initial state is empty', () => {
         const problem = store.getState().problem;
@@ -37,6 +46,15 @@ describe('problemSlice redux state tests', () => {
         expect(result.type).toEqual("problem/changeProblemTitle");
         const problem = store.getState().problem;
         expect(problem.problemTitle).toEqual("Tampopo");
+    })
+
+    test("if pushJSX works", async () => {
+        await store.dispatch(pushJSXToLog({element: element}));
+        await store.dispatch(pushJSXToLog({element: elementTwo}));
+        const problemInfo = store.getState().problem;
+        expect(problemInfo.problemLog.length).toEqual(2);
+        expect(problemInfo.problemLog[0]).toEqual(element);
+        expect(problemInfo.problemLog[1]).toEqual(elementTwo);
     })
     
 })
