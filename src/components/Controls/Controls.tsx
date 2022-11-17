@@ -19,6 +19,7 @@ import { Problem1091Controller } from "../Controllers/Problem1091";
 import { Problem695Controller } from "../Controllers/Problem695";
 import { selectTotalStructs } from "../../features/totalStructs/totalStructsSlice";
 import { Problem733Controller } from "../Controllers/Problem733";
+import { addArray, copyArray } from "../../features/sharedActions";
 //#endregion
 
 
@@ -303,6 +304,9 @@ export const Controls = () => {
 
     return (
     <ControlsContainer>
+        <div className={"controller_buttons_container"}>
+            <button className={"controller_button"} onClick={() => dispatch(copyArray({data: [1, 2, 3, 4, 5]}))}>Set Up</button>
+        </div>
         <Problem417Controller 
             animationOn={animationOn}
             play={play}

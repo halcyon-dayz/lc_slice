@@ -1,7 +1,7 @@
 import React, {useState} from "react"
 import { useAppSelector } from "../../features/hooks"
-import {GridDS} from "../../utils/types"
 import {Node} from "../Node"
+import "./grid.css"
 
 
 type GridProps = {

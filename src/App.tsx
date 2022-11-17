@@ -14,7 +14,6 @@ import {
 import {Container, Section, Bar, BarActionType} from "react-simple-resizer"
 import { PathFindingVisualizer } from './components/PathFindingVisualizer';
 import { Controls } from './components/Controls';
-import { dragRefWith } from './utils/dragUtils';
 import { useDispatch } from 'react-redux';
 import { changeGridCellSize } from './features/grids/gridsSlice';
 
@@ -89,6 +88,10 @@ function App() {
     dispatch(changeGridCellSize)
   }
 
+  const onRightSectionChange = (currentSize: number) => {
+    console.log(currentSize);
+  }
+
 
   return (
     <div className="App">
@@ -101,12 +104,9 @@ function App() {
         <Bar size={10} style={{ background: '#738228', cursor: 'col-resize' }} />
         <Section style={{ 
           background: 'rgb(240, 240, 240)', 
-          display: "flex", 
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "auto"
+          overflow: "auto",
           }} minSize={100}
+          onSizeChanged={onRightSectionChange}
         >
           <PathFindingVisualizer />
         </Section>

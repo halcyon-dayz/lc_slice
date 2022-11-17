@@ -1,35 +1,37 @@
 import React from "react"
+import { useAppSelector } from "../../features/hooks"
 import { Cell } from "../../utils/types"
 import {ArrayNode} from "../Node"
 
 
 
 type PointedArrayProps = {
-    pointerLocations: number[]
-    cells: Cell[],
+    arrayIndex: number
 }
 
-export const PointedArray = ({pointerLocations, cells}: PointedArrayProps) => {
+export const PointedArray = ({arrayIndex}: PointedArrayProps) => {
 
-    //const numPointers = pointerLocations.length;
+    const array = useAppSelector(state => state.arrays[arrayIndex]);
 
     return (
-        <div style={{marginBottom: "20px", width: `${cells.length * 50}px`}}>
-            {pointerLocations.map((pointer, idx) => (
+        <div style={{
+            marginBottom: "20px", 
+            width: `${array.data.length * 50}px`,}}>
+            {array.pointerLocations.map((pointer, idx) => (
                 <div style={{
                     width: "20px", 
                     height: "15px", 
                     marginBottom: "10px",
                     marginLeft: "10px",
                     position: "relative",
-                    left: `${100 / cells.length * pointer}%`
+                    left: `${100 / array.data.length * pointer}%`
                 }}
                     key={`Array_Pointer_${idx}`}
                 >
                     {`p${idx + 1}`}
                 </div>
             ))}
-            {cells.map((cell, idx) => (
+            {array.data.map((cell, idx) => (
                 <ArrayNode 
                     status={cell.status}
                     data={cell.data}
