@@ -14,6 +14,7 @@
     "@types/react-dom": "^18.0.6",
     "@types/selenium-webdriver": "^4.1.9",
     "@types/styled-components": "^5.1.26",
+    "framer-motion": "^7.6.7",
     "gh-pages": "^4.0.0",
     "interact.js": "^1.2.8",
     "interactjs": "^1.10.17",

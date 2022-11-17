@@ -46,6 +46,7 @@ export type ProblemInfo = {
     problemNumber: number,
     problemTitle: string,
     problemDescription: string,
+    problemLog: JSX.Element[] 
 }
 
 export type RootState = {

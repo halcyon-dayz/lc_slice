@@ -17,9 +17,9 @@ import { UtilitiesController } from "../Controllers/UtilitiesController";
 import { Problem417Controller } from "../Controllers/Problem417/Problem417Controller";
 import { Problem1091Controller } from "../Controllers/Problem1091";
 import { Problem695Controller } from "../Controllers/Problem695";
-import { selectTotalStructs } from "../../features/totalStructs/totalStructsSlice";
 import { Problem733Controller } from "../Controllers/Problem733";
 import { addArray, copyArray } from "../../features/sharedActions";
+import {motion} from "framer-motion"
 //#endregion
 
 
@@ -32,9 +32,11 @@ export const Controls = () => {
     const [currentCell, setCurrentCell] = useState<[number, number]>([0, 0])
     const [animationOn, setAnimationOn] = useState<boolean>(false);
     const [animationSpeed, setAnimationSpeed] = useState<number>(500);
+    const [test, setTest] = useState<string[]>([]);
 
     const grids = useSelector(selectAllGrids);
     const dispatch = useAppDispatch();
+
 
 
     const onChangeClearValue = (e: React.FormEvent<HTMLInputElement>) => {
@@ -306,14 +308,15 @@ export const Controls = () => {
     <ControlsContainer>
         <div className={"controller_buttons_container"}>
             <button className={"controller_button"} onClick={() => dispatch(copyArray({data: [1, 2, 3, 4, 5]}))}>Set Up</button>
+            <button className={"controller_button"} onClick={() => setTest([...test, "Pushed new array at [0, 0]"])}>Set Up</button>
         </div>
-        <Problem417Controller 
+        <Problem733Controller 
             animationOn={animationOn}
             play={play}
             pause={pause}
             animationSpeed={animationSpeed}
         />
-        <Problem733Controller 
+        <Problem417Controller 
             animationOn={animationOn}
             play={play}
             pause={pause}
@@ -337,6 +340,21 @@ export const Controls = () => {
                 value={animationSpeed}
             >
             </input>
+        </div>
+        <div className="action_log">
+            <h3 className="controller_contents_container" style={{"marginLeft": "20px"}}>Action Log</h3>
+            {test.map((str, idx) => {
+                return (
+                    <motion.div 
+                        className="controller_contents_container"
+                        style={{"marginLeft": "20px"}}
+                        initial={{opacity: 0, x: 100, y: 100, fontSize: "12px"}}
+                        animate={{opacity: 1, x: 0, y: 0, fontSize: "16px"}}
+                    >
+                        <i>{str}</i>
+                    </motion.div>
+                )
+            })}
         </div>
 
     </ControlsContainer>);

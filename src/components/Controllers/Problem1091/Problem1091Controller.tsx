@@ -19,7 +19,8 @@ import {
 } from "../../../features/grids/gridUtils";
 import { 
     deleteGrid,
-    copyGrid
+    copyGrid,
+    copyArray
 } from "../../../features/sharedActions";
 import { 
     GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, 
@@ -53,6 +54,7 @@ export const Problem1091Controller = () => {
         //Get new grid
         const selectedGrid = DEFAULT_1091_GRIDS[defaultGridIndex];
         dispatch(copyGrid({cells: selectedGrid}));
+        dispatch(copyArray({data: []}));
         //Do something if there is no path
         const firstCell = selectedGrid[0][0];
         const lastCell = selectedGrid[selectedGrid.length][selectedGrid.length - 1];
