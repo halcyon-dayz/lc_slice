@@ -5,25 +5,30 @@ import { ArrayBeforeEachFunc, createArrayActionSA, indexExistsOnArray } from "./
 import { isValidIndex, isStateValid} from "../featureUtils"
 import { Cell, ArrDS} from "../../utils/types";
 
-import * as ArrayPayloads from "./arrayPayloads"
+import * as ArrayPLs from "./arrayPayloads"
 
 
 const initialState: RootState["arrays"] = [];
 
-const checkArrayExists: ArrayBeforeEachFunc = (state: RootState["arrays"], action?: PayloadAction<any>) => {
-	const result = action ? ( isValidIndex(state.length, action.payload.gridIndex) ) : (isStateValid(state.length))
-    return result;
+const checkArrayExists: ArrayBeforeEachFunc = (
+    state: RootState["arrays"], 
+    action?: PayloadAction<ArrayPLs.ArrayIndexPL>
+) => {
+	return action ? ( isValidIndex(state.length, action.payload.arrayIndex) ) : (isStateValid(state.length));
 }
 
-const checkIndexExists: ArrayBeforeEachFunc = (state: RootState["arrays"], action?: PayloadAction<any>) => {
-    return action ? ( indexExistsOnArray(state[action.payload.gridIndex].data, action.payload.index) ) : false;
+const checkIndexExists: ArrayBeforeEachFunc = (
+    state: RootState["arrays"], 
+    action?: PayloadAction<ArrayPLs.ArrayIndexPL & {index: number}>
+) => {
+    return action ? ( indexExistsOnArray(state[action.payload.arrayIndex].data, action.payload.index) ) : false;
 }
 
 
 const arraysReducerObject = {
     pushDataAtIndex: createArrayActionSA(
         [checkArrayExists, checkIndexExists], 
-        (state: RootState["arrays"], action: PayloadAction<ArrayPayloads.PushDataAtIndexPayload>) => 
+        (state: RootState["arrays"], action: PayloadAction<ArrayPLs.PushDataAtIndexPayload>) => 
     {
         const {arrayIndex, index, data, replaceAtIndex} = action.payload;
         const newData: Cell[] = data.map((d) => {
@@ -46,7 +51,7 @@ const arraysReducerObject = {
 	 */
     pushData: createArrayActionSA(
         [checkArrayExists],
-        (state: RootState["arrays"], action: PayloadAction<ArrayPayloads.PushDataPayload>) => 
+        (state: RootState["arrays"], action: PayloadAction<ArrayPLs.PushDataPayload>) => 
     {
         const {arrayIndex, data} = action.payload;
         const pushArray: Cell[] = data.map((D) => {
@@ -65,7 +70,7 @@ const arraysReducerObject = {
 	 */
     popData: createArrayActionSA(
         [checkArrayExists],
-        (state: RootState["arrays"], action: PayloadAction<ArrayPayloads.PopDataPayload>) => 
+        (state: RootState["arrays"], action: PayloadAction<ArrayPLs.PopDataPayload>) => 
     {
         const {arrayIndex, num} = action.payload;
         if (num <= 0) {
@@ -83,19 +88,18 @@ const arraysReducerObject = {
     }),
     addPointer: createArrayActionSA(
         [checkArrayExists],
-        (state: RootState["arrays"], action: PayloadAction<ArrayPayloads.AddPointerPayload>) => {
+        (state: RootState["arrays"], action: PayloadAction<ArrayPLs.AddPointerPayload>) => {
             const {arrayIndex, location} = action.payload;
-            if (location && location > 0 && location < state[arrayIndex].data.length) {
+            if (location !== undefined && location > 0 && location < state[arrayIndex].data.length) {
                 state[arrayIndex].pointerLocations.push(location);
             } else {
-                console.log(state[arrayIndex].pointerLocations);
                 state[arrayIndex].pointerLocations.push(0);
             }
         }
     ),
     movePointer: createArrayActionSA(
         [checkArrayExists],
-        (state: RootState["arrays"], action: PayloadAction<ArrayPayloads.MovePointerPayload>) => {
+        (state: RootState["arrays"], action: PayloadAction<ArrayPLs.MovePointerPayload>) => {
             const {arrayIndex, pointerIndex, newLocation} = action.payload;
             if (state[arrayIndex].pointerLocations.length <= 0) {
                 return;

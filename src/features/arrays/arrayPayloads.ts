@@ -1,37 +1,35 @@
-export type PushDataPayload = {
-    arrayIndex: number,
-    data: any[],
+export interface ArrayIndexPL {
+    arrayIndex: number
 }
 
-export type PopDataPayload = {
-    arrayIndex: number,
+export interface DataPL {
+    data: any[]
+}
+
+export interface PushDataPayload extends ArrayIndexPL, DataPL {}
+
+export interface PopDataPayload extends ArrayIndexPL {
     num: number,
 }
 
-export type PushDataAtIndexPayload = {
-    arrayIndex: number, 
+export interface PushDataAtIndexPayload extends ArrayIndexPL, DataPL {
     index: number,
-    data: any[]
     replaceAtIndex: boolean
 }
 
-export type RemoveIndexAtPayload = {
-    arrayIndex: number, 
+export interface RemoveIndexAtPayload extends ArrayIndexPL {
     index: number,
 }
 
-export type AddPointerPayload = {
-    arrayIndex: number,
+export interface AddPointerPayload extends ArrayIndexPL {
     location?: number
 }
 
-export type DeletePointerPayload = {
-    arrayIndex: number,
+export interface DeletePointerPayload extends ArrayIndexPL {
     pointerIndex?: number
 }
 
-export type MovePointerPayload = {
-    arrayIndex: number,
+export interface MovePointerPayload extends ArrayIndexPL {
     pointerIndex: number, 
     newLocation: number
 }
