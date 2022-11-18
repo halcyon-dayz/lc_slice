@@ -190,6 +190,8 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
         const j = currentCell[1];
         const curTileValue = waterFlowGrid.cells[currentCell[0]][currentCell[1]].data;
 
+        let element: JSX.Element = <div>temp</div>
+
         const isPacific = globals === "PACIFIC";
 
         const dfsCellIsValid = (cell: [number, number]): boolean => {
@@ -311,6 +313,21 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
             col: nextCell[1],
             status: "CURRENT"
         }));
+        element = (
+            <p>{`Iterated from cell`}
+                <motion.div style={{display: "inline-block"}}whileHover={{scale: 1.2}} onMouseEnter={() => {
+                    dispatch(changeGridCellStatus({
+                        gridIndex: 0, 
+                        row: currentCell[0],
+                        col: currentCell[1],
+                        status: "MONKEY_ISLAND"
+                    }))
+                }}>
+                    <i style={{marginLeft: "10px"}}>{`   [${currentCell[0]}, ${currentCell[1]}]`}</i>
+                </motion.div>
+            </p>
+        )
+        dispatch(pushJSXToLog({element: element}))
         setCurrentCell(nextCell);
     }
     
