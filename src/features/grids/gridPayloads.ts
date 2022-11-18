@@ -1,5 +1,14 @@
 import { Cell, CellStatus } from "../../utils/types"
 
+interface GridIndexPL {
+    gridIndex: number,
+}
+
+interface RowColPL {
+    row: number,
+    col: number,
+}
+
 
 export type ChangeGridWidthPayload = {
     newWidth: number,
@@ -55,3 +64,8 @@ export type ClearGridRowPayload = {
 }
 
 export type ChangeGridCellDataPayload = Omit<ChangeGridCellPayload, "status">
+
+export interface ChangeGridIndividualCellSize extends GridIndexPL, RowColPL {
+    width: number | undefined, 
+    height: number | undefined,
+}

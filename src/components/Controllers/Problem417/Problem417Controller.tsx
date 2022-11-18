@@ -11,7 +11,8 @@ import {
     changeGridCellData,
     changeMultiGridSameCellStatus,
     clearGridCellsStatus,
-    changeGridCellSize
+    changeGridCellSize,
+    changeGridIndividualCellSize
 } from "../../../features/grids/gridsSlice";
 import { 
     ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL,
@@ -315,14 +316,28 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
         }));
         element = (
             <p>{`Iterated from cell`}
-                <motion.div style={{display: "inline-block"}}whileHover={{scale: 1.2}} onMouseEnter={() => {
-                    dispatch(changeGridCellStatus({
-                        gridIndex: 0, 
-                        row: currentCell[0],
-                        col: currentCell[1],
-                        status: "MONKEY_ISLAND"
-                    }))
-                }}>
+                <motion.div 
+                    style={{display: "inline-block"}} 
+                    whileHover={{scale: 1.2}} 
+                    onMouseEnter={() => {
+                        dispatch(changeGridIndividualCellSize({
+                            gridIndex: 0, 
+                            row: currentCell[0],
+                            col: currentCell[1],
+                            width: 60, 
+                            height: 60,
+                        }))
+                    }}
+                    onMouseLeave={() => {
+                        dispatch(changeGridIndividualCellSize({
+                            gridIndex: 0, 
+                            row: currentCell[0],
+                            col: currentCell[1],
+                            width: undefined, 
+                            height: undefined,
+                        }))
+                    }}
+                >
                     <i style={{marginLeft: "10px"}}>{`   [${currentCell[0]}, ${currentCell[1]}]`}</i>
                 </motion.div>
             </p>

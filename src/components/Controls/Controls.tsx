@@ -307,10 +307,10 @@ export const Controls = () => {
     return (
     <LeftContainer>
         <div className="controls_container">
-        <div className={"controller_buttons_container"}>
+        {/*<div className={"controller_buttons_container"}>
             <button className={"controller_button"} onClick={() => dispatch(copyArray({data: [1, 2, 3, 4, 5]}))}>Set Up</button>
             <button className={"controller_button"} onClick={() => setTest([...test, "Pushed new array at [0, 0]"])}>Set Up</button>
-        </div>
+        </div>*/}
         <Problem733Controller 
             animationOn={animationOn}
             play={play}

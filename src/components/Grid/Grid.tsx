@@ -17,10 +17,10 @@ export const Grid = ({gridIndex}: GridProps) => {
     const cellHeight = useAppSelector(state => state.grids[gridIndex].cellStyleHeight);
 
     return (
-        <div className="grid" style={{marginBottom: "20px"}}>
+        <div className="grid">
             {gridLabel}
             {gridCells.map((row, rowIdx) => (
-                <div key={`Grid_${gridIndex}_Row_${rowIdx}`}>
+                <div key={`Grid_${gridIndex}_Row_${rowIdx}`} style={{"display": "flex", "position": "relative"}}>
                     {row.map((node, nodeIdx) => (
                         <Node 
                             gridIndex={gridIndex}

@@ -13,6 +13,8 @@ export type DataStructureType = "GRID" | "ARRAY" | "BINARY_TREE"
 export type Cell = {
     data: any
     status: CellStatus
+    width?: number,
+    height?: number,
 }
 
 interface TreeNode<TValue = unknown, TKey = unknown> {

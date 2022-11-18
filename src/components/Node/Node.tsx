@@ -4,6 +4,7 @@ import {changeGridCell} from "../../features/grids/gridsSlice";
 import {RootState} from "../../utils/types"
 import "./node.css"
 import {motion} from "framer-motion"
+import { useAppSelector } from "../../features/hooks";
 
 
 type NodeProps = {
@@ -60,6 +61,8 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth, styleHeight}: NodeP
     const [stateIndex, setStateIndex] = useState<number>(0);
     const cellData = useSelector((state: RootState) => state.grids[gridIndex].cells[rowIdx][colIdx].data);
     const cellStatus = useSelector((state: RootState) => state.grids[gridIndex].cells[rowIdx][colIdx].status);
+    const cellWidth: number | undefined = useAppSelector(state => state.grids[gridIndex].cells[rowIdx][colIdx].width)
+    const cellHeight: number | undefined = useAppSelector(state => state.grids[gridIndex].cells[rowIdx][colIdx].height)
     const dispatch = useDispatch();
 
     //TODO: Change example dispatch
@@ -96,14 +99,17 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth, styleHeight}: NodeP
 
     const variants = {
         normal: {width: 50, height: 50},
-        change: {width: `${styleWidth}px`, height: `${styleHeight}px`}
+        change: {
+            width: `${cellWidth ? cellWidth : styleWidth}px`, 
+            height: `${cellHeight ? cellHeight : styleHeight}px`,
+            marginBottom: `${cellHeight ? -5 : 0}px`,
+            marginTop: `${cellHeight ? -5 : 0}px`,
+            marginLeft: `${cellWidth ? -5 : 0}px`,
+            marginRight: `${cellWidth ? -5 : 0}px`,
+            zIndex: cellWidth || cellHeight ? 9 : 0
+        }
     }
     
-    useEffect(() => {
-
-
-
-    }, [styleWidth, styleHeight])
 
     return (
         <motion.div
@@ -122,6 +128,7 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth, styleHeight}: NodeP
                 cellStatus === "PREV_EVALUATE" ? "node_prev_evaluate" :
                 "node"
             }
+            style={cellWidth || cellHeight ? {"zIndex": 10} : {}}
             contentEditable={true}
             onInput={onEditData}
             suppressContentEditableWarning={true}

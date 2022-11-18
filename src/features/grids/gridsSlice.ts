@@ -244,7 +244,15 @@ const gridsSlice = createSlice({
 			}
 			state[gridIndex].cellStyleWidth = width;
 			state[gridIndex].cellStyleHeight = height;
-		}
+		},
+		changeGridIndividualCellSize: createGridActionSA(gridBeforeEach, (
+			state: RootState["grids"],
+			action: PayloadAction<GridPayloads.ChangeGridIndividualCellSize>
+		) => {
+			const {gridIndex, row, col, width, height} = action.payload;
+			state[gridIndex].cells[row][col].width = width;
+			state[gridIndex].cells[row][col].height = height;
+		})
 	},
 	//#endregion
 	//#region Shared Actions
@@ -363,7 +371,8 @@ export const {
 	changeGridCellStatus,
 	changeGridCellData,
 	clearGridRow,
-	clearGridCellsStatus
+	clearGridCellsStatus,
+	changeGridIndividualCellSize
 } = gridsSlice.actions
 
 export const selectAllGrids = (
