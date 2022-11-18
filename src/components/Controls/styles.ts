@@ -1,7 +1,7 @@
 import styled from "styled-components"
 
 
-export const ControlsContainer = styled.div`
+export const LeftContainer = styled.div`
     display: flex;
     flex-direction: column;
 `

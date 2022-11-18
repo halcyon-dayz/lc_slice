@@ -1,5 +1,5 @@
 // #region Imports
-import { ControlsContainer } from "./styles"
+import { LeftContainer } from "./styles"
 import React, {useState, useEffect} from "react"
 import { useSelector} from "react-redux";
 import { 
@@ -305,7 +305,8 @@ export const Controls = () => {
     }
 
     return (
-    <ControlsContainer>
+    <LeftContainer>
+        <div className="controls_container">
         <div className={"controller_buttons_container"}>
             <button className={"controller_button"} onClick={() => dispatch(copyArray({data: [1, 2, 3, 4, 5]}))}>Set Up</button>
             <button className={"controller_button"} onClick={() => setTest([...test, "Pushed new array at [0, 0]"])}>Set Up</button>
@@ -341,12 +342,13 @@ export const Controls = () => {
             >
             </input>
         </div>
+        </div>
+        <hr style={{width: "100%"}}></hr>
         <div className="action_log">
-            <h3 className="controller_contents_container" style={{"marginLeft": "20px", "width": "auto"}}>Action Log</h3>
+            <h3 style={{marginTop: "5px"}}>Action Log</h3>
             {problemLog.map(ele => (ele))}
         </div>
-
-    </ControlsContainer>);
+    </LeftContainer>);
 }
 
 /* return (

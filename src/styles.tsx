@@ -129,19 +129,21 @@ export const NavItem = ({
     imageProps, 
 }: NavItemProps) => {
 
+    console.log(imageProps?.imageURLs);
+
     return (<NavItemContainer>
         <a href={href ? href : "/"}>
-            {imageProps ? imageProps.imageURLs.map((url) => (
-                <img key={url}
+            {imageProps ? imageProps.imageURLs.map((url) => {
+                return (<img key={url}
                     style={{
                         "height": imageProps.height ? `${imageProps.height}px` : "1px",
                         "width" : imageProps.width ? `${imageProps.width}px` : "1px",
                         "margin": imageProps.margin ? imageProps.margin : "0px 0px 0px 0px"
                     }}
-                    src={url} 
+                    src={url}
                     alt="logo"
-                /> 
-            )): null}
+                /> );
+            }): null}
             {text}
         </a>
     </NavItemContainer>);

@@ -25,7 +25,7 @@ const NavItemLeftList: NavItemProps[] = [
     text: "",
     href:"http://www.leetcode.com",
     imageProps: {
-      imageURLs: ["/orange-slice.svg"],
+      imageURLs: ["./orange-slice.svg"],
       height: 35,
       width: 35,
       margin: "7px 0px 0px 0px"
