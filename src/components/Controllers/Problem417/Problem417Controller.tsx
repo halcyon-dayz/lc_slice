@@ -10,7 +10,8 @@ import {
     changeGridCellStatus,
     changeGridCellData,
     changeMultiGridSameCellStatus,
-    clearGridCellsStatus
+    clearGridCellsStatus,
+    changeGridCellSize
 } from "../../../features/grids/gridsSlice";
 import { 
     ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL,
@@ -29,8 +30,10 @@ import {
 import { useAppDispatch } from "../../../features/hooks";
 
 import "../controller.css"
-import { changeProblemNumber, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
+import { changeProblemNumber, clearLog, pushJSXToLog, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
 import { BasicController } from "../BasicController";
+import {motion} from "framer-motion"
+import { clearState} from "../controllerUtils";
 //#endregion
 
 //Equivalent to currentCell
@@ -86,14 +89,12 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
         return false;
     }
 
+
     const clickSetUp417 = () => {
-        //Clear previous problem
-        dispatch(deleteAllStructs());
-        //Change Problem Number
-        dispatch(changeProblemNumber({problemNumber: 417}));
-        //Copy relevant grids
+        clearState(dispatch, 417);
         dispatch(copyGrids([GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_417_BOOLEAN, GRID_417_BOOLEAN]));
-        dispatch(changeGridLabels(0, ["Water Flow", "Pacific", "Atlantic"]));
+        let gridLabels = ["Water Flow", "Pacific", "Atlantic"];
+        dispatch(changeGridLabels(0, gridLabels));
         dispatch(changeGridCellStatus({
             gridIndex: 0,
             row: 0,
@@ -103,6 +104,35 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
         setCurrentCell([0, 0]);
         setStackContext([]);
         setBuildFinished(true);
+        //Add to log
+        const element: JSX.Element = (
+            <div style={{display: "flex", "flexDirection": "column", alignItems: "center"}}>
+                <div>Created three grids!</div>
+                {[...Array(3)].map((ele, idx) => (
+                    <motion.h4 
+                        whileHover={{scale: 1.4, transition: {duration: 0.2, ease: "easeOut"}}} style={{"display": "inline-block", margin: "0 0 0 0"}}
+                    onMouseEnter={() => 
+                        dispatch(changeGridCellSize({
+                            gridIndex: idx, 
+                            width: 60, 
+                            height: 60
+                        }))
+                    }
+                    onMouseLeave={() => 
+                        dispatch(changeGridCellSize({
+                            gridIndex: idx, 
+                            width: 50, 
+                            height: 50
+                        }))
+                    }   
+                >
+                    {gridLabels[idx]}
+                </motion.h4>
+                ))}
+            </div>
+        )
+        //dispatch(clearLog())
+        dispatch(pushJSXToLog({element: element}))
     }
 
     const exploreAndPushStack = (

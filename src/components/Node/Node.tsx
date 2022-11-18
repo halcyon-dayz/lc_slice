@@ -1,8 +1,9 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {changeGridCell} from "../../features/grids/gridsSlice";
 import {RootState} from "../../utils/types"
 import "./node.css"
+import {motion} from "framer-motion"
 
 
 type NodeProps = {
@@ -92,8 +93,23 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth, styleHeight}: NodeP
                 // at some point.
                 //TOOD: Ideally status is only for visual updates, and real status is inferred
                 //from the data in the cells. Semantic issue with current naming scheme
+
+    const variants = {
+        normal: {width: 50, height: 50},
+        change: {width: `${styleWidth}px`, height: `${styleHeight}px`}
+    }
+    
+    useEffect(() => {
+
+
+
+    }, [styleWidth, styleHeight])
+
     return (
-        <div
+        <motion.div
+            initial="normal"
+            animate="change"
+            variants={variants}
             className={
                 cellStatus === 'START' ? "node_start" : 
                 cellStatus === "END" ? "node_end" : 
@@ -106,12 +122,11 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth, styleHeight}: NodeP
                 cellStatus === "PREV_EVALUATE" ? "node_prev_evaluate" :
                 "node"
             }
-            style={{"width": `${styleWidth}px`, "height": `${styleHeight}px`}}
             contentEditable={true}
             onInput={onEditData}
             suppressContentEditableWarning={true}
         >
             {cellData.toString()}
-        </div>
+        </motion.div>
     )
 }

@@ -8,7 +8,7 @@ import {
     changeGridCellStatus
 } from "../../features/grids/gridsSlice";
 import { floodFill} from "../../features/grids/gridsSlice";
-import { useAppDispatch } from "../../features/hooks";
+import { useAppDispatch, useAppSelector } from "../../features/hooks";
 import { GRID_CONTEXT } from "../../features/grids/gridTypes";
 import { 
     ARRAY_2D_GET_NEXT_INDEX, 
@@ -34,8 +34,8 @@ export const Controls = () => {
     const [animationSpeed, setAnimationSpeed] = useState<number>(500);
     const [test, setTest] = useState<string[]>([]);
 
-    const grids = useSelector(selectAllGrids);
     const dispatch = useAppDispatch();
+    const problemLog = useAppSelector(state => state.problem.problemLog);
 
 
 
@@ -342,9 +342,14 @@ export const Controls = () => {
             </input>
         </div>
         <div className="action_log">
-            <h3 className="controller_contents_container" style={{"marginLeft": "20px"}}>Action Log</h3>
-            {test.map((str, idx) => {
-                return (
+            <h3 className="controller_contents_container" style={{"marginLeft": "20px", "width": "auto"}}>Action Log</h3>
+            {problemLog.map(ele => (ele))}
+        </div>
+
+    </ControlsContainer>);
+}
+
+/* return (
                     <motion.div 
                         className="controller_contents_container"
                         style={{"marginLeft": "20px"}}
@@ -354,8 +359,4 @@ export const Controls = () => {
                         <i>{str}</i>
                     </motion.div>
                 )
-            })}
-        </div>
-
-    </ControlsContainer>);
-}
+            })} */
