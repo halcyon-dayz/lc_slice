@@ -96,13 +96,13 @@ function App() {
 
   //Hopefully the behavior is to automatically scroll to the bottom by passing
   //an absurd number into top that cannot actually be scrolled to
-  useEffect(() => {
+  /*useEffect(() => {
     if (problemLog.length === logLength) {
       return;
     }
     setLogLength(problemLog.length);
     leftSectionRef.current?.scrollBy({top: 200, left: 0, behavior: "smooth"})
-  }, [problemLog])
+  }, [problemLog]) */
 
   /*const onSectionSizeChanged = () => {
     dispatch(changeGridCellSize)

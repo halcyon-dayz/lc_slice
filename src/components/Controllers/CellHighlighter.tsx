@@ -8,6 +8,25 @@ type CellHighlighterProps = {
     cell: [number, number]
 }
 
+type TextHighlighterProps = {
+    onEnter: () => void,
+    onLeave: () => void,
+    text: string,
+    color?: string
+}
+
+
+export const TextHighlighter = ({onEnter, onLeave, text, color}: TextHighlighterProps) => {
+    return (<motion.div
+            style={{display: "inline-block"}} 
+            whileHover={{scale: 1.2}} 
+            onMouseEnter={() => onEnter()}
+            onMouseLeave={() => onLeave()}
+    >
+        <i style={{color: color}} onMouseEnter={onEnter} onMouseLeave={onLeave}>{text}</i>
+    </motion.div>);
+
+}
 
 export const CellHighlighter = ({dispatch, cell}: CellHighlighterProps) => {
     

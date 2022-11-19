@@ -38,7 +38,7 @@ export const ARRAY_2D_GET_NEXT_INDEX = <T,>(arr: T[][], row: number, col: number
 }
 
 
-type DirectionString = "north" | "northeast" | "east" | "southeast" | "south" | "southwest" | "west" | "northwest" | "none" | "undefined"
+export type DirectionString = "north" | "northeast" | "east" | "southeast" | "south" | "southwest" | "west" | "northwest" | "none" | "undefined"
 
 
 export const ARRAY_2D_GET_DIRECTION_FROM_PREVIOUS_CELL = <T,>(

@@ -18,7 +18,8 @@ import {
     ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL,
     GRID_CELL_INDEX_HAS_DATA,
     GRID_CELL_INDEX_GET_DATA,
-    ARRAY_2D_GET_NEXT_INDEX
+    ARRAY_2D_GET_NEXT_INDEX,
+    DirectionString
 } from "../../../features/grids/gridUtils";
 import { 
     deleteAllStructs,
@@ -35,7 +36,7 @@ import { changeProblemNumber, clearLog, pushJSXToLog, selectProblemNumber } from
 import { BasicController } from "../BasicController";
 import {motion} from "framer-motion"
 import { clearState} from "../controllerUtils";
-import { CellHighlighter } from "../CellHighlighter";
+import { CellHighlighter, TextHighlighter } from "../CellHighlighter";
 //#endregion
 
 //Equivalent to currentCell
@@ -113,6 +114,7 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
         }));
         setCurrentCell([0, 0]);
         setStackContext([]);
+        setGlobals("PACIFIC");
         setBuildFinished(true);
         //Add to log
         const element: JSX.Element = (
@@ -136,7 +138,7 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
                         }))
                     }   
                 >
-                    {gridLabels[idx]}
+                    {`${idx + 1}. ${gridLabels[idx]}`}
                 </motion.h4>
                 ))}
             </div>
@@ -148,7 +150,9 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
     const exploreAndPushStack = (
         cell: [number, number], 
         nextCell: [number, number], 
-        tileValue: number
+        tileValue: number,
+        nextTileValue: number, 
+        direction: DirectionString
     ) => {
         //Indicate that the current cell is explored
         dispatch(changeGridCellStatus({
@@ -169,10 +173,11 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
         // eslint-disable-next-line react-hooks/rules-of-hooks
         let element: JSX.Element = (
             <p>
-                {`Depth first searched from cell`}
+                <b>{`Searched `}</b><i>{`${direction}`}</i><b>{` from cell`}</b>
                 <CellHighlighter dispatch={dispatch} cell={cell} />
-                {` to cell`}
+                <b>{` with value `}</b><i>{`${tileValue}`}</i><b>{` to cell`}</b>
                 <CellHighlighter dispatch={dispatch} cell={nextCell}/>
+                <b>{` with value `}</b><i>{`${nextTileValue}.`}</i>
             </p> 
         );
         dispatch(pushJSXToLog({element: element}));
@@ -184,24 +189,53 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
         if (isPacific) {
             setGlobals("ATLANTIC");
             dispatch(clearGridCellsStatus({gridIndex: 0, defaultStatus: "UNEXPLORED"}));
+            let element: JSX.Element = (<p><b>Returned to first cell to flood fill from the Atlantic</b></p>)
+            dispatch(pushJSXToLog({element: element}));
         //Find mountains if last atlantic cell reached
         } else {
             setGlobals("PACIFIC");
             dispatch(clearGridCellsStatus({gridIndex: 0, defaultStatus: "UNEXPLORED"}));
-            /*for (let i = 0; i < waterFlowG; i++) {
-                for (let j = 0; j < grids[0].cells[0].length; j++) {
-                    if (grids[1].cells[i][j].data === true && grids[2].cells[i][j].data === true) {
-                        dispatch(changeGridCellStatus({gridIndex: 0, row: i, col: j, status: "ISLAND"}));
-                    }
-                }
-            } */
+            let element: JSX.Element = (<p><b>Completed search!</b></p>)
+            const islandCells: [number, number][] = [];
+            dispatch(pushJSXToLog({element: element}));
             for (let i = 0; i < waterFlowGridHeight; i++) {
                 for (let j = 0; j < waterFlowGridWidth; j++) {
                     if (pacificCells[i][j].data === true && atlanticCells[i][j].data === true) {
                         dispatch(changeGridCellStatus({gridIndex: 0, row: i, col: j, status: "ISLAND"}));
+                        islandCells.push([i, j]);
                     }
                 }
             }
+
+            const onEnter = () => {
+                for (let i = 0; i < islandCells.length; i++) {
+                    dispatch(changeGridIndividualCellSize({
+                        gridIndex: 0, 
+                        row: islandCells[i][0],
+                        col: islandCells[i][1],
+                        width: 60, 
+                        height: 60,
+                    }))
+                }
+            }
+            const onLeave = () => {
+                for (let i = 0; i < islandCells.length; i++) {
+                    dispatch(changeGridIndividualCellSize({
+                        gridIndex: 0, 
+                        row: islandCells[i][0],
+                        col: islandCells[i][1],
+                        width: undefined, 
+                        height: undefined,
+                    }))
+                }
+
+            }
+            element = (<p>
+                <TextHighlighter text={"Green Mountains"}onEnter={onEnter} onLeave={onLeave} color={"green"}/>
+                {`: ${islandCells.map(cell => `[${cell[0]}, ${cell[1]}]`)}`}
+                </p>
+            );
+            dispatch(pushJSXToLog({element: element}));
             pause();
         }
     }
@@ -210,14 +244,9 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
         if (!buildFinished) {
             clickSetUp417();
         }
-        //const waterFlowGrid = grids[0];
-        //const pacificGrid = grids[1];
-        //const atlanticGrid = grids[2];
         const i = currentCell[0]
         const j = currentCell[1];
         const curTileValue = waterFlowGridCells[currentCell[0]][currentCell[1]].data;
-
-        let element: JSX.Element = <div>temp</div>
 
         const isPacific = globals === "PACIFIC";
 
@@ -243,19 +272,23 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
             const [northOfCur, eastOfCur, southOfCur, westOfCur] = 
                 ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(cell);
             if (dfsCellIsValid(northOfCur)) {
-                exploreAndPushStack(cell, northOfCur, curTileValue);
+                const nextTileValue = GRID_CELL_INDEX_GET_DATA(waterFlowGridCells, northOfCur[0], northOfCur[1]);
+                exploreAndPushStack(cell, northOfCur, curTileValue, nextTileValue, "north");
                 return true;
             }
             if (dfsCellIsValid(eastOfCur)) {
-                exploreAndPushStack(cell, eastOfCur, curTileValue);
+                const nextTileValue = GRID_CELL_INDEX_GET_DATA(waterFlowGridCells, eastOfCur[0], eastOfCur[1]);
+                exploreAndPushStack(cell, eastOfCur, curTileValue, nextTileValue, "east");
                 return true;
             }
             if (dfsCellIsValid(southOfCur)) {
-                exploreAndPushStack(cell, southOfCur, curTileValue);
+                const nextTileValue = GRID_CELL_INDEX_GET_DATA(waterFlowGridCells, southOfCur[0], southOfCur[1]);
+                exploreAndPushStack(cell, southOfCur, curTileValue, nextTileValue, "south");
                 return true;
             }
             if (dfsCellIsValid(westOfCur)) {
-                exploreAndPushStack(cell, westOfCur, curTileValue);
+                const nextTileValue = GRID_CELL_INDEX_GET_DATA(waterFlowGridCells, westOfCur[0], westOfCur[1]);
+                exploreAndPushStack(cell, westOfCur, curTileValue, nextTileValue, "west");
                 return true;
             }
             return false;
@@ -340,33 +373,9 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
             col: nextCell[1],
             status: "CURRENT"
         }));
-        element = (
+        let element: JSX.Element = (
             <p>{`Iterated from cell`}
-                <motion.div 
-                    style={{display: "inline-block"}} 
-                    whileHover={{scale: 1.2}} 
-                    onMouseEnter={() => {
-                        setTimeout(() => console.log("s"), 200);
-                        dispatch(changeGridIndividualCellSize({
-                            gridIndex: 0, 
-                            row: currentCell[0],
-                            col: currentCell[1],
-                            width: 60, 
-                            height: 60,
-                        }))
-                    }}
-                    onMouseLeave={() => {
-                        dispatch(changeGridIndividualCellSize({
-                            gridIndex: 0, 
-                            row: currentCell[0],
-                            col: currentCell[1],
-                            width: undefined, 
-                            height: undefined,
-                        }))
-                    }}
-                >
-                    <i style={{marginLeft: "10px"}}>{`   [${currentCell[0]}, ${currentCell[1]}]`}</i>
-                </motion.div>
+                <CellHighlighter dispatch={dispatch} cell={currentCell}/>
             </p>
         )
         dispatch(pushJSXToLog({element: element}))
