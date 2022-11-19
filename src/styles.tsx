@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useState} from "react"
 import styled from "styled-components"
 
 
@@ -81,9 +81,7 @@ export const NavBar = ({children}: WithChildrenProps) => {
 }
 
 const NavBarLeftContainer = styled.div`
-    display: flex;
-    -webkit-box-align: center;
-    align-items: center;
+
 `;
 
 export const NavBarLeft = ({children}: WithChildrenProps) => {
@@ -92,19 +90,22 @@ export const NavBarLeft = ({children}: WithChildrenProps) => {
     </NavBarLeftContainer>);
 }
 
-const NavItemContainer = styled.div.attrs(props => ({
-    className: props.className,
-}))`
-    margin-left: 20px;
+type NavItemContainerProps = {
+    isOpen: boolean
+}
+ 
 
-    a {
+const NavItemContainer = styled.div<NavItemContainerProps>`
+    margin-left: 20px;
+    float: left;
+
+    div {
         text-decoration: none;
         color: #546e7a;
     }
 
-    a:hover {
+    div:hover {
         color: black;
-        text-shadow: 0px 10px 30px black;
     }
 `
 
@@ -121,31 +122,41 @@ export type NavItemProps = {
     text: string
     href?: string
     imageProps?: ImageProps
+    questions?: string[]
 }
 
 export const NavItem = ({
     text,
     href,
     imageProps, 
+    questions
 }: NavItemProps) => {
 
+    const [isOpen, setIsOpen] = useState<boolean>(false);
     console.log(imageProps?.imageURLs);
 
-    return (<NavItemContainer>
-        <a href={href ? href : "/"}>
-            {imageProps ? imageProps.imageURLs.map((url) => {
-                return (<img key={url}
-                    style={{
-                        "height": imageProps.height ? `${imageProps.height}px` : "1px",
-                        "width" : imageProps.width ? `${imageProps.width}px` : "1px",
-                        "margin": imageProps.margin ? imageProps.margin : "0px 0px 0px 0px"
-                    }}
-                    src={url}
-                    alt="logo"
-                /> );
-            }): null}
-            {text}
-        </a>
+    return (<NavItemContainer isOpen>
+        {isOpen ? (
+            <div onClick={() => setIsOpen(false)}>
+                {text}
+                <ul style={{
+                    listStyle: "none", 
+                    display: "flex", 
+                    flexDirection: "column", 
+                    padding: "0 0 0 0",
+                    flexWrap: "wrap"
+                }}>
+                    {questions?.map(q => (
+                        <li key={q}>{q}</li>
+                    ))}
+                </ul>
+            </div>
+        ) : (
+            <div onClick={() => setIsOpen(true)}>
+                {text}
+            </div>
+        )}
+        
     </NavItemContainer>);
 }
 

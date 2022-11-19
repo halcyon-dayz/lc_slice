@@ -247,7 +247,7 @@ const gridsSlice = createSlice({
 		},
 		changeGridIndividualCellSize: createGridActionSA(gridBeforeEach, (
 			state: RootState["grids"],
-			action: PayloadAction<GridPayloads.ChangeGridIndividualCellSize>
+			action: PayloadAction<GridPayloads.ChangeGridIndividualCellSizePayload>
 		) => {
 			const {gridIndex, row, col, width, height} = action.payload;
 			state[gridIndex].cells[row][col].width = width;

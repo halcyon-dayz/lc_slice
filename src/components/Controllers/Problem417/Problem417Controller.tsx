@@ -1,5 +1,5 @@
 //#region Imports
-import React, {useState, useEffect} from "react"
+import React, {useState, useEffect, useMemo} from "react"
 import {
      useSelector 
 } from "react-redux";
@@ -28,13 +28,14 @@ import {
     GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, 
     GRID_417_BOOLEAN
 } from "../../../features/grids/defaultGrids";
-import { useAppDispatch } from "../../../features/hooks";
+import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 
 import "../controller.css"
 import { changeProblemNumber, clearLog, pushJSXToLog, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
 import { BasicController } from "../BasicController";
 import {motion} from "framer-motion"
 import { clearState} from "../controllerUtils";
+import { CellHighlighter } from "../CellHighlighter";
 //#endregion
 
 //Equivalent to currentCell
@@ -61,7 +62,14 @@ type P417_PROPS = {
 export const Problem417Controller = ({animationOn, play, pause, animationSpeed}: P417_PROPS) => {
     /* Access the Global State */
     const dispatch = useAppDispatch();
-    const grids = useSelector(selectAllGrids);
+    //const grids = useSelector(selectAllGrids);
+    const waterFlowGridWidth = useAppSelector(state => state.grids[0] ? state.grids[0].width : 0);
+    const waterFlowGridHeight = useAppSelector(state => state.grids[0] ? state.grids[0].height : 0);
+    const waterFlowGridCells = useAppSelector(state => state.grids[0] ? state.grids[0].cells : []);
+
+    const pacificCells = useAppSelector(state => state.grids[1] ? state.grids[1].cells : []);
+    const atlanticCells = useAppSelector(state => state.grids[2] ? state.grids[2].cells : []);
+
     const problemNumber = useSelector(selectProblemNumber);
 
     /* Set local state variables */
@@ -84,7 +92,8 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
     }
 
     const directToAtlantic = (i: number, j: number): boolean => {
-        if (i === grids[0].cells.length - 1 || j === grids[0].cells[0].length - 1) {
+        //if (i === grids[0].cells.length - 1 || j === grids[0].cells[0].length - 1) {
+        if (i === waterFlowGridHeight - 1 || j === waterFlowGridWidth - 1) {
             return true;
         }
         return false;
@@ -157,6 +166,16 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
         }))
         //Add the current context to the stack
         setStackContext([...stackContext, {prevCell: cell, prevTileValue: tileValue}])
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        let element: JSX.Element = (
+            <p>
+                {`Depth first searched from cell`}
+                <CellHighlighter dispatch={dispatch} cell={cell} />
+                {` to cell`}
+                <CellHighlighter dispatch={dispatch} cell={nextCell}/>
+            </p> 
+        );
+        dispatch(pushJSXToLog({element: element}));
         //Set current cell to next cell
         setCurrentCell(nextCell);
     }
@@ -169,9 +188,16 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
         } else {
             setGlobals("PACIFIC");
             dispatch(clearGridCellsStatus({gridIndex: 0, defaultStatus: "UNEXPLORED"}));
-            for (let i = 0; i < grids[0].cells.length; i++) {
+            /*for (let i = 0; i < waterFlowG; i++) {
                 for (let j = 0; j < grids[0].cells[0].length; j++) {
                     if (grids[1].cells[i][j].data === true && grids[2].cells[i][j].data === true) {
+                        dispatch(changeGridCellStatus({gridIndex: 0, row: i, col: j, status: "ISLAND"}));
+                    }
+                }
+            } */
+            for (let i = 0; i < waterFlowGridHeight; i++) {
+                for (let j = 0; j < waterFlowGridWidth; j++) {
+                    if (pacificCells[i][j].data === true && atlanticCells[i][j].data === true) {
                         dispatch(changeGridCellStatus({gridIndex: 0, row: i, col: j, status: "ISLAND"}));
                     }
                 }
@@ -184,12 +210,12 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
         if (!buildFinished) {
             clickSetUp417();
         }
-        const waterFlowGrid = grids[0];
-        const pacificGrid = grids[1];
-        const atlanticGrid = grids[2];
+        //const waterFlowGrid = grids[0];
+        //const pacificGrid = grids[1];
+        //const atlanticGrid = grids[2];
         const i = currentCell[0]
         const j = currentCell[1];
-        const curTileValue = waterFlowGrid.cells[currentCell[0]][currentCell[1]].data;
+        const curTileValue = waterFlowGridCells[currentCell[0]][currentCell[1]].data;
 
         let element: JSX.Element = <div>temp</div>
 
@@ -199,16 +225,16 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
             if (isPacific) {
                 return (
                     //Check if pacific/atlantic grid has false in cell
-                    GRID_CELL_INDEX_HAS_DATA(pacificGrid.cells, cell[0], cell[1], false) &&
+                    GRID_CELL_INDEX_HAS_DATA(pacificCells, cell[0], cell[1], false) &&
                     //Check if flow gird cell is greater/equal to current cell value
-                    GRID_CELL_INDEX_GET_DATA(waterFlowGrid.cells, cell[0], cell[1]) >= curTileValue
+                    GRID_CELL_INDEX_GET_DATA(waterFlowGridCells, cell[0], cell[1]) >= curTileValue
                 );
             } else {
                 return (
                     //Check if pacific/atlantic grid has false in cell
-                    GRID_CELL_INDEX_HAS_DATA(atlanticGrid.cells, cell[0], cell[1], false) &&
+                    GRID_CELL_INDEX_HAS_DATA(atlanticCells, cell[0], cell[1], false) &&
                     //Check if flow gird cell is greater/equal to current cell value
-                    GRID_CELL_INDEX_GET_DATA(waterFlowGrid.cells, cell[0], cell[1]) >= curTileValue
+                    GRID_CELL_INDEX_GET_DATA(waterFlowGridCells, cell[0], cell[1]) >= curTileValue
                 );
             }
         }
@@ -273,7 +299,7 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
             if (dfs(currentCell) === true) {
                 return;
             } else {
-                const nextCell = ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j);
+                const nextCell = ARRAY_2D_GET_NEXT_INDEX(waterFlowGridCells, i, j);
                 if (nextCell[0] === 0 && nextCell[1] === 0) {
                     handleReturnToStart(isPacific);
                 }
@@ -283,13 +309,13 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
                     col: nextCell[1],
                     status: "CURRENT"
                 }));
-                setCurrentCell(ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j));
+                setCurrentCell(ARRAY_2D_GET_NEXT_INDEX(waterFlowGridCells, i, j));
             }
             //Reconsider this return statement
             return;
         }
         //Change the current cell back to it's previous status if no new paths found
-        if (grids[isPacific ? 1 : 2].cells[i][j].data === true) {
+        if (isPacific ? pacificCells[i][j].data === true : atlanticCells[i][j].data === true) {
             dispatch(changeGridCellStatus({
                 gridIndex: 0,
                 row: i, 
@@ -304,7 +330,7 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
                 status: "UNEXPLORED"
             }));
         }
-        const nextCell = ARRAY_2D_GET_NEXT_INDEX(waterFlowGrid.cells, i, j);
+        const nextCell = ARRAY_2D_GET_NEXT_INDEX(waterFlowGridCells, i, j);
         if (nextCell[0] === 0 && nextCell[1] === 0) {
            handleReturnToStart(isPacific);
         }
@@ -320,6 +346,7 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
                     style={{display: "inline-block"}} 
                     whileHover={{scale: 1.2}} 
                     onMouseEnter={() => {
+                        setTimeout(() => console.log("s"), 200);
                         dispatch(changeGridIndividualCellSize({
                             gridIndex: 0, 
                             row: currentCell[0],

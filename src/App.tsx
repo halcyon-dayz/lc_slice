@@ -20,22 +20,17 @@ import { useAppSelector } from './features/hooks';
 
 
 const NavItemLeftList: NavItemProps[] = [
-
   {
-    text: "",
-    href:"http://www.leetcode.com",
-    imageProps: {
-      imageURLs: ["./orange-slice.svg"],
-      height: 35,
-      width: 35,
-      margin: "7px 0px 0px 0px"
-    }
+    text: "Grid Structure Problems", 
+    questions: [
+        "733. Flood Fill dsfdfsdfsd fs f",
+        "417. Ocean Water Flow",
+        "1. Test",
+    ]
   },
   {
-    text: "Grid Problems"
-  },
-  {
-    text: "Tree Problems"
+    text: "Tree Problems",
+    questions: ["test"]
   }
   //Try to maintain width height ratio of sv
 ]
@@ -56,6 +51,7 @@ const HeaderLayout = ({leftList}: HeaderLayoutProps) => {
                 text={li.text}
                 imageProps={li.imageProps}
                 href={li.href}
+                questions={li.questions}
                 />
             ))}
           </NavBarLeft>

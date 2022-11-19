@@ -65,7 +65,7 @@ export type ClearGridRowPayload = {
 
 export type ChangeGridCellDataPayload = Omit<ChangeGridCellPayload, "status">
 
-export interface ChangeGridIndividualCellSize extends GridIndexPL, RowColPL {
+export interface ChangeGridIndividualCellSizePayload extends GridIndexPL, RowColPL {
     width: number | undefined, 
     height: number | undefined,
 }

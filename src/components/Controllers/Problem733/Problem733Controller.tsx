@@ -5,7 +5,7 @@ import {
 } from "react-redux";
 
 import { selectAllGrids, changeGridCell, changeGridCellStatus} from "../../../features/grids/gridsSlice";
-import { useAppDispatch } from "../../../features/hooks";
+import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 import { RootState } from "../../../utils/types";
 import { GRID_733_FLOOD_FILL } from "../../../features/grids/defaultGrids";
 
@@ -16,6 +16,7 @@ import {
     GRID_CELL_INDEX_HAS_DATA,
 } from "../../../features/grids/gridUtils"
 import { changeProblemNumber, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
+import { clearState } from "../controllerUtils";
 //#endregion
 
 type P733_PROPS = {
@@ -28,7 +29,7 @@ type P733_PROPS = {
 export const Problem733Controller = ({animationOn, play, pause, animationSpeed}: P733_PROPS) => {
     /* Access the Global State */
     const dispatch = useAppDispatch();
-    const grids = useSelector(selectAllGrids);
+    const gridCells = useAppSelector(state => state.grids[0] ? state.grids[0].cells : []);
     const problemNumber = useSelector(selectProblemNumber);
     /* Local State */
     const [toReplace, setToReplace] = useState<number>(0);
@@ -57,9 +58,10 @@ export const Problem733Controller = ({animationOn, play, pause, animationSpeed}:
         //Stop any animations
         pause();
         //Delete all structs
-        dispatch(deleteAllStructs());
+        clearState(dispatch, 733);
+        //dispatch(deleteAllStructs());
         //Change Problem Number
-        dispatch(changeProblemNumber({problemNumber: 733}));
+        //dispatch(changeProblemNumber({problemNumber: 733}));
         dispatch(copyGrid({cells: GRID_733_FLOOD_FILL}));
         dispatch(changeGridCellStatus({
             gridIndex: 0,
@@ -72,7 +74,7 @@ export const Problem733Controller = ({animationOn, play, pause, animationSpeed}:
     }
 
     const dfsCellIsValid = (cell: [number, number]): boolean => {
-        return GRID_CELL_INDEX_HAS_DATA(grids[0].cells, cell[0], cell[1], toReplace);
+        return GRID_CELL_INDEX_HAS_DATA(gridCells, cell[0], cell[1], toReplace);
     }
 
     const exploreAndPushStack = (

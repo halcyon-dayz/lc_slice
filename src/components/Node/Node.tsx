@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useMemo} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {changeGridCell} from "../../features/grids/gridsSlice";
-import {RootState} from "../../utils/types"
+import {CellStatus, RootState} from "../../utils/types"
 import "./node.css"
 import {motion} from "framer-motion"
 import { useAppSelector } from "../../features/hooks";
@@ -56,47 +56,17 @@ const parseCellData = (data: any) => {
     return data;
 }
 
-export const Node = ({gridIndex, rowIdx, colIdx, styleWidth, styleHeight}: NodeProps) => {
-    //TODO: Select individual cells
-    const [stateIndex, setStateIndex] = useState<number>(0);
-    const cellData = useSelector((state: RootState) => state.grids[gridIndex].cells[rowIdx][colIdx].data);
-    const cellStatus = useSelector((state: RootState) => state.grids[gridIndex].cells[rowIdx][colIdx].status);
-    const cellWidth: number | undefined = useAppSelector(state => state.grids[gridIndex].cells[rowIdx][colIdx].width)
-    const cellHeight: number | undefined = useAppSelector(state => state.grids[gridIndex].cells[rowIdx][colIdx].height)
-    const dispatch = useDispatch();
 
-    //TODO: Change example dispatch
-    /* const onClickNode = (e: React.MouseEvent) => {
-        if (e.nativeEvent.button === 0) {
-            dispatch(changeCell({row: rowIdx, col: colIdx, data: cell.data, status: "START"}));
-        }
-    } */
-
-    const onEditData = (e: React.FormEvent) => {
-        const value = e.currentTarget.textContent
-        if (value === null) {
-            return;
-        }
-        if (onlyNumbers(value)) {
-            const num = parseInt(value);
-            dispatch(changeGridCell({gridIndex: 0, row: rowIdx, col: colIdx, data: num, status: cellStatus}));
-            return;
-        }
-        if (onlyBooleans(value)) {
-            const val = parseBoolean(value);
-            dispatch(changeGridCell({gridIndex: 0, row: rowIdx, col: colIdx, data: val, status: cellStatus}));
-            
-        }
-        
-    }
-
-
-    //TODO: It can't be explored and current at the same time
-                //We need to differentiate between status and visual updates
-                // at some point.
-                //TOOD: Ideally status is only for visual updates, and real status is inferred
-                //from the data in the cells. Semantic issue with current naming scheme
-
+type NodeInnerProps = {
+    cellData: number, 
+    cellStatus: CellStatus, 
+    cellWidth: number | undefined,
+    cellHeight: number | undefined,
+    styleWidth: number,
+    styleHeight: number,
+    onEditData: (e: React.FormEvent) => void
+}
+export const NodeInner = ({cellData, cellStatus, cellWidth, cellHeight, styleWidth, styleHeight, onEditData}: NodeInnerProps) => {
     const variants = {
         normal: {width: 50, height: 50},
         change: {
@@ -106,7 +76,8 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth, styleHeight}: NodeP
             marginTop: `${cellHeight ? -5 : 0}px`,
             marginLeft: `${cellWidth ? -5 : 0}px`,
             marginRight: `${cellWidth ? -5 : 0}px`,
-            zIndex: cellWidth || cellHeight ? 9 : 0
+            zIndex: cellWidth || cellHeight ? 9 : 0,
+            opacity: 1
         }
     }
     
@@ -128,12 +99,55 @@ export const Node = ({gridIndex, rowIdx, colIdx, styleWidth, styleHeight}: NodeP
                 cellStatus === "PREV_EVALUATE" ? "node_prev_evaluate" :
                 "node"
             }
-            style={cellWidth || cellHeight ? {"zIndex": 10} : {}}
             contentEditable={true}
             onInput={onEditData}
             suppressContentEditableWarning={true}
         >
             {cellData.toString()}
         </motion.div>
-    )
+    );
+
+}
+
+export const Node = ({gridIndex, rowIdx, colIdx, styleWidth, styleHeight}: NodeProps) => {
+    //TODO: Select individual cells
+    const cellData = useAppSelector(state => 
+        state.grids[gridIndex].cells[rowIdx][colIdx].data
+    );
+    const cellStatus = useAppSelector(state =>  
+        state.grids[gridIndex].cells[rowIdx][colIdx].status
+    );
+    const cellWidth: number | undefined = useAppSelector(state => state.grids[gridIndex].cells[rowIdx][colIdx].width)
+    const cellHeight: number | undefined = useAppSelector(state => state.grids[gridIndex].cells[rowIdx][colIdx].height);
+    const dispatch = useDispatch();
+
+    const onEditData = (e: React.FormEvent) => {
+        const value = e.currentTarget.textContent
+        if (value === null) {
+            return;
+        }
+        if (onlyNumbers(value)) {
+            const num = parseInt(value);
+            dispatch(changeGridCell({gridIndex: 0, row: rowIdx, col: colIdx, data: num, status: cellStatus}));
+            return;
+        }
+        if (onlyBooleans(value)) {
+            const val = parseBoolean(value);
+            dispatch(changeGridCell({gridIndex: 0, row: rowIdx, col: colIdx, data: val, status: cellStatus}));
+            
+        }
+        
+    }
+    return (
+        <NodeInner
+            cellData={cellData}
+            cellStatus={cellStatus}
+            cellWidth={cellWidth}
+            cellHeight={cellHeight}
+            styleWidth={styleWidth}
+            styleHeight={styleHeight}
+            onEditData={onEditData}
+        />
+    );
+
 }

@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-import { deleteGrid, copyGrid } from "../../../features/sharedActions";
+import { deleteGrid, copyGrid, deleteAllStructs } from "../../../features/sharedActions";
 import { changeGridCell, changeGridCellData, changeGridCellStatus } from "../../../features/grids/gridsSlice";
 import React, {useState, useEffect} from "react"
 import { DEFAULT_695_GRIDS } from "./695Defaults";
@@ -8,6 +8,7 @@ import { changeProblemNumber, selectProblemNumber } from "../../../features/prob
 import { BasicController } from "../BasicController";
 import {GRID_CELL_INDEX_HAS_DATA, ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL, GRID_CELL_INDEX_GET_DATA, ARRAY_2D_GET_NEXT_INDEX} from "../../../features/grids/gridUtils"
 import { current } from "@reduxjs/toolkit";
+import { clearState } from "../controllerUtils";
 
 
 type P695_CONTEXT = [number, number][]
@@ -22,8 +23,7 @@ type P617_PROPS = {
 export const Problem695Controller = ({animationOn, play, pause, animationSpeed}: P617_PROPS) => {
     /* Access the Global State */
     const dispatch = useAppDispatch();
-    const grid = useAppSelector(state => state.grids[0]);
-    const gridsLength = useAppSelector(state => state.grids.length);
+    const gridCells = useAppSelector(state => state.grids[0] ? state.grids[0].cells : []);
     const problemNumber = useAppSelector(selectProblemNumber);
 
     /* Create Local State */
@@ -39,10 +39,7 @@ export const Problem695Controller = ({animationOn, play, pause, animationSpeed}:
 
 
     const clickSetUp695 = () => {
-        //Clear all previous ds
-        dispatch(deleteGrid({num: gridsLength, gridsLength: gridsLength}));
-        //Set problem to 695
-        dispatch(changeProblemNumber({problemNumber: 695}))
+        clearState(dispatch, 695);
         //Get new grid
         const data = DEFAULT_695_GRIDS[defaultGridIndex];
         //Set index to next grid
@@ -86,7 +83,7 @@ export const Problem695Controller = ({animationOn, play, pause, animationSpeed}:
     }
 
     const dfsCellIsValid = (cell: [number, number]): boolean => {
-        return GRID_CELL_INDEX_HAS_DATA(grid.cells, cell[0], cell[1], 1);
+        return GRID_CELL_INDEX_HAS_DATA(gridCells, cell[0], cell[1], 1);
     }
 
     const exploreAndPushStack = (
@@ -143,7 +140,7 @@ export const Problem695Controller = ({animationOn, play, pause, animationSpeed}:
             }
             let nextCell = stack[stack.length - 1];
             if (stack.length === 1) {
-                nextCell = ARRAY_2D_GET_NEXT_INDEX(grid.cells, nextCell[0], nextCell[1]);
+                nextCell = ARRAY_2D_GET_NEXT_INDEX(gridCells, nextCell[0], nextCell[1]);
             }
             dispatch(changeGridCellStatus({
                 gridIndex: 0,
@@ -162,7 +159,7 @@ export const Problem695Controller = ({animationOn, play, pause, animationSpeed}:
             return;
         }
 
-        const nextCell = ARRAY_2D_GET_NEXT_INDEX(grid.cells, currentCell[0], currentCell[1]);
+        const nextCell = ARRAY_2D_GET_NEXT_INDEX(gridCells, currentCell[0], currentCell[1]);
         dispatch(changeGridCellStatus({
             gridIndex: 0,
             row: nextCell[0],

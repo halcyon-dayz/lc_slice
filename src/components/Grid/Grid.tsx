@@ -11,7 +11,8 @@ type GridProps = {
 }
 
 export const Grid = ({gridIndex}: GridProps) => {
-    const gridCells = useAppSelector(state => state.grids[gridIndex].cells);
+    const gridRowLength = useAppSelector(state => state.grids[gridIndex].width);
+    const gridColumnLength = useAppSelector(state => state.grids[gridIndex].height);
     const gridLabel = useAppSelector(state => state.grids[gridIndex].label);
     const cellWidth = useAppSelector(state => state.grids[gridIndex].cellStyleWidth);
     const cellHeight = useAppSelector(state => state.grids[gridIndex].cellStyleHeight);
@@ -19,9 +20,9 @@ export const Grid = ({gridIndex}: GridProps) => {
     return (
         <div className="grid">
             {gridLabel}
-            {gridCells.map((row, rowIdx) => (
+            {[...Array(gridRowLength)].map((row, rowIdx) => (
                 <div key={`Grid_${gridIndex}_Row_${rowIdx}`} style={{"display": "flex", "position": "relative"}}>
-                    {row.map((node, nodeIdx) => (
+                    {[...Array(gridColumnLength)].map((node, nodeIdx) => (
                         <Node 
                             gridIndex={gridIndex}
                             key={`Grid_${gridIndex}_Cell_${rowIdx}_${nodeIdx}`}
