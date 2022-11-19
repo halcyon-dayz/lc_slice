@@ -4,7 +4,7 @@ import {
      useSelector 
 } from "react-redux";
 
-import { selectAllGrids, changeGridCell, changeGridCellStatus} from "../../../features/grids/gridsSlice";
+import { selectAllGrids, changeGridCell, changeGridCellStatus, changeGridCellSize} from "../../../features/grids/gridsSlice";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 import { RootState } from "../../../utils/types";
 import { GRID_733_FLOOD_FILL } from "../../../features/grids/defaultGrids";
@@ -15,8 +15,9 @@ import {
     ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL,
     GRID_CELL_INDEX_HAS_DATA,
 } from "../../../features/grids/gridUtils"
-import { changeProblemNumber, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
+import { changeProblemNumber, pushJSXToLog, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
 import { clearState } from "../controllerUtils";
+import {motion} from "framer-motion"
 //#endregion
 
 type P733_PROPS = {
@@ -70,6 +71,32 @@ export const Problem733Controller = ({animationOn, play, pause, animationSpeed}:
             status: "CURRENT"
         }))
         setCurrentCell([0,0]);
+        const element: JSX.Element = (
+            <div style={{display: "flex", "flexDirection": "column", alignItems: "center"}}>
+                <div>Created a grid!</div>
+                <motion.h4 
+                    whileHover={{scale: 1.4, transition: {duration: 0.2, ease: "easeOut"}}} style={{"display": "inline-block", margin: "0 0 0 0"}}
+                    onMouseEnter={() => 
+                        dispatch(changeGridCellSize({
+                            gridIndex: 0, 
+                            width: 60, 
+                            height: 60
+                        }))
+                    }
+                    onMouseLeave={() => 
+                        dispatch(changeGridCellSize({
+                            gridIndex: 0, 
+                            width: 50, 
+                            height: 50
+                    }))
+                    }   
+                >
+                    {`Flood Fill Grid`}
+                </motion.h4>
+            </div>
+        );
+        //dispatch(clearLog())
+        dispatch(pushJSXToLog({element: element}))
         setIsEnd(false);
     }
 
