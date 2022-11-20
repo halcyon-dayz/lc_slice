@@ -27,7 +27,7 @@ export const PathFindingVisualizer = () => {
                 />);
             })}
             {[...Array(1)].map((graph, idx) => (
-                <Graph />
+                <Graph key={`Graph_${idx}`}/>
             ))}
         </div>
     )  
