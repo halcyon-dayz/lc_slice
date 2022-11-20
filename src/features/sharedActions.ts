@@ -1,6 +1,15 @@
 import {createAction} from "@reduxjs/toolkit"
 import { Cell, DataStructureType } from "../utils/types"
 
+
+export type AddGraphPL = {
+    num?: number
+}
+
+export type DeleteGraphPL = {
+    num?: number
+}
+
 export type AddArrayPayload = {
     num: number
 }
@@ -40,6 +49,21 @@ export type AddDataStructurePayload = {
     num?: number
 }
 
+
+/**
+ * Add graph to the graph list.
+ * @param {number} [num]
+ * The number of graphs to be added.
+ */
+export const addGraph = createAction<AddGraphPL>("addGraph");
+
+/**
+ * Delete graphs from the graph list.
+ * @param {number} [num]
+ * The number of graphs to be deleted.
+ */
+export const deleteGraph = createAction<DeleteGraphPL>("deleteGraph");
+
 /**
  * Add data structure of specific type to its corresponding list
  * @param {DataStructureType} type
@@ -55,7 +79,7 @@ export const addDataStructure = createAction<AddDataStructurePayload>("addDataSt
  */
 export const addArray = createAction<AddArrayPayload>("addArray");
 /**
- * Delete arrays from the array list
+ * Delete arrays from the array list.
  * @param {number} num
  * The number of arrays to remove.
  */

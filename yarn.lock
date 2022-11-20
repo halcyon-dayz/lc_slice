@@ -8813,6 +8813,7 @@ __metadata:
     chromedriver: ^107.0.3
     framer-motion: ^7.6.7
     gh-pages: ^4.0.0
+    immer: ^9.0.16
     interact.js: ^1.2.8
     interactjs: ^1.10.17
     patch-package: ^6.5.0
@@ -8828,6 +8829,7 @@ __metadata:
     styled-components: ^5.3.6
     ts-jest: ^29.0.3
     typescript: ^4.8.4
+    use-immer: ^0.8.1
     web-vitals: ^2.1.4
   languageName: unknown
   linkType: soft
@@ -13221,6 +13223,16 @@ __metadata:
     querystringify: ^2.1.1
     requires-port: ^1.0.0
   checksum: fbdba6b1d83336aca2216bbdc38ba658d9cfb8fc7f665eb8b17852de638ff7d1a162c198a8e4ed66001ddbf6c9888d41e4798912c62b4fd777a31657989f7bdf
+  languageName: node
+  linkType: hard
+
+"use-immer@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "use-immer@npm:0.8.1"
+  peerDependencies:
+    immer: ">=2.0.0"
+    react: ^16.8.0 || ^17.0.1 || ^18.0.0
+  checksum: 9ffc1a201a92b6b026c420718e6a00e72ba48b62420bb515927b379bb1d791b5b4766b57c755b4851c0e1f80000e639bc1cf8e73424e44466741c159391d35dd
   languageName: node
   linkType: hard
 

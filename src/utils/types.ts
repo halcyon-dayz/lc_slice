@@ -36,6 +36,15 @@ export type GridDS = {
 }
 
 
+export type GraphDS = {
+    nodeRadius: number,
+    connected: boolean,
+    weighted: boolean,
+    directed: boolean,
+    edgeLabels: any,
+}
+
+
 export type ArrDS = {
     type: string,
     label?: string,
@@ -55,6 +64,7 @@ export type RootState = {
     problem: ProblemInfo,
     grids: GridDS[],
     arrays: ArrDS[],
+    graphs: GraphDS[],
     totalStructs: number
 }
 
