@@ -234,7 +234,11 @@ export const Graph = () => {
         setSvgHeight(svgDimensions.height);
         //Make the Graph Node Movable...will eventually take an index to indicate which node
         if (graphNodeRef.current) {
-            setMovableGraphNode()
+            setMovableGraphNode();
+            graphNodeRef.current.addEventListener("click", (event) => {
+                console.log("clicked");
+                event.stopPropagation();
+            })
         }
         
     }, [graphSVGRef, graphNodeRef])
