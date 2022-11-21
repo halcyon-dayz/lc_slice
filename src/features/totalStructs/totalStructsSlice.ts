@@ -66,7 +66,6 @@ const totalStructsSlice = createSlice({
             return action.payload.num ? state + action.payload.num : state + 1;
         }).addCase(deleteGraph, (state, action: PayloadAction<DeleteGraphPL>) => {
             return action.payload.num ? state - action.payload.num : state - 1;
-
         }).addCase(addDataStructure, (state, action: PayloadAction<AddDataStructurePayload>) => {
             return state + (action.payload.num ? action.payload.num : 1);
         }).addCase(deleteAllStructs, (state) => {

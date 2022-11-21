@@ -18,8 +18,6 @@ export const GraphNode = React.forwardRef<SVGGElement, GraphNodeProps>((props, r
             <circle cx={startX.toString()} cy={startY.toString()} fill="url(#bubble_gradient2)" opacity="0.33" r={radius.toString()}/>
             <circle className="nwbubblecoloredcircle" cx={startX.toString()} cy={startY.toString()} fill="rgb(255,193,101)" r={radius.toString()}/>
             <ellipse cx={startX.toString()} cy={(startY - 12).toString()} fill="url(#brilliance_gradient)" rx="11.5" ry="6"/>
-            <text fill="rgb(247,246,242)" filter="url(#filter_bg_text)" opacity="1.0" stroke="rgb(247,246,242)" strokeWidth="5" textAnchor="start" x={(startX + 18).toString()} y={(startY - 18).toString()}>desF</text>
-            <text fill="rgb(0,0,0)" opacity="1.0" textAnchor="start" x="604" y="286">desF</text>
         </g>
     );
 })

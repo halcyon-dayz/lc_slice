@@ -66,5 +66,8 @@
     "postinstall-postinstall": "^2.1.0",
     "ts-jest": "^29.0.3"
   },
-  "packageManager": "yarn@3.2.4"
+  "packageManager": "yarn@3.2.4",
+  "resolutions": {
+    "react-simple-resizer@^2.1.0": "patch:react-simple-resizer@npm%3A2.1.0#./.yarn/patches/react-simple-resizer-npm-2.1.0-db31752ad2.patch"
+  }
 }

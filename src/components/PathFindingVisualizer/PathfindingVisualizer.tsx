@@ -6,7 +6,12 @@ import { RootState } from "../../utils/types";
 import "./ds.css"
 import { Graph} from "../Graph/Graph"
 
-export const PathFindingVisualizer = () => {
+
+type PFVProps = {
+    rightWidth: number,
+}
+
+export const PathFindingVisualizer = ({rightWidth}: PFVProps) => {
     const gridsLength = useAppSelector((state: RootState) => state.grids.length);
     const arraysLength = useAppSelector((state: RootState) => state.arrays.length);
 
@@ -27,7 +32,7 @@ export const PathFindingVisualizer = () => {
                 />);
             })}
             {[...Array(1)].map((graph, idx) => (
-                <Graph key={`Graph_${idx}`}/>
+                <Graph key={`Graph_${idx}`} width={rightWidth}/>
             ))}
         </div>
     )  

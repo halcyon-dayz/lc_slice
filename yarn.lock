@@ -11313,7 +11313,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-simple-resizer@npm:^2.1.0":
+"react-simple-resizer@npm:2.1.0":
   version: 2.1.0
   resolution: "react-simple-resizer@npm:2.1.0"
   dependencies:
@@ -11322,6 +11322,18 @@ __metadata:
     react: ^16.3.0
     react-dom: ^16.4.2
   checksum: 5ed90599e07a51d3dd9275cda8e66f3612a1954b9adc2e6147205e0dc473ee6fb679731ab47fe4eb9e56a6659038eb8b3eb6664a87a19ded5fca858e54092ba9
+  languageName: node
+  linkType: hard
+
+"react-simple-resizer@patch:react-simple-resizer@npm%3A2.1.0#./.yarn/patches/react-simple-resizer-npm-2.1.0-db31752ad2.patch::locator=lc_slice%40workspace%3A.":
+  version: 2.1.0
+  resolution: "react-simple-resizer@patch:react-simple-resizer@npm%3A2.1.0#./.yarn/patches/react-simple-resizer-npm-2.1.0-db31752ad2.patch::version=2.1.0&hash=a9ec19&locator=lc_slice%40workspace%3A."
+  dependencies:
+    rxjs: ^6.3.3
+  peerDependencies:
+    react: ^16.3.0
+    react-dom: ^16.4.2
+  checksum: 7a7c49dac5a53684edc75a335bdf4cf26a7ceacc786a0380182343746f08064d5d7288b08b66228fdd7309082fd6a469f29bd36f7f87179f60756f1fb514fda7
   languageName: node
   linkType: hard
 

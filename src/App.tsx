@@ -11,7 +11,7 @@ import {
   Main,
 } from './styles';
 
-import {Container, Section, Bar} from "react-simple-resizer"
+import {Container, Bar, Section} from "react-simple-resizer"
 import { PathFindingVisualizer } from './components/PathFindingVisualizer';
 import { Controls } from './components/Controls';
 import { useDispatch } from 'react-redux';
@@ -79,6 +79,7 @@ function App() {
 
   //# Local State Values #//
   const [height, setHeight] = useState<number>(window.innerHeight - 44);
+  const [rightWidth, setRightWidth] = useState<number>(0);
   //Need this to prevent scroll on each save
   const [logLength, setLogLength] = useState<number>(0);
 
@@ -93,24 +94,14 @@ function App() {
     });
   }, []);
 
-
-  //Hopefully the behavior is to automatically scroll to the bottom by passing
-  //an absurd number into top that cannot actually be scrolled to
-  /*useEffect(() => {
-    if (problemLog.length === logLength) {
-      return;
+  useEffect(() => {
+    if (rightSectionRef.current !== null) {
+      console.log(rightSectionRef.current.clientWidth)
+      setRightWidth(rightSectionRef.current.clientWidth);
     }
-    setLogLength(problemLog.length);
-    leftSectionRef.current?.scrollBy({top: 200, left: 0, behavior: "smooth"})
-  }, [problemLog]) */
 
-  /*const onSectionSizeChanged = () => {
-    dispatch(changeGridCellSize)
-  }
+  }, [rightSectionRef])
 
-  const onRightSectionChange = (currentSize: number) => {
-    console.log(currentSize);
-  } */
 
   return (
     <div className="App">
@@ -124,12 +115,18 @@ function App() {
           <Controls />
         </Section>
         <Bar size={10} style={{ background: '#738228', cursor: 'col-resize' }} />
-        <Section innerRef={rightSectionRef} style={{ 
+        <Section innerRef={rightSectionRef} 
+          onSizeChanged={() => {
+            if (rightSectionRef.current) {
+              setRightWidth(rightSectionRef.current?.clientWidth)
+            }
+          }}
+        style={{ 
           background: 'rgb(240, 240, 240)', 
           overflow: "auto",
           }} minSize={100}
         >
-          <PathFindingVisualizer />
+          <PathFindingVisualizer rightWidth={rightWidth}/>
         </Section>
         </Container>
       </Main>    
