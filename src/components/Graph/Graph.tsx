@@ -27,6 +27,26 @@ type GraphNodeStateDeclarativeType= {
     onMouseMoveCallback: (this: any, event: MouseEvent) => any,
 }
 
+
+type NodeType = {
+    x: number,
+    y: number,
+    ix: number,
+    iy: number,
+    radius: number, 
+    links: EdgeImperativeType[],
+}
+
+type EdgeImperativeType = {
+    nodeOne: NodeType,
+    nodeTwo: NodeType,
+    elm: SVGLineElement,
+    x1: number,
+    x2: number,
+    y1: number, 
+    y2: number
+}
+
 type nodeImperativeType = {
     mouseStart: {
         x: number,
@@ -42,17 +62,14 @@ type nodeImperativeType = {
         ix: number,
         iy: number,
         radius: number,
-        links: [],
+        links: EdgeImperativeType[],
     }
 }
 
+
+
 export type GraphProps = {
     width: number,
-}
-
-const parseTranslateString = (str: string) => {
-    
-    
 }
 
 export const Graph = ({width}: GraphProps) => {
@@ -66,12 +83,16 @@ export const Graph = ({width}: GraphProps) => {
 
     const selectedNode = useRef<number>(0);
 
+    const edge = useRef<SVGLineElement>(null);
+
+    const edgeState = useRef<EdgeImperativeType>(null);
+
     //Ref of the entire graph
     const graphSVGRef = useRef<SVGSVGElement>(null);
     //Forwareded ref from GraphNodeObject
-    const graphNodeRefs = useRef<SVGGElement[]>([]);
+    const nodes = useRef<SVGGElement[]>([]);
     //We separate the state of the node from its reference, which might need to be changed in the future
-    const nodeImperativeRefs = useRef<nodeImperativeType[]>([
+    const nodeStates = useRef<nodeImperativeType[]>([
         {
             mouseStart: {
                 x: 0,
@@ -109,17 +130,17 @@ export const Graph = ({width}: GraphProps) => {
             }
         }
     ]);
-    const [nodeDeclarative, updateNodeDeclarative] = useImmer<GraphNodeStateDeclarativeType>({
+    const [dragState, updateDrag] = useImmer<GraphNodeStateDeclarativeType>({
         hasMoved : false,
         isInFront: false,
         isBeingDragged: false,
         originalEventTarget: null,
         onMouseMoveCallback: (event: MouseEvent) => {
-            updateNodeDeclarative(state => {state.originalEventTarget = event.currentTarget});
+            updateDrag(state => {state.originalEventTarget = event.currentTarget});
             return moveNodeOnMouseMove(event);
         },
         onMouseUpCallback: (event: MouseEvent) => {
-            updateNodeDeclarative(state => {state.originalEventTarget = event.currentTarget});
+            updateDrag(state => {state.originalEventTarget = event.currentTarget});
             return moveNodeOnMouseUp(event);
         },
     })
@@ -127,22 +148,20 @@ export const Graph = ({width}: GraphProps) => {
 
     const startMove = (index: number, x: number, y: number) => {
         //Certain fields are not yet populated but will be when the callback is first called
-        console.log("startMove");
-        console.log(x, y);
-        nodeImperativeRefs.current[index].mouseStart.x = x;
-        nodeImperativeRefs.current[index].mouseStart.y = y;
-        nodeImperativeRefs.current[index].nodeStart.x = nodeImperativeRefs.current[index].node.x;
-        nodeImperativeRefs.current[index].nodeStart.y = nodeImperativeRefs.current[index].node.y;
-        updateNodeDeclarative(state => {state.hasMoved = false});
-        updateNodeDeclarative(state => {state.isInFront = false});
-        updateNodeDeclarative(state => {state.isBeingDragged = true});
-        updateNodeDeclarative(state => {state.originalEventTarget = null});
+        nodeStates.current[index].mouseStart.x = x;
+        nodeStates.current[index].mouseStart.y = y;
+        nodeStates.current[index].nodeStart.x = nodeStates.current[index].node.x;
+        nodeStates.current[index].nodeStart.y = nodeStates.current[index].node.y;
+        updateDrag(state => {state.hasMoved = false});
+        updateDrag(state => {state.isInFront = false});
+        updateDrag(state => {state.isBeingDragged = true});
+        updateDrag(state => {state.originalEventTarget = null});
     }
 
     const moveNodeOnMouseMove = useCallback( (e: MouseEvent) => {
         //Get the currently selected node
         let curNode = selectedNode.current !== undefined ? selectedNode.current : 0;
-        updateNodeDeclarative(state => {
+        updateDrag(state => {
             state.isBeingDragged = true;
         })
 
@@ -155,79 +174,40 @@ export const Graph = ({width}: GraphProps) => {
         //Get new mouse coordinates
         const newMouseX = e.clientX;
         const newMouseY = e.clientY;
-        updateNodeDeclarative(state => {state.originalEventTarget = null});
+        updateDrag(state => {state.originalEventTarget = null});
 
         //If the mouse has moved from its starting position at mouse down
         if (
-            newMouseX !== nodeImperativeRefs.current[curNode].mouseStart.x || 
-            newMouseY !== nodeImperativeRefs.current[curNode].mouseStart.y) {
+            newMouseX !== nodeStates.current[curNode].mouseStart.x || 
+            newMouseY !== nodeStates.current[curNode].mouseStart.y) {
             //Indicate that the mouse has indeed moved
-            updateNodeDeclarative(state => {state.hasMoved = true})
+            updateDrag(state => {state.hasMoved = true})
         }
 
-        //Create new values first since setState/Immer will not update synchronously
-        //However, our ref will need to be updated synchronously
         let newNodePosX = 
-            //(currentSVGLeftX ? currentSVGLeftX : 0) +
-            nodeImperativeRefs.current[curNode].nodeStart.x + 
+            nodeStates.current[curNode].nodeStart.x + 
             newMouseX - 
-            nodeImperativeRefs.current[curNode].mouseStart.x
+            nodeStates.current[curNode].mouseStart.x
         ;
-
-
-        console.log("New Node Position X:")
-        console.log(newNodePosX);
 
         let newNodePosY = 
-            //(currentSVGTopY ? currentSVGTopY : 0) +
-            nodeImperativeRefs.current[curNode].nodeStart.y +
+            nodeStates.current[curNode].nodeStart.y +
             newMouseY - 
-            nodeImperativeRefs.current[curNode].mouseStart.y
+            nodeStates.current[curNode].mouseStart.y
         ;
 
-        console.log("New Node Position Y:")
-        console.log(newNodePosY);
 
-        let nodeRadius = nodeImperativeRefs.current[curNode].node.radius;
-
+        let nodeRadius = nodeStates.current[curNode].node.radius;
 
         //Move the node to where the node object lay + (new position of mouse - where the mouse started)
-        nodeImperativeRefs.current[curNode].node.x = newNodePosX;
-        nodeImperativeRefs.current[curNode].node.y = newNodePosY;
-        //If the new position of the node goes off screen left
-        //TODO: GET RID OF COMMENTED OFF SCREEN EDGE CASES ONCE REGULAR DRAGGING IS WORKING PROPERLY
-        /*if (nodeImperative.current.node.x < nodeRadius / 2.0) {
-            console.log("off screen")
-            newNodePosX = nodeRadius / 2.0
-            nodeImperative.current.node.x = newNodePosX;
-        //Else if it goes off screen right
-        } else if (nodeImperative.current.node.x + nodeRadius / 2.0 > svgWidth) {
-            console.log("off screen right")
-            newNodePosX = svgWidth - nodeRadius / 2.0;
-            updateNodeDeclarative(state => {state.node.x = newNodePosX});
-        }
-
-        //If the new position of the node goes off screen top
-        if (graphNodeState.node.y < nodeRadius / 2.0) {
-            newNodePosY = nodeRadius / 2.0
-            updateNodeDeclarative(state => {state.node.y = newNodePosY});
-        //Else if it goes off screen bottom
-        } else if (graphNodeState.node.y + nodeRadius / 2.0 > svgHeight) {
-            newNodePosY = svgHeight - nodeRadius / 2.0
-            updateNodeDeclarative(state => {state.node.y = newNodePosY});
-        } */
-
-        //TODO: 
-        //Finally after the position has been fully updated, update the ref
-        let prevIX = nodeImperativeRefs.current[curNode].node.ix
-        let prevIY = nodeImperativeRefs.current[curNode].node.iy
-        console.log(prevIX);
+        nodeStates.current[curNode].node.x = newNodePosX;
+        nodeStates.current[curNode].node.y = newNodePosY;
+        let prevIX = nodeStates.current[curNode].node.ix
+        let prevIY = nodeStates.current[curNode].node.iy
         let x = newNodePosX - prevIX;
         let y = newNodePosY - prevIY;
 
-        console.log("Translate (x, y)")
-        console.log(x, y);
-        graphNodeRefs.current[curNode].setAttribute("transform", "translate(" + (x) + "," + (y) + ")")
+        nodes.current[curNode].setAttribute("transform", "translate(" + (x) + "," + (y) + ")")
         return false;
     }, [width])
 
@@ -235,11 +215,11 @@ export const Graph = ({width}: GraphProps) => {
         const curNode = selectedNode.current
         console.log("Mouse up on node")
         //Node is no longer being dragged
-        updateNodeDeclarative(state => {state.isBeingDragged = false});
-        nodeImperativeRefs.current[curNode].node.radius = nodeImperativeRefs.current[curNode].node.radius / 1.5;;
+        updateDrag(state => {state.isBeingDragged = false});
+        nodeStates.current[curNode].node.radius = nodeStates.current[curNode].node.radius / 1.5;;
 
-        document.removeEventListener("mousemove", nodeDeclarative.onMouseMoveCallback, false);
-        document.removeEventListener("mouseup", nodeDeclarative.onMouseUpCallback, false);
+        document.removeEventListener("mousemove", dragState.onMouseMoveCallback, false);
+        document.removeEventListener("mouseup", dragState.onMouseUpCallback, false);
         return false;
     }
 
@@ -248,24 +228,19 @@ export const Graph = ({width}: GraphProps) => {
         console.log("Mouse down on node")
         selectedNode.current = index;
         startMove(index, e.clientX, e.clientY);
-        nodeImperativeRefs.current[index].node.radius = nodeImperativeRefs.current[index].node.radius * 1.5;
-        document.addEventListener("mousemove", nodeDeclarative.onMouseMoveCallback, false);
-        document.addEventListener("mouseup", nodeDeclarative.onMouseUpCallback, false);
+        nodeStates.current[index].node.radius = nodeStates.current[index].node.radius * 1.5;
+        document.addEventListener("mousemove", dragState.onMouseMoveCallback, false);
+        document.addEventListener("mouseup", dragState.onMouseUpCallback, false);
         return false;
     }
 
     const setMovableGraphNode = (index: number) => {
         //Do nothing if the ref is null
-        if (graphNodeRefs.current[index] !== undefined) {
-            //NOTE ABOUT HANDLERS
-            //ref.onmousedown will reset all handlers associated with onmousedown
-            //addEventListener allows you to add multiple onmousedown handler
-            //Note if onmousedown has more than one handler so we can refactor accordingly
-            graphNodeRefs.current[index].onmousedown = (event) => moveNodeOnMouseDown(event, index);
+        if (nodes.current[index] !== undefined) {
+            nodes.current[index].onmousedown = (event) => moveNodeOnMouseDown(event, index);
         } else{
             return;
-        }
-        
+        } 
     }
 
 
@@ -278,13 +253,78 @@ export const Graph = ({width}: GraphProps) => {
         setSvgWidth(svgDimensions.width);
         setSvgHeight(svgDimensions.height);
         //Make the Graph Node Movable...will eventually take an index to indicate which node
-        if (graphNodeRefs.current) {
-            for (let i = 0; i < graphNodeRefs.current.length; i++) {
+        if (nodes.current) {
+            for (let i = 0; i < nodes.current.length; i++) {
                 setMovableGraphNode(i);
             }
         }
+        if (edge.current !== null) {
+            const nodeIds = edge.current.id.split(".");
+            let n1: number = parseInt(nodeIds[1]);
+            let n2: number = parseInt(nodeIds[2]);
+
+            if (edgeState.current)  {
+                edgeState.current.nodeOne = nodeStates.current[n1].node;
+                edgeState.current.nodeTwo = nodeStates.current[n2].node;
+                edgeState.current.elm = edge.current;
+                let x1 = Number(edge.current.getAttribute("x1"));
+                let x2 = Number(edge.current.getAttribute("x2"));
+                let y1 = Number(edge.current.getAttribute("y1"));
+                let y2 = Number(edge.current.getAttribute("y2"));
+                edgeState.current.x1 = x1
+                edgeState.current.x2 = x2
+                edgeState.current.y1 = y1
+                edgeState.current.y2 = y2
+
+                let lengthX = x2 - x1;
+                let lengthY = y2 - y1;
+
+                //a2 + b2 etc. Thought it was dot product, lol
+                let c = Math.sqrt(lengthX * lengthX + lengthY * lengthY);
+                if (c === 0.0) {
+                    lengthX = 0.0;
+                    lengthY = 0.0;
+                } else {
+                    //unit vector
+                    lengthX = lengthX / c;
+                    lengthY = lengthY /c;
+                }
+
+                lengthX = Math.abs (lengthX); lengthY = Math.abs (lengthY);
+                if (edgeState.current.nodeOne.ix > edgeState.current.nodeTwo.ix) { 
+                    lengthX *= -1.0; 
+                }
+                if (edgeState.current.nodeOne.iy > edgeState.current.nodeTwo.iy) { 
+                    lengthY *= -1.0; 
+                }
+
+                let px = -lengthY;
+                var py = lengthX;
+
+                let tmpx, tmpy;
+                // transform line endpoint coordinates (x1,y1) and (x2,y2) such that they are relative to the nodes when the line is horizontal (0 degrees)
+                edgeState.current.x1 -= edgeState.current.nodeOne.x; 
+                edgeState.current.y1 -= edgeState.current.nodeOne.y;
+                tmpx = edgeState.current.x1 * lengthX + edgeState.current.y1 * lengthY; 
+                tmpy = edgeState.current.x1 * px + edgeState.current.y1 * py; // projection of line vector on line unit vector and perp unit vector
+                edgeState.current.x1 = tmpx; 
+                edgeState.current.y1 = tmpy;
+                edgeState.current.x2 -= edgeState.current.nodeTwo.x; 
+                edgeState.current.y2 -= edgeState.current.nodeTwo.y;
+                tmpx = edgeState.current.x2 * lengthX + edgeState.current.y2 * lengthY; 
+                tmpy = edgeState.current.x2 * px + edgeState.current.y2 * py; // projection of line vector on line unit vector and perp unit vector
+                edgeState.current.x2 = tmpx; 
+                edgeState.current.y2 = tmpy;
+
+                //Push the new edge state to links
+                nodeStates.current[n1].node.links.push(edgeState.current);
+                nodeStates.current[n2].node.links.push(edgeState.current);
+
+            }
+        }
         
-    }, [graphSVGRef, graphNodeRefs])
+        //TODO: Possible remove edge from dependency lsit
+    }, [graphSVGRef, nodes, edge])
 
 
     return (
@@ -295,6 +335,16 @@ export const Graph = ({width}: GraphProps) => {
                 xmlnsXlink={"http://www.w3.org/1999/xlink"} 
                 className="notselectable nwlinkhovertoggle" 
                 height="900" id="svg_network_image" width={width} style={{verticalAlign: "top"}}>
+                <g id="edges">
+                    <g xmlns="http://www.w3.org/2000/svg" className="nwlinkwrapper" id="edge.0.1">
+                        <line xmlns="http://www.w3.org/2000/svg" 
+                            ref={edge}
+                            className="nw_edge" 
+                            id="line.17069343.17074188.0" 
+                            stroke="rgb(0,0,200)" 
+                            strokeOpacity="0" strokeWidth={"13"} x1="381" x2="480" y1="98" y2="207"/>
+                    </g>
+                </g>
                 <g id="nodes">
                     <defs>
                         <filter id="filter_shadow">
@@ -307,14 +357,14 @@ export const Graph = ({width}: GraphProps) => {
                         </filter>
                     </defs>
 
-                    <GraphNode startX={200} startY={200} radius={nodeImperativeRefs.current[0].node.radius} ref={(ref) => {
+                    <GraphNode nodeId={0}startX={200} startY={200} radius={nodeStates.current[0].node.radius} ref={(ref) => {
                         if (ref !== null) {
-                            graphNodeRefs.current.push(ref)}
+                            nodes.current.push(ref)}
                         }
                     } />
-                    <GraphNode startX={600} startY={600} radius={nodeImperativeRefs.current[1].node.radius} ref={(ref) => {
+                    <GraphNode nodeId={1}startX={600} startY={600} radius={nodeStates.current[1].node.radius} ref={(ref) => {
                         if (ref !== null) {
-                            graphNodeRefs.current.push(ref)}
+                            nodes.current.push(ref)}
                         }
                     } />
                 </g>
