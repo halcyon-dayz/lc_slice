@@ -1,22 +1,22 @@
 import React, { useEffect, useState, useRef} from 'react';
 import './App.css';
 import { 
-  Header, 
-  Layout, 
-  NavBarBue, 
-  NavBar, 
-  NavBarLeft, 
-  NavItem,
-  NavItemProps,
   Main,
+  NavItemProps,
+  NavItem
 } from './styles';
 
-import {Container, Bar, Section} from "react-simple-resizer"
+import {Container as ResizeContainer, Bar, Section} from "react-simple-resizer"
 import { PathFindingVisualizer } from './components/PathFindingVisualizer';
 import { Controls } from './components/Controls';
 import { useDispatch } from 'react-redux';
-import { changeGridCellSize } from './features/grids/gridsSlice';
+import { changeGridCellSize, changeGridLabel} from './features/grids/gridsSlice';
 import { useAppSelector } from './features/hooks';
+import Dropdown from "react-bootstrap/Dropdown"
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
 
 
 const NavItemLeftList: NavItemProps[] = [
@@ -39,27 +39,6 @@ type HeaderLayoutProps = {
   leftList: NavItemProps[]
 }
 
-const HeaderLayout = ({leftList}: HeaderLayoutProps) => {
-  return (<Layout>
-    <Header>
-      <NavBarBue>
-        <NavBar>
-          <NavBarLeft>
-            {leftList.map((li, idx) => (
-              <NavItem
-                key={idx}
-                text={li.text}
-                imageProps={li.imageProps}
-                href={li.href}
-                questions={li.questions}
-                />
-            ))}
-          </NavBarLeft>
-        </NavBar>
-      </NavBarBue>
-    </Header>
-  </Layout>);
-}
 
 type Coordinate = {
   x: number,
@@ -87,7 +66,7 @@ function App() {
   const leftSectionRef = useRef<HTMLDivElement>(null);
   const rightSectionRef = useRef<HTMLDivElement>(null);
 
-  //const dispatch = useDispatch();
+  const dispatch = useDispatch();
   useEffect(() => {
     window.addEventListener('resize', () => {
       setHeight(window.innerHeight - 44);
@@ -105,9 +84,20 @@ function App() {
 
   return (
     <div className="App">
-      <HeaderLayout leftList={NavItemLeftList}/>
+      <div id="navBarDiv">
+        <Navbar bg="primary" variant="dark">
+          <Container style={{"width": "100%", "marginLeft": "0px"}}>
+            <Navbar.Brand href="#home">Navbar</Navbar.Brand>
+            <Nav className="me-auto">
+              <NavDropdown title="Grid Problems">
+                <NavDropdown.Item onClick={() => dispatch(changeGridLabel({gridIndex: 0, label: "Bleh"}))}>FloodFill</NavDropdown.Item>
+              </NavDropdown>
+            </Nav>
+          </Container>
+        </Navbar>
+      </div>
       <Main>
-        <Container style={{position: "relative", height: `${height}px`}}>
+        <ResizeContainer style={{position: "relative", height: `${height}px`}}>
         <Section innerRef={leftSectionRef} style={{
           background: 'rgb(240, 240, 240)',
           overflow: "auto",
@@ -128,7 +118,7 @@ function App() {
         >
           <PathFindingVisualizer rightWidth={rightWidth}/>
         </Section>
-        </Container>
+        </ResizeContainer>
       </Main>    
     </div>
   );

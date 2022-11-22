@@ -1,21 +1,6 @@
-import React, {useState, useCallback, useEffect, useRef} from "react"
+import React, {useCallback, useEffect, useRef} from "react"
 import {GraphNode} from "./GraphNode"
 import {useImmer} from "use-immer"
-
-type XY = {
-    x: number,
-    y: number
-}
-
-//Needed for edges as I understand it
-type Node<T> = {
-    x: number,
-    y: number, 
-    ix: number, 
-    iy: number,
-    radius: number,
-    links: T[],
-}
 
 
 type GraphNodeStateDeclarativeType= {
@@ -38,9 +23,9 @@ type NodeType = {
 }
 
 type EdgeImperativeType = {
-    nodeOne: NodeType,
-    nodeTwo: NodeType,
-    elm: SVGLineElement,
+    n1Idx: number,
+    n2Idx: number,
+    edgeIdx: number,
     x1: number,
     x2: number,
     y1: number, 
@@ -56,14 +41,7 @@ type nodeImperativeType = {
         x: number, 
         y: number
     },
-    node: {
-        x: number, 
-        y: number,
-        ix: number,
-        iy: number,
-        radius: number,
-        links: EdgeImperativeType[],
-    }
+    node: NodeType
 }
 
 
@@ -74,18 +52,9 @@ export type GraphProps = {
 
 export const Graph = ({width}: GraphProps) => {
 
-    const [svgWidth, setSvgWidth] = useState<number>(width);
-    const [svgHeight, setSvgHeight] = useState<number>(450.0);
-
-    useEffect(() => {
-        setSvgWidth(width);
-    }, [width])
-
     const selectedNode = useRef<number>(0);
 
-    const edge = useRef<SVGLineElement>(null);
-
-    const edgeState = useRef<EdgeImperativeType>(null);
+    const edges = useRef<SVGLineElement[]>([]);
 
     //Ref of the entire graph
     const graphSVGRef = useRef<SVGSVGElement>(null);
@@ -165,12 +134,6 @@ export const Graph = ({width}: GraphProps) => {
             state.isBeingDragged = true;
         })
 
-        //Set svgWidth if it has not yet been set
-        if (graphSVGRef.current !== null) {
-            setSvgWidth(graphSVGRef.current.clientWidth);
-            setSvgHeight(graphSVGRef.current.clientHeight);
-        }
-
         //Get new mouse coordinates
         const newMouseX = e.clientX;
         const newMouseY = e.clientY;
@@ -202,12 +165,65 @@ export const Graph = ({width}: GraphProps) => {
         //Move the node to where the node object lay + (new position of mouse - where the mouse started)
         nodeStates.current[curNode].node.x = newNodePosX;
         nodeStates.current[curNode].node.y = newNodePosY;
+
+        //Account for the node's initial position before applying a translation
         let prevIX = nodeStates.current[curNode].node.ix
         let prevIY = nodeStates.current[curNode].node.iy
         let x = newNodePosX - prevIX;
         let y = newNodePosY - prevIY;
-
         nodes.current[curNode].setAttribute("transform", "translate(" + (x) + "," + (y) + ")")
+
+        //Now modify the edges between nodes
+
+        for (let i = 0; i < nodeStates.current[curNode].node.links.length; i++) {
+            //Get the indexes of the nodes referred to in the current link of the current node
+            let n1 = nodeStates.current[curNode].node.links[i].n1Idx;
+            let n2 = nodeStates.current[curNode].node.links[i].n2Idx;
+            let edgeIndex = nodeStates.current[curNode].node.links[i].edgeIdx;
+
+            console.log(`Cur Node ${curNode} n1 ${n1} n2 ${n2}`)
+
+            let x1 = nodeStates.current[curNode].node.links[i].x1;
+            let x2 = nodeStates.current[curNode].node.links[i].x2;
+            let y1 = nodeStates.current[curNode].node.links[i].y1;
+            let y2 = nodeStates.current[curNode].node.links[i].y2;
+
+            let nodeOne = nodeStates.current[n1].node;
+            let nodeTwo = nodeStates.current[n2].node;
+            //Get new x and y lengths
+            let lengthX = nodeTwo.x - nodeOne.x;
+            let lengthY = nodeTwo.y - nodeOne.y;
+            let c = (lengthX * lengthX + lengthY * lengthY);
+            if (c === 0.0) {
+                lengthX = 0.0; lengthY = 0.0;
+            } else {
+                lengthX = lengthX / c;
+                lengthY = lengthY / c;
+            }
+            
+
+            let px = -lengthY;
+            let py = lengthX;
+
+            //The node positions won't be updated dynamically
+            if (edges.current[edgeIndex]) {
+                //Set edge position to Node1 position + unitVector * old position
+                let newX1 = nodeOne.x + lengthX * x1 + px * y1;
+                let newY1 = nodeOne.y + lengthY * x1 + py * y1;
+                let newX2 = nodeTwo.x + lengthX * x2 + px * y2;
+                let newY2 = nodeTwo.y + lengthY * x2 + py * y2;
+                nodeStates.current[curNode].node.links[i].x1 = newX1;
+                nodeStates.current[curNode].node.links[i].x2 = newX2;
+                nodeStates.current[curNode].node.links[i].y1 = newY1;
+                nodeStates.current[curNode].node.links[i].y2 = newY2;
+                edges.current[edgeIndex].setAttribute("x1", (newX1).toString());
+                edges.current[edgeIndex].setAttribute("y1", (newY1).toString());
+                edges.current[edgeIndex].setAttribute("x2", (newX2).toString());
+                edges.current[edgeIndex].setAttribute("y2", (newY2).toString());
+            }
+        }
+
+
         return false;
     }, [width])
 
@@ -248,33 +264,33 @@ export const Graph = ({width}: GraphProps) => {
         if (graphSVGRef.current === null) {
             return;
         }
-        //Set correct width and height once graphsvg has been found
-        let svgDimensions = graphSVGRef.current.getBoundingClientRect();
-        setSvgWidth(svgDimensions.width);
-        setSvgHeight(svgDimensions.height);
         //Make the Graph Node Movable...will eventually take an index to indicate which node
         if (nodes.current) {
             for (let i = 0; i < nodes.current.length; i++) {
                 setMovableGraphNode(i);
             }
         }
-        if (edge.current !== null) {
-            const nodeIds = edge.current.id.split(".");
-            let n1: number = parseInt(nodeIds[1]);
-            let n2: number = parseInt(nodeIds[2]);
 
-            if (edgeState.current)  {
-                edgeState.current.nodeOne = nodeStates.current[n1].node;
-                edgeState.current.nodeTwo = nodeStates.current[n2].node;
-                edgeState.current.elm = edge.current;
-                let x1 = Number(edge.current.getAttribute("x1"));
-                let x2 = Number(edge.current.getAttribute("x2"));
-                let y1 = Number(edge.current.getAttribute("y1"));
-                let y2 = Number(edge.current.getAttribute("y2"));
-                edgeState.current.x1 = x1
-                edgeState.current.x2 = x2
-                edgeState.current.y1 = y1
-                edgeState.current.y2 = y2
+        if (edges.current && nodeStates.current) {
+            for (let i = 0; i < edges.current.length; i++) {
+                const nodeIds = edges.current[i].id.split(".");
+                //Get the indexes of the nodes connected by the edge
+                let n1: number = parseInt(nodeIds[1]);
+                let n2: number = parseInt(nodeIds[2]);
+                let x1 = Number(edges.current[i].getAttribute("x1"));
+                let x2 = Number(edges.current[i].getAttribute("x2"));
+                let y1 = Number(edges.current[i].getAttribute("y1"));
+                let y2 = Number(edges.current[i].getAttribute("y2"));
+                //Assign current values to edgeState
+                let edgeState: EdgeImperativeType = {
+                    n1Idx: n1,
+                    n2Idx: n2,
+                    edgeIdx: i,
+                    x1: x1,
+                    x2: x2,
+                    y1: y1, 
+                    y2: y2,
+                }
 
                 let lengthX = x2 - x1;
                 let lengthY = y2 - y1;
@@ -290,11 +306,12 @@ export const Graph = ({width}: GraphProps) => {
                     lengthY = lengthY /c;
                 }
 
+                //If the first node is after the second node, negate the length
                 lengthX = Math.abs (lengthX); lengthY = Math.abs (lengthY);
-                if (edgeState.current.nodeOne.ix > edgeState.current.nodeTwo.ix) { 
+                if (nodeStates.current[n1].node.ix > nodeStates.current[n2].node.ix) { 
                     lengthX *= -1.0; 
                 }
-                if (edgeState.current.nodeOne.iy > edgeState.current.nodeTwo.iy) { 
+                if (nodeStates.current[n1].node.iy > nodeStates.current[n2].node.iy) { 
                     lengthY *= -1.0; 
                 }
 
@@ -303,28 +320,27 @@ export const Graph = ({width}: GraphProps) => {
 
                 let tmpx, tmpy;
                 // transform line endpoint coordinates (x1,y1) and (x2,y2) such that they are relative to the nodes when the line is horizontal (0 degrees)
-                edgeState.current.x1 -= edgeState.current.nodeOne.x; 
-                edgeState.current.y1 -= edgeState.current.nodeOne.y;
-                tmpx = edgeState.current.x1 * lengthX + edgeState.current.y1 * lengthY; 
-                tmpy = edgeState.current.x1 * px + edgeState.current.y1 * py; // projection of line vector on line unit vector and perp unit vector
-                edgeState.current.x1 = tmpx; 
-                edgeState.current.y1 = tmpy;
-                edgeState.current.x2 -= edgeState.current.nodeTwo.x; 
-                edgeState.current.y2 -= edgeState.current.nodeTwo.y;
-                tmpx = edgeState.current.x2 * lengthX + edgeState.current.y2 * lengthY; 
-                tmpy = edgeState.current.x2 * px + edgeState.current.y2 * py; // projection of line vector on line unit vector and perp unit vector
-                edgeState.current.x2 = tmpx; 
-                edgeState.current.y2 = tmpy;
+                edgeState.x1 -= nodeStates.current[n1].node.x;
+                edgeState.y1 -= nodeStates.current[n1].node.y;
+                tmpx = edgeState.x1 * lengthX + edgeState.y1 * lengthY; 
+                tmpy = edgeState.x1 * px + edgeState.y1 * py; // projection of line vector on line unit vector and perp unit vector
+                edgeState.x1 = tmpx; 
+                edgeState.y1 = tmpy;
+                edgeState.x2 -= nodeStates.current[n2].node.x;
+                edgeState.y2 -= nodeStates.current[n2].node.y;
+                tmpx = edgeState.x2 * lengthX + edgeState.y2 * lengthY; 
+                tmpy = edgeState.x2 * px + edgeState.y2 * py; // projection of line vector on line unit vector and perp unit vector
+                edgeState.x2 = tmpx; 
+                edgeState.y2 = tmpy;
 
                 //Push the new edge state to links
-                nodeStates.current[n1].node.links.push(edgeState.current);
-                nodeStates.current[n2].node.links.push(edgeState.current);
-
+                nodeStates.current[n1].node.links.push(edgeState);
+                nodeStates.current[n2].node.links.push(edgeState);
             }
-        }
+        }   
         
         //TODO: Possible remove edge from dependency lsit
-    }, [graphSVGRef, nodes, edge])
+    }, [graphSVGRef, nodes, edges])
 
 
     return (
@@ -338,11 +354,15 @@ export const Graph = ({width}: GraphProps) => {
                 <g id="edges">
                     <g xmlns="http://www.w3.org/2000/svg" className="nwlinkwrapper" id="edge.0.1">
                         <line xmlns="http://www.w3.org/2000/svg" 
-                            ref={edge}
+                            ref={(ref) => {
+                                if (ref !== null) {
+                                    edges.current.push(ref)
+                                }
+                            }}
                             className="nw_edge" 
-                            id="line.17069343.17074188.0" 
+                            id="line.0.1.0" 
                             stroke="rgb(0,0,200)" 
-                            strokeOpacity="0" strokeWidth={"13"} x1="381" x2="480" y1="98" y2="207"/>
+                            strokeOpacity="1" strokeWidth={"13"} x1="200" x2="600" y1="200" y2="600"/>
                     </g>
                 </g>
                 <g id="nodes">
