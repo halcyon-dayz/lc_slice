@@ -121,20 +121,20 @@ export const Problem417Controller = ({animationOn, play, pause, animationSpeed}:
             <div style={{display: "flex", "flexDirection": "column", alignItems: "center"}}>
                 <div>Created three grids!</div>
                 {[...Array(3)].map((ele, idx) => (
-                    <motion.h4 
+                    <motion.h4 key={`LOG_${gridLabels[idx]}`}
                         whileHover={{scale: 1.4, transition: {duration: 0.2, ease: "easeOut"}}} style={{"display": "inline-block", margin: "0 0 0 0"}}
                     onMouseEnter={() => 
                         dispatch(changeGridCellSize({
                             gridIndex: idx, 
-                            width: 60, 
-                            height: 60
+                            width: 70, 
+                            height: 70
                         }))
                     }
                     onMouseLeave={() => 
                         dispatch(changeGridCellSize({
                             gridIndex: idx, 
-                            width: 50, 
-                            height: 50
+                            width: 60, 
+                            height: 60
                         }))
                     }   
                 >

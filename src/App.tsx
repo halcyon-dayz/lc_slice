@@ -7,7 +7,6 @@ import {
 } from './styles';
 
 import {Container as ResizeContainer, Bar, Section} from "react-simple-resizer"
-import { PathFindingVisualizer } from './components/PathFindingVisualizer';
 import { Controls } from './components/Controls';
 import { useDispatch } from 'react-redux';
 import { changeGridCellSize, changeGridLabel} from './features/grids/gridsSlice';
@@ -17,6 +16,9 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import { deleteAllStructs } from './features/sharedActions';
+import { clearState } from './components/Controllers/controllerUtils';
+import { DataStructureDisplay } from './components';
 
 
 const NavItemLeftList: NavItemProps[] = [
@@ -79,7 +81,29 @@ function App() {
       setRightWidth(rightSectionRef.current.clientWidth);
     }
 
-  }, [rightSectionRef])
+  }, [rightSectionRef]);
+
+
+  const GridProblems = [
+      {
+        title: "733. Flood Fill",
+        action: () => {
+          clearState(dispatch, 733);
+        }
+      }, 
+      {
+        title: "417. Pacific Atlantic Waterflow", 
+        action: () => {
+          clearState(dispatch, 417);
+        }
+      },
+      {
+        title: "All Paths to Cells",
+        action: () => {
+          clearState(dispatch, 21);
+        }
+      }
+  ];
 
 
   return (
@@ -87,10 +111,12 @@ function App() {
       <div id="navBarDiv">
         <Navbar bg="primary" variant="dark">
           <Container style={{"width": "100%", "marginLeft": "0px"}}>
-            <Navbar.Brand href="#home">Navbar</Navbar.Brand>
+            <Navbar.Brand href="#home">LC_SLICE</Navbar.Brand>
             <Nav className="me-auto">
               <NavDropdown title="Grid Problems">
-                <NavDropdown.Item onClick={() => dispatch(changeGridLabel({gridIndex: 0, label: "Bleh"}))}>FloodFill</NavDropdown.Item>
+                {GridProblems.map((problem, idx) => (
+                  <NavDropdown.Item key={problem.title} onClick={problem.action}>{problem.title}</NavDropdown.Item>
+                ))}
               </NavDropdown>
             </Nav>
           </Container>
@@ -108,7 +134,7 @@ function App() {
         <Section innerRef={rightSectionRef} 
           onSizeChanged={() => {
             if (rightSectionRef.current) {
-              setRightWidth(rightSectionRef.current?.clientWidth)
+              setRightWidth(rightSectionRef.current?.clientWidth);
             }
           }}
         style={{ 
@@ -116,7 +142,7 @@ function App() {
           overflow: "auto",
           }} minSize={100}
         >
-          <PathFindingVisualizer rightWidth={rightWidth}/>
+          <DataStructureDisplay rightWidth={rightWidth}/>
         </Section>
         </ResizeContainer>
       </Main>    

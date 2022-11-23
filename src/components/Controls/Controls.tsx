@@ -20,6 +20,7 @@ import { Problem695Controller } from "../Controllers/Problem695";
 import { Problem733Controller } from "../Controllers/Problem733";
 import { addArray, copyArray } from "../../features/sharedActions";
 import {motion} from "framer-motion"
+import { CreateProblemController } from "./CreateProblemController";
 //#endregion
 
 
@@ -36,6 +37,7 @@ export const Controls = () => {
 
     const dispatch = useAppDispatch();
     const problemLog = useAppSelector(state => state.problem.problemLog);
+    const problemNumber = useAppSelector(state => state.problem.problemNumber);
 
 
 
@@ -307,24 +309,15 @@ export const Controls = () => {
     return (
     <LeftContainer>
         <div className="controls_container">
-        {/*<div className={"controller_buttons_container"}>
-            <button className={"controller_button"} onClick={() => dispatch(copyArray({data: [1, 2, 3, 4, 5]}))}>Set Up</button>
-            <button className={"controller_button"} onClick={() => setTest([...test, "Pushed new array at [0, 0]"])}>Set Up</button>
-        </div>*/}
-        <Problem733Controller 
-            animationOn={animationOn}
-            play={play}
-            pause={pause}
-            animationSpeed={animationSpeed}
-        />
-        <Problem417Controller 
-            animationOn={animationOn}
-            play={play}
-            pause={pause}
-            animationSpeed={animationSpeed}
-        />
+            <CreateProblemController 
+                problemNumber={problemNumber}
+                animationOn={animationOn}
+                play={play}
+                pause={pause}
+                animationSpeed={animationSpeed}
+            />
         <br></br>
-        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "20px"}}>
+        <div style={{display: "flex", flexDirection: "row", "justifyContent": "flex-start", marginLeft: "10px"}}>
             {"Animation Speed: "}
             <input
                 type="number"

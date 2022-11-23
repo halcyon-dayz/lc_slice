@@ -1,2 +1,2 @@
 export * from "./Node"
-export * from "./PathFindingVisualizer"
+export * from "./DataStructureDisplay/DataStructureDisplay"

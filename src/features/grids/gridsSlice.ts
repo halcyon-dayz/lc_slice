@@ -270,8 +270,8 @@ const gridsSlice = createSlice({
 				   indexInList: (prevLength - 1) + i,
 				   label: `Grid #${prevLength + i}`,
 				   cells: defaultGrid,
-				   cellStyleHeight: 50,
-				   cellStyleWidth: 50,
+				   cellStyleHeight: 60,
+				   cellStyleWidth: 60,
 				   width: defaultGrid[0].length,
 				   height: defaultGrid.length
 			   };
@@ -319,8 +319,8 @@ const gridsSlice = createSlice({
 				indexInList: (prevLength),
 				label: `Grid #${prevLength + 1}`,
 				cells: cells,
-				cellStyleHeight: 50,
-				cellStyleWidth: 50,
+				cellStyleHeight: 60,
+				cellStyleWidth: 60,
 				width: cells[0].length,
 				height: cells.length
 			};
@@ -341,8 +341,8 @@ const gridsSlice = createSlice({
 				   	indexInList: (prevLength - 1) + i,
 				   	label: `Grid #${prevLength + i}`,
 				   	cells: defaultGrid,
-				   	cellStyleHeight: 50,
-				   	cellStyleWidth: 50,
+				   	cellStyleHeight: 60,
+				   	cellStyleWidth: 60,
 				   	width: defaultGrid[0].length,
 				   	height: defaultGrid.length
 			   	};

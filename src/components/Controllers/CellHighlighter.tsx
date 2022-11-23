@@ -39,8 +39,8 @@ export const CellHighlighter = ({dispatch, cell}: CellHighlighterProps) => {
                     gridIndex: 0, 
                     row: cell[0],
                     col: cell[1],
-                    width: 60, 
-                    height: 60,
+                    width: 70, 
+                    height: 70,
                     }))
             }}
             onMouseLeave={() => {

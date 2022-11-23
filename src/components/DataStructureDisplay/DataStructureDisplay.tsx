@@ -7,11 +7,11 @@ import "./ds.css"
 import { Graph} from "../Graph/Graph"
 
 
-type PFVProps = {
+type DSDisplayProps = {
     rightWidth: number,
 }
 
-export const PathFindingVisualizer = ({rightWidth}: PFVProps) => {
+export const DataStructureDisplay = ({rightWidth}: DSDisplayProps) => {
     const gridsLength = useAppSelector((state: RootState) => state.grids.length);
     const arraysLength = useAppSelector((state: RootState) => state.arrays.length);
 
@@ -31,9 +31,9 @@ export const PathFindingVisualizer = ({rightWidth}: PFVProps) => {
                     key={`Array_${idx}`}
                 />);
             })}
-            {[...Array(1)].map((graph, idx) => (
+            {/*{[...Array(1)].map((graph, idx) => (
                 <Graph key={`Graph_${idx}`} width={rightWidth}/>
-            ))}
+            ))}*/}
         </div>
     )  
 }

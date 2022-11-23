@@ -68,7 +68,7 @@ type NodeInnerProps = {
 }
 export const NodeInner = ({cellData, cellStatus, cellWidth, cellHeight, styleWidth, styleHeight, onEditData}: NodeInnerProps) => {
     const variants = {
-        normal: {width: 50, height: 50},
+        normal: {width: 60, height: 60},
         change: {
             width: `${cellWidth ? cellWidth : styleWidth}px`, 
             height: `${cellHeight ? cellHeight : styleHeight}px`,

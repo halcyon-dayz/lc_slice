@@ -4,7 +4,7 @@ import {
      useSelector 
 } from "react-redux";
 
-import { selectAllGrids, changeGridCell, changeGridCellStatus, changeGridCellSize} from "../../../features/grids/gridsSlice";
+import { selectAllGrids, changeGridCell, changeGridCellStatus, changeGridCellSize, changeGridCellData} from "../../../features/grids/gridsSlice";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 import { RootState } from "../../../utils/types";
 import { GRID_733_FLOOD_FILL } from "../../../features/grids/defaultGrids";
@@ -13,11 +13,13 @@ import "../controller.css"
 import { copyGrid, deleteAllStructs} from "../../../features/sharedActions";
 import {
     ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL,
+    DirectionString,
     GRID_CELL_INDEX_HAS_DATA,
 } from "../../../features/grids/gridUtils"
 import { changeProblemNumber, pushJSXToLog, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
 import { clearState } from "../controllerUtils";
 import {motion} from "framer-motion"
+import {SearchFromToLog } from "../GridControllers/logUtils";
 //#endregion
 
 type P733_PROPS = {
@@ -79,15 +81,15 @@ export const Problem733Controller = ({animationOn, play, pause, animationSpeed}:
                     onMouseEnter={() => 
                         dispatch(changeGridCellSize({
                             gridIndex: 0, 
-                            width: 60, 
-                            height: 60
+                            width: 70, 
+                            height: 70
                         }))
                     }
                     onMouseLeave={() => 
                         dispatch(changeGridCellSize({
                             gridIndex: 0, 
-                            width: 50, 
-                            height: 50
+                            width: 60, 
+                            height: 60
                     }))
                     }   
                 >
@@ -106,7 +108,8 @@ export const Problem733Controller = ({animationOn, play, pause, animationSpeed}:
 
     const exploreAndPushStack = (
         cell: [number, number], 
-        nextCell: [number, number]
+        nextCell: [number, number],
+        direction: DirectionString
     ) => {
         //Indicate that the current cell is explored
         dispatch(changeGridCellStatus({
@@ -122,6 +125,15 @@ export const Problem733Controller = ({animationOn, play, pause, animationSpeed}:
             col: nextCell[1],
             status: "CURRENT"
         }))
+        let element = (
+            <SearchFromToLog 
+                dispatch={dispatch}
+                cell={cell}
+                nextCell={nextCell}
+                direction={direction}
+            />
+        );
+        dispatch(pushJSXToLog({element: element}));
         //Add the current context to the stack
         setStack([...stack, cell])
         //Set current cell to next cell
@@ -132,31 +144,35 @@ export const Problem733Controller = ({animationOn, play, pause, animationSpeed}:
         const [northOfCur, eastOfCur, southOfCur, westOfCur] = 
             ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(cell);
         if (dfsCellIsValid(northOfCur)) {
-            exploreAndPushStack(cell, northOfCur);
+            exploreAndPushStack(cell, northOfCur, "north");
             return true;
         }
         if (dfsCellIsValid(eastOfCur)) {
-            exploreAndPushStack(cell, eastOfCur);
+            exploreAndPushStack(cell, eastOfCur, "east");
             return true;
         }
         if (dfsCellIsValid(southOfCur)) {
-            exploreAndPushStack(cell, southOfCur);
+            exploreAndPushStack(cell, southOfCur, "south");
             return true;
         }
         if (dfsCellIsValid(westOfCur)) {
-            exploreAndPushStack(cell, westOfCur);
+            exploreAndPushStack(cell, westOfCur, "west");
             return true;
         }
     }
 
 
     const clickStep733 = () => {
-        dispatch(changeGridCell({
+        if (gridCells[currentCell[0]][currentCell[1]].data !== toReplace) {
+            let element: JSX.Element = <p><i>{`WARNING! `}</i>The cell does not have a value from which a flood fill can occur.</p>
+            dispatch(pushJSXToLog({element: element}));
+            return;
+        }
+        dispatch(changeGridCellData({
             gridIndex: 0, 
             data: replaceWith, 
             row: currentCell[0], 
             col: currentCell[1], 
-            status: "EXPLORED"
         }))
 
         if (dfs(currentCell)) {
