@@ -122,7 +122,7 @@ function App() {
           </Container>
         </Navbar>
       </div>
-      <Main>
+      <Main> {/*sdfsdfsfs*/}
         <ResizeContainer style={{position: "relative", height: `${height}px`}}>
         <Section innerRef={leftSectionRef} style={{
           background: 'rgb(240, 240, 240)',
