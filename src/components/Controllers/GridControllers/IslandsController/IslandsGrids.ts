@@ -1,3 +1,17 @@
+const GRID_200_A = [
+    [1, 1, 1, 1, 0],
+    [1, 1, 0, 1, 1],
+    [1, 1, 0, 0, 0],
+    [0, 0, 0, 1, 1]
+]
+
+const GRID_200_B = [
+    [1,1,0,0,0],
+    [1,1,0,0,0],
+    [0,0,1,0,0],
+    [0,0,0,1,1]
+]
+
 const GRID_695_A: number[][] = [
     [0,0,1,0,0,0,0,1,0,0,0,0,0],
     [0,0,0,0,0,0,0,1,1,1,0,0,0],
@@ -11,4 +25,4 @@ const GRID_695_A: number[][] = [
 
 const GRID_695_B = [[0,0,0,0,0,0,0,0]];
 
-export const DEFAULT_695_GRIDS = [GRID_695_A, GRID_695_B];
+export const DEFAULT_ISLANDS_GRIDS = [GRID_200_A, GRID_200_B, GRID_695_A, GRID_695_B];

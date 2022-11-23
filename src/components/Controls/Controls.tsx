@@ -1,25 +1,11 @@
 // #region Imports
 import { LeftContainer } from "./styles"
 import React, {useState, useEffect} from "react"
-import { useSelector} from "react-redux";
-import { 
-    changeGridCell, 
-    selectAllGrids,
-    changeGridCellStatus
-} from "../../features/grids/gridsSlice";
-import { floodFill} from "../../features/grids/gridsSlice";
 import { useAppDispatch, useAppSelector } from "../../features/hooks";
 import { GRID_CONTEXT } from "../../features/grids/gridTypes";
 import { 
     ARRAY_2D_GET_NEXT_INDEX, 
 } from "../../features/grids/gridUtils";
-import { UtilitiesController } from "../Controllers/UtilitiesController";
-import { Problem417Controller } from "../Controllers/Problem417/Problem417Controller";
-import { Problem1091Controller } from "../Controllers/Problem1091";
-import { Problem695Controller } from "../Controllers/Problem695";
-import { Problem733Controller } from "../Controllers/Problem733";
-import { addArray, copyArray } from "../../features/sharedActions";
-import {motion} from "framer-motion"
 import { CreateProblemController } from "./CreateProblemController";
 //#endregion
 
@@ -337,15 +323,3 @@ export const Controls = () => {
         </div>
     </LeftContainer>);
 }
-
-/* return (
-                    <motion.div 
-                        className="controller_contents_container"
-                        style={{"marginLeft": "20px"}}
-                        initial={{opacity: 0, x: 100, y: 100, fontSize: "12px"}}
-                        animate={{opacity: 1, x: 0, y: 0, fontSize: "16px"}}
-                    >
-                        <i>{str}</i>
-                    </motion.div>
-                )
-            })} */

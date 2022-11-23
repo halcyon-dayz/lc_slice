@@ -1,25 +1,34 @@
-import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-import { deleteGrid, copyGrid, deleteAllStructs } from "../../../features/sharedActions";
-import { changeGridCell, changeGridCellData, changeGridCellStatus } from "../../../features/grids/gridsSlice";
 import React, {useState, useEffect} from "react"
-import { DEFAULT_695_GRIDS } from "./695Defaults";
-import {Cell} from "../../../utils/types"
-import { changeProblemNumber, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
-import { BasicController } from "../BasicController";
-import {GRID_CELL_INDEX_HAS_DATA, ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL, GRID_CELL_INDEX_GET_DATA, ARRAY_2D_GET_NEXT_INDEX} from "../../../features/grids/gridUtils"
-import { current } from "@reduxjs/toolkit";
-import { clearState } from "../controllerUtils";
-
-
+import { useAppDispatch, useAppSelector } from "../../../../features/hooks";
+import { 
+    deleteGrid, 
+    copyGrid, 
+    deleteAllStructs 
+} from "../../../../features/sharedActions";
+import { 
+    changeGridCell, 
+    changeGridCellData, 
+    changeGridCellStatus 
+} from "../../../../features/grids/gridsSlice";
+import { 
+    DEFAULT_ISLANDS_GRIDS 
+} from "./IslandsGrids";
+import {Cell} from "../../../../utils/types"
+import {selectProblemNumber } from "../../../../features/problemInfo/problemSlice";
+import { BasicController } from "../../BasicController";
+import {GRID_CELL_INDEX_HAS_DATA, ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL, GRID_CELL_INDEX_GET_DATA, ARRAY_2D_GET_NEXT_INDEX} from "../../../../features/grids/gridUtils"
+import { clearState } from "../../controllerUtils";
+    
+    
 type P695_CONTEXT = [number, number][]
-
+    
 type P617_PROPS = {
     animationOn: boolean,
     play: () => void,
     pause: () => void,
     animationSpeed: number
 }
-
+    
 export const Problem695Controller = ({animationOn, play, pause, animationSpeed}: P617_PROPS) => {
     /* Access the Global State */
     const dispatch = useAppDispatch();
@@ -31,6 +40,13 @@ export const Problem695Controller = ({animationOn, play, pause, animationSpeed}:
     const [currentCell, setCurrentCell] = useState<[number, number]>([0, 0]);
     const [stack, setStack] = useState<P695_CONTEXT>([]);
 
+    //Function return values
+    const [numIslands, setNumIslands] = useState<number>(0);
+    const [maxArea, setMaxArea] = useState<number>(0);
+    const [numClosedIslands, setNumClosedIslands] = useState<number>(0);
+    const [numEnclaves, setNumEnclaves] = useState<number>(0);
+
+
     useEffect(() => {
         if (animationOn && problemNumber === 695) {
             setTimeout(() => clickStep695(), animationSpeed);
@@ -41,9 +57,9 @@ export const Problem695Controller = ({animationOn, play, pause, animationSpeed}:
     const clickSetUp695 = () => {
         clearState(dispatch, 695);
         //Get new grid
-        const data = DEFAULT_695_GRIDS[defaultGridIndex];
+        const data = DEFAULT_ISLANDS_GRIDS[defaultGridIndex];
         //Set index to next grid
-        setDefaultGridIndex((defaultGridIndex + 1) % DEFAULT_695_GRIDS.length);
+        setDefaultGridIndex((defaultGridIndex + 1) % DEFAULT_ISLANDS_GRIDS.length);
         //Generate cells
         const newGrid: Cell[][] = data.map((row, rowIdx) => {
             return row.map((col, colIdx) => {
@@ -170,18 +186,22 @@ export const Problem695Controller = ({animationOn, play, pause, animationSpeed}:
     }
 
     return (
-        <BasicController 
-            label={"Max Area of Island"}
-            setup={clickSetUp695}
-            step={clickStep695}
-            pause={pause}
-            play={() => {
-                if (problemNumber !== 695) {
-                    clickSetUp695()
-                }
-                play()
-            }}
-        />
-    );
+        <div>
+            <BasicController 
+                label={"Parse Islands"}
+                setup={clickSetUp695}
+                step={clickStep695}
+                pause={pause}
+                play={() => {
+                    if (problemNumber !== 695) {
+                        clickSetUp695()
+                    }
+                    play()
+                }}
+            />
+            <div>
 
-} 
+            </div>
+        </div>
+    );
+}
