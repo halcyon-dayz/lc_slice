@@ -12,6 +12,36 @@ type GraphNodeStateDeclarativeType= {
     onMouseMoveCallback: (this: any, event: MouseEvent) => any,
 }
 
+type XY = {
+    x: number,
+    y: number
+}
+
+const RotatePolygon = (angle: number, points: XY[]): XY[] => {
+    let cosAngle = Math.cos(angle);
+    let sinAngle = Math.sin(angle);
+
+    let newPoints: XY[] = [];
+    
+    for (let i = 0; i < points.length; i++) {
+        let new_x = points[i].x * cosAngle - points[i].y * sinAngle;
+        let new_y = points[i].x * sinAngle + points[i].y * cosAngle;
+        newPoints[i] = {x: new_x, y: new_y};
+    }
+    return newPoints;
+}
+
+const TranslatePolygon = (x: number, y: number, points: XY[]): XY[] => {
+    let newPoints: XY[] = [];
+    for (let i = 0; i < points.length; i++) {
+        let new_x = points[i].x + x;
+        let new_y = points[i].y + y;
+        newPoints[i] = {x: new_x, y: new_y}
+    }
+    return newPoints;
+}
+
+
 
 type NodeType = {
     x: number,
@@ -56,6 +86,38 @@ export const Graph = ({width}: GraphProps) => {
 
     const edges = useRef<SVGLineElement[]>([]);
 
+    const arrowRef = useRef<SVGPolygonElement>(null);
+    const arrowState = useRef({
+        mesh: [
+            {
+                x: 0,
+                y: -50
+            },
+            {
+                x: -50,
+                y: 50,
+            },
+            {
+                x: 50,
+                y: 50,
+            },
+        ],
+        points: [
+            {
+                x: 0,
+                y: -50
+            },
+            {
+                x: -50,
+                y: 50,
+            },
+            {
+                x: 50,
+                y: 50,
+            },
+        ]
+    })
+
     //Ref of the entire graph
     const graphSVGRef = useRef<SVGSVGElement>(null);
     //Forwareded ref from GraphNodeObject
@@ -90,10 +152,10 @@ export const Graph = ({width}: GraphProps) => {
                 y: 0,
             },
             node: {
-                x: 200,
-                y: 200, 
-                ix: 200,
-                iy: 200,
+                x: 600,
+                y: 600, 
+                ix: 600,
+                iy: 600,
                 radius: 30,
                 links: [],
             }
@@ -181,15 +243,20 @@ export const Graph = ({width}: GraphProps) => {
             let n2 = nodeStates.current[curNode].node.links[i].n2Idx;
             let edgeIndex = nodeStates.current[curNode].node.links[i].edgeIdx;
 
-            console.log(`Cur Node ${curNode} n1 ${n1} n2 ${n2}`)
-
-            let x1 = nodeStates.current[curNode].node.links[i].x1;
+            /*let x1 = nodeStates.current[curNode].node.links[i].x1;
             let x2 = nodeStates.current[curNode].node.links[i].x2;
             let y1 = nodeStates.current[curNode].node.links[i].y1;
-            let y2 = nodeStates.current[curNode].node.links[i].y2;
+            let y2 = nodeStates.current[curNode].node.links[i].y2; */
 
+            //Get the affected nodes
             let nodeOne = nodeStates.current[n1].node;
             let nodeTwo = nodeStates.current[n2].node;
+            //Get their current positions
+            let x1 = nodeStates.current[n1].node.x;
+            let x2 = nodeStates.current[n2].node.x;
+            let y1 = nodeStates.current[n1].node.y;
+            let y2 = nodeStates.current[n2].node.y;
+
             //Get new x and y lengths
             let lengthX = nodeTwo.x - nodeOne.x;
             let lengthY = nodeTwo.y - nodeOne.y;
@@ -212,6 +279,8 @@ export const Graph = ({width}: GraphProps) => {
                 let newY1 = nodeOne.y + lengthY * x1 + py * y1;
                 let newX2 = nodeTwo.x + lengthX * x2 + px * y2;
                 let newY2 = nodeTwo.y + lengthY * x2 + py * y2;
+                console.log("X1, Y1, X2, Y2");
+                console.log(newX1, newY1, newX2, newY2);
                 nodeStates.current[curNode].node.links[i].x1 = newX1;
                 nodeStates.current[curNode].node.links[i].x2 = newX2;
                 nodeStates.current[curNode].node.links[i].y1 = newY1;
@@ -221,9 +290,15 @@ export const Graph = ({width}: GraphProps) => {
                 edges.current[edgeIndex].setAttribute("x2", (newX2).toString());
                 edges.current[edgeIndex].setAttribute("y2", (newY2).toString());
             }
+
+            if (arrowRef.current) {
+                let meshRotated = RotatePolygon(0.1, arrowState.current.mesh);
+                arrowState.current.mesh = meshRotated;
+                let meshTranslated = TranslatePolygon(100, 400, meshRotated);
+                arrowState.current.points = meshTranslated;
+            }
+
         }
-
-
         return false;
     }, [width])
 
@@ -333,14 +408,18 @@ export const Graph = ({width}: GraphProps) => {
                 edgeState.x2 = tmpx; 
                 edgeState.y2 = tmpy;
 
+                //Do something with arrow, obviously need to do matrix math here
+                let halfX = 0.5 * (edgeState.x2 - edgeState.x1);
+                let halfY = 0.5 * (edgeState.y2 - edgeState.y1);
+
                 //Push the new edge state to links
                 nodeStates.current[n1].node.links.push(edgeState);
                 nodeStates.current[n2].node.links.push(edgeState);
             }
-        }   
+        }
         
         //TODO: Possible remove edge from dependency lsit
-    }, [graphSVGRef, nodes, edges])
+    }, [graphSVGRef, nodes, edges, arrowRef])
 
 
     return (
@@ -362,7 +441,8 @@ export const Graph = ({width}: GraphProps) => {
                             className="nw_edge" 
                             id="line.0.1.0" 
                             stroke="rgb(0,0,200)" 
-                            strokeOpacity="1" strokeWidth={"13"} x1="200" x2="600" y1="200" y2="600"/>
+                            strokeOpacity="1" strokeWidth={"5"} x1="200" x2="600" y1="200" y2="600"/>
+                            <polygon ref={arrowRef} points={arrowState.current.points.map( ({x, y}) => `${x},${y}`).join(" ")}/>
                     </g>
                 </g>
                 <g id="nodes">
