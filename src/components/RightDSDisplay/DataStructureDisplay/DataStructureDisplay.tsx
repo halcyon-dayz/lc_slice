@@ -1,10 +1,10 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Grid} from "../Grid"
+import { Grid } from "../Grid";
 import { PointedArray } from "../PointedArray";
-import { useAppSelector } from "../../features/hooks";
-import { RootState } from "../../utils/types";
+import { useAppSelector } from "../../../features/hooks";
+import { RootState } from "../../../utils/types";
 import "./ds.css"
-import { Graph} from "../Graph/Graph"
+import {Graph} from "../Graph/Graph"
 
 
 type DSDisplayProps = {

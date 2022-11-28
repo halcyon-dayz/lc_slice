@@ -29,7 +29,7 @@ export const UtilitiesController = ({inputGrid, selectedRow, clearValue}: Utilit
     const dispatch = useAppDispatch();
 
     const clickAddGraph = () => {
-        dispatch(addGraph({num: 1}));
+        dispatch(addGraph({}));
     }
 
     const clickIncreaseRows = () => {

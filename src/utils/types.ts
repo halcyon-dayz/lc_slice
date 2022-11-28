@@ -2,7 +2,6 @@ import { AnyAction } from "@reduxjs/toolkit";
 import { ThunkAction } from "@reduxjs/toolkit";
 import { lchown } from "fs";
 import { Root } from "react-dom/client";
-import { LC_QUESTIONS } from "./questionEnum";
 
 
 export type CellStatus = "NO_DATA" | "PROCESSING" | "EXPLORED" | "LOCKED" | "UNEXPLORED" | "START" | "END" |

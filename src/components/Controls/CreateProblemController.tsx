@@ -1,6 +1,8 @@
 import React from "react"
 import { Problem733Controller } from "../Controllers/Problem733"
 import {Problem417Controller} from "../Controllers/Problem417"
+import { AllPathsFromSourceToTargetController } from "../Controllers/GraphControllers/AllPathsFromSourceToTargetController"
+import { QUESTIONS_ENUM } from "../../utils/questionEnum"
 
 type CreateProblemControllerProps = {
     problemNumber: number,
@@ -38,6 +40,16 @@ export const CreateProblemController = ({
                     animationSpeed={animationSpeed}
                 />
             );
+        }
+        case QUESTIONS_ENUM.ALL_PATHS_FROM_SOURCE_TO_TARGET: {
+            return (
+                <AllPathsFromSourceToTargetController
+                    animationOn={animationOn}
+                    play={play}
+                    pause={pause}
+                    animationSpeed={animationSpeed}
+                />
+            )
         }
         default: {
             return (

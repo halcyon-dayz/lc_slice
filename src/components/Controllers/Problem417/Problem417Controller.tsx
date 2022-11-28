@@ -63,16 +63,15 @@ type P417_PROPS = {
 export const Problem417Controller = ({animationOn, play, pause, animationSpeed}: P417_PROPS) => {
     /* Access the Global State */
     const dispatch = useAppDispatch();
-    //const grids = useSelector(selectAllGrids);
+    //Grids
     const waterFlowGridWidth = useAppSelector(state => state.grids[0] ? state.grids[0].width : 0);
     const waterFlowGridHeight = useAppSelector(state => state.grids[0] ? state.grids[0].height : 0);
     const waterFlowGridCells = useAppSelector(state => state.grids[0] ? state.grids[0].cells : []);
-
+    //Grid cells
     const pacificCells = useAppSelector(state => state.grids[1] ? state.grids[1].cells : []);
     const atlanticCells = useAppSelector(state => state.grids[2] ? state.grids[2].cells : []);
-
-    const problemNumber = useSelector(selectProblemNumber);
-
+    //Problem Number
+    const problemNumber = useAppSelector(selectProblemNumber);
     /* Set local state variables */
     const [buildFinished, setBuildFinished] = useState<boolean>(false);
     const [currentCell, setCurrentCell] = useState<P417_CURRENT_CONTEXT_TYPE>([0, 0])

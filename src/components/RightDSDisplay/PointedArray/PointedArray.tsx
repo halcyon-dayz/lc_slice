@@ -1,6 +1,6 @@
 import React from "react"
-import { useAppSelector } from "../../features/hooks"
-import { Cell } from "../../utils/types"
+import { useAppSelector } from "../../../features/hooks"
+import { Cell } from "../../../utils/types"
 import {ArrayNode} from "../Node"
 
 

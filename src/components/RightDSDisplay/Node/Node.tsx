@@ -1,10 +1,10 @@
 import React, {useState, useEffect, useMemo} from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {changeGridCell} from "../../features/grids/gridsSlice";
-import {CellStatus, RootState} from "../../utils/types"
+import {changeGridCell} from "../../../features/grids/gridsSlice";
+import {CellStatus, RootState} from "../../../utils/types"
 import "./node.css"
 import {motion} from "framer-motion"
-import { useAppSelector } from "../../features/hooks";
+import { useAppSelector } from "../../../features/hooks";
 
 
 type NodeProps = {

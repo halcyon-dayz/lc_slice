@@ -1,5 +1,5 @@
 import React from "react";
-import { CellStatus } from "../../utils/types";
+import { CellStatus } from "../../../utils/types";
 import "./node.css"
 
 

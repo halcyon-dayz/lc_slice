@@ -7,38 +7,35 @@ import {
 } from './styles';
 
 import {Container as ResizeContainer, Bar, Section} from "react-simple-resizer"
-import { Controls } from './components/Controls';
+import { Controls } from './components/Controls'
 import { useDispatch } from 'react-redux';
-import { changeGridCellSize, changeGridLabel} from './features/grids/gridsSlice';
 import { useAppSelector } from './features/hooks';
-import Dropdown from "react-bootstrap/Dropdown"
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import { deleteAllStructs } from './features/sharedActions';
 import { clearState } from './components/Controllers/controllerUtils';
-import { DataStructureDisplay } from './components';
+import { DataStructureDisplay } from './components/RightDSDisplay';
 
 
-const NavItemLeftList: NavItemProps[] = [
-  {
-    text: "Grid Structure Problems", 
-    questions: [
-        "733. Flood Fill dsfdfsdfsd fs f",
-        "417. Ocean Water Flow",
-        "1. Test",
-    ]
-  },
-  {
-    text: "Tree Problems",
-    questions: ["test"]
-  }
-  //Try to maintain width height ratio of sv
-]
+type ProblemDropdownType = {
+  title: string,
+  action: () => void,
+}
 
-type HeaderLayoutProps = {
-  leftList: NavItemProps[]
+const constructProblemDropdown = (
+  problems: string[], 
+  dispatch: any
+): ProblemDropdownType[] => {
+  return problems.map((problem, idx) => {
+    let number = parseInt(problem.split(".")[0]);
+    return {
+      title: problem, 
+      action: () => {
+        clearState(dispatch, number);
+      }
+    }
+  })
 }
 
 
@@ -84,27 +81,18 @@ function App() {
   }, [rightSectionRef]);
 
 
-  const GridProblems = [
-      {
-        title: "733. Flood Fill",
-        action: () => {
-          clearState(dispatch, 733);
-        }
-      }, 
-      {
-        title: "417. Pacific Atlantic Waterflow", 
-        action: () => {
-          clearState(dispatch, 417);
-        }
-      },
-      {
-        title: "All Paths to Cells",
-        action: () => {
-          clearState(dispatch, 21);
-        }
-      }
-  ];
+  const GridProblems = constructProblemDropdown(
+    ["733. Flood Fill", "417. Pacific Atlantic Waterflow", "21. All Paths to Cells"],
+    dispatch
+  );
 
+  const GraphProblems = constructProblemDropdown(
+    [
+      "797. All Paths from Source to Target",
+      "1129. Shortest Path with Alternating Colors"
+    ],
+    dispatch
+  );
 
   return (
     <div className="App">
@@ -115,6 +103,11 @@ function App() {
             <Nav className="me-auto">
               <NavDropdown title="Grid Problems">
                 {GridProblems.map((problem, idx) => (
+                  <NavDropdown.Item key={problem.title} onClick={problem.action}>{problem.title}</NavDropdown.Item>
+                ))}
+              </NavDropdown>
+              <NavDropdown title="Graph Problems">
+                {GraphProblems.map((problem, idx) => (
                   <NavDropdown.Item key={problem.title} onClick={problem.action}>{problem.title}</NavDropdown.Item>
                 ))}
               </NavDropdown>

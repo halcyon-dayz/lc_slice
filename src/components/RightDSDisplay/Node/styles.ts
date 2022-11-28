@@ -1,6 +1,6 @@
 import styled from "styled-components"
 
-import {CellStatus} from "../../utils/types"
+import {CellStatus} from "../../../utils/types"
 
 
 type NodeContainerProps = {

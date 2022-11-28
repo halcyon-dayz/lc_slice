@@ -1,5 +1,5 @@
 import React, {useState} from "react"
-import { useAppSelector } from "../../features/hooks"
+import { useAppSelector } from "../../../features/hooks"
 import {Node} from "../Node"
 import "./grid.css"
 import {motion} from "framer-motion"
