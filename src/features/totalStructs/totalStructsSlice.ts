@@ -63,7 +63,7 @@ const totalStructsSlice = createSlice({
         }).addCase(copyGrid, (state, action: PayloadAction<CopyGridPayload>) => {
             return state + 1;
         }).addCase(addGraph, (state, action: PayloadAction<AddGraphPL>) => {
-            return action.payload.num ? state + action.payload.num : state + 1;
+            return state + 1;
         }).addCase(deleteGraph, (state, action: PayloadAction<DeleteGraphPL>) => {
             return action.payload.num ? state - action.payload.num : state - 1;
         }).addCase(addDataStructure, (state, action: PayloadAction<AddDataStructurePayload>) => {

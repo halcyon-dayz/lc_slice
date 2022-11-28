@@ -10,8 +10,9 @@ import {
 } from "../../features/grids/gridsSlice";
 import { selectAllGrids } from "../../features/grids/gridsSlice";
 import { useAppDispatch, useAppSelector } from "../../features/hooks";
-import {addArray, addGrid, deleteArray, deleteGrid} from "../../features/sharedActions"
+import {addArray, addGrid, deleteArray, deleteGrid, addGraph} from "../../features/sharedActions"
 import {RootState} from "../../utils/types"
+import { ControllerButtons } from "./BasicController";
 import "./controller.css"
 
 type UtilitiesControllerType = {
@@ -26,6 +27,10 @@ export const UtilitiesController = ({inputGrid, selectedRow, clearValue}: Utilit
     const grids = useSelector(selectAllGrids);
     const arraysLength = useAppSelector(state => state.arrays.length);
     const dispatch = useAppDispatch();
+
+    const clickAddGraph = () => {
+        dispatch(addGraph({num: 1}));
+    }
 
     const clickIncreaseRows = () => {
         dispatch(changeGridWidth({gridIndex: inputGrid, newWidth: grids[inputGrid].width + 1}))
@@ -96,22 +101,26 @@ export const UtilitiesController = ({inputGrid, selectedRow, clearValue}: Utilit
 
     return (
         <div>
-            <div className={"controller_buttons_container"}>
-                <button className={"controller_button"} onClick={() => clickDecreaseRows()}>Remove Grid Width</button>
-                <button className={"controller_button"} onClick={() => clickIncreaseRows()}>Add Grid Width</button>
-                <button className={"controller_button"} onClick={() => clickDecreaseColumns()}>Remove Grid Height</button>
-                <button className={"controller_button"} onClick={() => clickIncreaseColumns()}>Add Grid Height</button>
-            </div>
-            <div className={"controller_buttons_container"}>
-                <button className={"controller_button"} onClick={() => clickClearSelectedGrid()}>Clear Selected Grid</button>
-                <button className={"controller_button"} onClick={() => clickClearSelectedRow()}>Clear Selected Row</button>
-            </div>
-            <div className={"controller_buttons_container"}>
-                <button className={"controller_button"} onClick={() => clickAddGrid()}>Add Grid</button>
-                <button className={"controller_button"} onClick={() => clickDeleteGrid()}>Delete Grid</button>
-                <button className={"controller_button"} onClick={() => clickAddArray()}>Add Array</button>
-                <button className={"controller_button"} onClick={() => clickDeleteArray()}>Delete Array</button>
-            </div>
+            <ControllerButtons 
+                actions={[clickAddGraph]} 
+                buttonLabels={["Add Graph"]} 
+                label="Graph Utils"
+            />
+            <ControllerButtons 
+                actions={[clickDecreaseRows, clickIncreaseRows, clickDecreaseColumns, clickIncreaseColumns]}
+                buttonLabels={["Decrease Rows", "Increase Rows", "Decrease Columns", "Increase Columns"]}
+                label={"Grid Utils"}
+            />
+            <ControllerButtons
+                actions={[clickClearSelectedGrid, clickClearSelectedRow]}
+                buttonLabels={["Clear Selected Grid", "Clear Selected Row"]}
+                label={"Clear Grid Utils"}
+            />
+            <ControllerButtons
+                actions={[clickAddGrid, clickDeleteGrid, clickAddArray, clickDeleteArray]}
+                buttonLabels={["Add Grid", "Delete Grid", "Add Array", "Delete Array"]}
+                label={"Add/Delete Grid/Array"}
+            />
             <div className={"controller_buttons_container"}>
                 <button 
                     className={"controller_button"} 

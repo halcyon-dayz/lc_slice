@@ -1,7 +1,19 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState, GraphDS} from "../../utils/types";
-import { addGraph, AddGraphPL, deleteAllStructs, deleteGraph, DeleteGraphPL } from "../sharedActions";
+import { RootState, GraphDS, GraphNode} from "../../utils/types";
+import { AddNodePL } from "./graphPayloads";
+import { createGraphActionS, createGraphActionSA, GraphBeforeEachFunc } from "./graphUtils";
+import { isValidIndex, isStateValid } from "../featureUtils";
+import { addGraph, AddGraphPL, deleteAllStructs, deleteGraph, DeleteGraphPL} from "../sharedActions";
 import * as GraphPLs from "./graphPayloads"
+import hash from "object-hash"
+
+
+const checkGraphExists: GraphBeforeEachFunc = (
+    state: RootState["graphs"], 
+    action?: PayloadAction<GraphPLs.GraphIndexPL>
+) => {
+	return action ? ( isValidIndex(state.length, action.payload.graphIndex) ) : (isStateValid(state.length));
+}
 
 
 const initialState: RootState["graphs"] = [];
@@ -31,22 +43,36 @@ const graphsSlice = createSlice({
             }
             state[graphIndex].connected = !state[graphIndex].connected
         },
+        addNode: createGraphActionSA(
+            [checkGraphExists], 
+            (state: RootState["graphs"], action: PayloadAction<GraphPLs.AddNodePL>) => {
+                const {graphIndex, data, name, links, initX, initY} = action.payload
+                const numNodes = state[graphIndex].nodes.length;
+                state[graphIndex].nodes.push({
+                    data: data !== undefined ? data : 0,
+                    name: name ? name : `GRAPH_${graphIndex + 1}_NODE_${numNodes + 1}`,
+                    links: links ? links : [],
+                    initX: initX ? initX : 200,
+                    initY: initY ? initY : 200,
+                })
+            }
+        ),
     },
     extraReducers: (builder) => {
         builder.addCase(addGraph, (
             state: RootState["graphs"],
             action: PayloadAction<AddGraphPL>
         ) => {
-            const numAdd = action.payload.num ? action.payload.num : 1;
-            for (let i = 0; i < numAdd; i++) {
-                state.push({
-                    nodeRadius: 20,
-                    connected: true,
-                    directed: false,
-                    weighted: false,
-                    edgeLabels: ["test", "testTwo"]
-                })
-            }
+            const {nodeRadius,connected,weighted,directed,edgeLabels,label} = action.payload;
+            state.push({
+                nodeRadius: nodeRadius ? nodeRadius : 20,
+                connected: connected ? connected : false,
+                weighted: weighted ? weighted : false,
+                directed: directed ? directed: false,
+                edgeLabels: edgeLabels ? edgeLabels : [],
+                label: label ? label : `GRID_${state.length + 1}`,
+                nodes: [],
+            })
         }).addCase(deleteGraph, (
             state: RootState["graphs"],
             action: PayloadAction<DeleteGraphPL>
@@ -69,8 +95,11 @@ const graphsSlice = createSlice({
     }
 })
 
-export const graphsRedcuer = graphsSlice.reducer;
+export const graphsReducer = graphsSlice.reducer;
 export const {
     changeNodeRadius,
-    switchConnected
+    switchConnected,
+    addNode
 } = graphsSlice.actions
+
+export const selectAllGraphs = (state: RootState) => state.graphs;

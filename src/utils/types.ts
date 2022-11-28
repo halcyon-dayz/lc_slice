@@ -8,7 +8,7 @@ import { LC_QUESTIONS } from "./questionEnum";
 export type CellStatus = "NO_DATA" | "PROCESSING" | "EXPLORED" | "LOCKED" | "UNEXPLORED" | "START" | "END" |
 "WATER" | "ISLAND" | "DEEP_OCEAN" | "MONKEY_ISLAND" | "CURRENT" | "PREV_EVALUATE"
 
-export type DataStructureType = "GRID" | "ARRAY" | "BINARY_TREE"
+export type DataStructureType = "GRID" | "ARRAY" | "BINARY_TREE" | "GRAPH"
 
 export type Cell = {
     data: any
@@ -36,12 +36,22 @@ export type GridDS = {
 }
 
 
+export type GraphNode = {
+    name: string,
+    data: any,
+    links: number[]
+    initX: number,
+    initY: number,
+}
+
 export type GraphDS = {
     nodeRadius: number,
     connected: boolean,
     weighted: boolean,
     directed: boolean,
     edgeLabels: any,
+    label: string, 
+    nodes: GraphNode[]
 }
 
 

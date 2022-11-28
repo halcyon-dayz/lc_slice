@@ -1,4 +1,4 @@
-import { addGrid, deleteArray, deleteGrid } from "../../sharedActions";
+import { addGraph, addGrid, deleteArray, deleteGraph, deleteGrid } from "../../sharedActions";
 import {store} from "../../store"
 
 beforeEach(async () => {
@@ -34,6 +34,27 @@ describe("totalStructsSlice redux state tests", () => {
         result = await store.dispatch(deleteGrid({num: 3, gridsLength: grids.length}));
         totalStructs = store.getState().totalStructs;
         expect(totalStructs).toEqual(7);
+    })
+
+    test("if addGraph increments totalStructs", async () => {
+        await store.dispatch(addGraph({}));
+        await store.dispatch(addGraph({}));
+        await store.dispatch(addGraph({}));
+        await store.dispatch(addGraph({}));
+        await store.dispatch(addGraph({}));
+        let totalStructs = store.getState().totalStructs;
+        expect(totalStructs).toEqual(5);
+    })
+
+    test("if deleteGraph decrements totalStructs", async () => {
+        await store.dispatch(addGraph({}));
+        await store.dispatch(addGraph({}));
+        await store.dispatch(addGraph({}));
+        await store.dispatch(addGraph({}));
+        await store.dispatch(addGraph({}));
+        await store.dispatch(deleteGraph({num: 3}));
+        let totalStructs = store.getState().totalStructs;
+        expect(totalStructs).toEqual(2);
     })
  
 })

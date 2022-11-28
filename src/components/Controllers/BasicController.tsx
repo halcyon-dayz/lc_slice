@@ -11,6 +11,13 @@ type BasicControllerDivProps = {
     extraFunctions?: ExtraFunc[]
 }
 
+type func = () => void;
+type BasicControllerButtonOverrideProps = {
+    label: string,
+    buttonLabels: string[],
+    actions: (() => void)[]
+}
+
 export const BasicController = ({
     label,
     setup,
@@ -32,5 +39,19 @@ export const BasicController = ({
         </div>     
     ) 
 }
+
+export const ControllerButtons = ({label, buttonLabels, actions} : BasicControllerButtonOverrideProps) => {
+    return (
+        <div className={"controller_contents_container"}>
+                <b>{label}</b>
+                <div className={"controller_buttons_container"}>
+                    {actions.map((action, idx) => (
+                        <button key={idx} className={"controller_button"} onClick={() => action()}>{buttonLabels[idx]}</button>
+                    ))}
+                </div>
+        </div>
+    )
+}
+
 
 

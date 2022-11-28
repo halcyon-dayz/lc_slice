@@ -14,6 +14,7 @@ type DSDisplayProps = {
 export const DataStructureDisplay = ({rightWidth}: DSDisplayProps) => {
     const gridsLength = useAppSelector((state: RootState) => state.grids.length);
     const arraysLength = useAppSelector((state: RootState) => state.arrays.length);
+    const graphsLength = useAppSelector((state: RootState) => state.graphs.length);
 
 
     return (
@@ -31,7 +32,7 @@ export const DataStructureDisplay = ({rightWidth}: DSDisplayProps) => {
                     key={`Array_${idx}`}
                 />);
             })}
-            {[...Array(1)].map((graph, idx) => (
+            {[...Array(graphsLength)].map((graph, idx) => (
                 <Graph key={`Graph_${idx}`} width={rightWidth}/>
             ))}
         </div>

@@ -1,10 +1,14 @@
 import {createAction} from "@reduxjs/toolkit"
 import { Cell, DataStructureType } from "../utils/types"
+import {GraphDS} from "../utils/types"
 
 
-export type AddGraphPL = {
-    num?: number
+type XY = {
+    x: number,
+    y: number
 }
+
+export type AddGraphPL = Omit<Partial<GraphDS>, "nodes">
 
 export type DeleteGraphPL = {
     num?: number
@@ -50,13 +54,8 @@ export type AddDataStructurePayload = {
 }
 
 
-/**
- * Add graph to the graph list.
- * @param {number} [num]
- * The number of graphs to be added.
- */
-export const addGraph = createAction<AddGraphPL>("addGraph");
 
+export const addGraph = createAction<AddGraphPL>("addGraph");
 /**
  * Delete graphs from the graph list.
  * @param {number} [num]

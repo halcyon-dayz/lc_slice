@@ -13,11 +13,13 @@ import {
 import { 
     problemReducer 
 } from "./problemInfo/problemSlice";
+import { graphsReducer } from "./graphs/graphsSlice";
 
 export const store = configureStore({
     reducer: {
         arrays: arraysReducer,
         grids: gridsReducer,
+        graphs: graphsReducer,
         totalStructs: totalStructsReducer,
         problem: problemReducer
     },

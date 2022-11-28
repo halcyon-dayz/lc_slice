@@ -7,6 +7,7 @@ import {
     ARRAY_2D_GET_NEXT_INDEX, 
 } from "../../features/grids/gridUtils";
 import { CreateProblemController } from "./CreateProblemController";
+import { UtilitiesController } from "../Controllers/UtilitiesController";
 //#endregion
 
 
@@ -295,6 +296,7 @@ export const Controls = () => {
     return (
     <LeftContainer>
         <div className="controls_container">
+            <UtilitiesController inputGrid={0} selectedRow={0} clearValue={0}/>
             <CreateProblemController 
                 problemNumber={problemNumber}
                 animationOn={animationOn}

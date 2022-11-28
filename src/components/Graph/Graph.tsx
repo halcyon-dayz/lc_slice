@@ -17,12 +17,22 @@ type XY = {
     y: number
 }
 
-const RotatePolygon = (angle: number, points: XY[]): XY[] => {
+const RotatePolygonAngle = (angle: number, points: XY[]): XY[] => {
     let cosAngle = Math.cos(angle);
     let sinAngle = Math.sin(angle);
 
     let newPoints: XY[] = [];
     
+    for (let i = 0; i < points.length; i++) {
+        let new_x = points[i].x * cosAngle - points[i].y * sinAngle;
+        let new_y = points[i].x * sinAngle + points[i].y * cosAngle;
+        newPoints[i] = {x: new_x, y: new_y};
+    }
+    return newPoints;
+}
+
+const RotatePolygonSinCos = (cosAngle: number, sinAngle: number, points: XY[]): XY[] => {
+    let newPoints: XY[] = [];
     for (let i = 0; i < points.length; i++) {
         let new_x = points[i].x * cosAngle - points[i].y * sinAngle;
         let new_y = points[i].x * sinAngle + points[i].y * cosAngle;
@@ -91,29 +101,29 @@ export const Graph = ({width}: GraphProps) => {
         mesh: [
             {
                 x: 0,
-                y: -50
+                y: -20
             },
             {
-                x: -50,
-                y: 50,
+                x: -20,
+                y: 20,
             },
             {
-                x: 50,
-                y: 50,
+                x: 20,
+                y: 20,
             },
         ],
         points: [
             {
                 x: 0,
-                y: -50
+                y: -20
             },
             {
-                x: -50,
-                y: 50,
+                x: -20,
+                y: 20,
             },
             {
-                x: 50,
-                y: 50,
+                x: 20,
+                y: 20,
             },
         ]
     })
@@ -243,11 +253,6 @@ export const Graph = ({width}: GraphProps) => {
             let n2 = nodeStates.current[curNode].node.links[i].n2Idx;
             let edgeIndex = nodeStates.current[curNode].node.links[i].edgeIdx;
 
-            /*let x1 = nodeStates.current[curNode].node.links[i].x1;
-            let x2 = nodeStates.current[curNode].node.links[i].x2;
-            let y1 = nodeStates.current[curNode].node.links[i].y1;
-            let y2 = nodeStates.current[curNode].node.links[i].y2; */
-
             //Get the affected nodes
             let nodeOne = nodeStates.current[n1].node;
             let nodeTwo = nodeStates.current[n2].node;
@@ -267,20 +272,18 @@ export const Graph = ({width}: GraphProps) => {
                 lengthX = lengthX / c;
                 lengthY = lengthY / c;
             }
-            
 
             let px = -lengthY;
             let py = lengthX;
 
+            let newX1 = nodeOne.x + lengthX * x1 + px * y1;
+            let newY1 = nodeOne.y + lengthY * x1 + py * y1;
+            let newX2 = nodeTwo.x + lengthX * x2 + px * y2;
+            let newY2 = nodeTwo.y + lengthY * x2 + py * y2;
+
             //The node positions won't be updated dynamically
             if (edges.current[edgeIndex]) {
                 //Set edge position to Node1 position + unitVector * old position
-                let newX1 = nodeOne.x + lengthX * x1 + px * y1;
-                let newY1 = nodeOne.y + lengthY * x1 + py * y1;
-                let newX2 = nodeTwo.x + lengthX * x2 + px * y2;
-                let newY2 = nodeTwo.y + lengthY * x2 + py * y2;
-                console.log("X1, Y1, X2, Y2");
-                console.log(newX1, newY1, newX2, newY2);
                 nodeStates.current[curNode].node.links[i].x1 = newX1;
                 nodeStates.current[curNode].node.links[i].x2 = newX2;
                 nodeStates.current[curNode].node.links[i].y1 = newY1;
@@ -291,10 +294,17 @@ export const Graph = ({width}: GraphProps) => {
                 edges.current[edgeIndex].setAttribute("y2", (newY2).toString());
             }
 
+            //Arrows at ends of lines
+            let arrowRightX = newX1 + (newX2 - newX1) * 0.9
+            let arrowRightY = newY1 + (newY2 - newY1) * 0.9;
+
+            //Using expensive math we don't need
+            let angle = Math.atan2((newY2 - newY1), (newX2 - newX1));
+
             if (arrowRef.current) {
-                let meshRotated = RotatePolygon(0.1, arrowState.current.mesh);
-                arrowState.current.mesh = meshRotated;
-                let meshTranslated = TranslatePolygon(100, 400, meshRotated);
+                let meshRotated = RotatePolygonAngle(angle, arrowState.current.mesh);
+                let meshTranslated = TranslatePolygon(arrowRightX, arrowRightY, meshRotated);
+                console.log(meshTranslated);
                 arrowState.current.points = meshTranslated;
             }
 
@@ -304,7 +314,6 @@ export const Graph = ({width}: GraphProps) => {
 
     const moveNodeOnMouseUp = (e: MouseEvent) => {
         const curNode = selectedNode.current
-        console.log("Mouse up on node")
         //Node is no longer being dragged
         updateDrag(state => {state.isBeingDragged = false});
         nodeStates.current[curNode].node.radius = nodeStates.current[curNode].node.radius / 1.5;;
@@ -431,7 +440,14 @@ export const Graph = ({width}: GraphProps) => {
                 className="notselectable nwlinkhovertoggle" 
                 height="900" id="svg_network_image" width={width} style={{verticalAlign: "top"}}>
                 <g id="edges">
+
                     <g xmlns="http://www.w3.org/2000/svg" className="nwlinkwrapper" id="edge.0.1">
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="20" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" />
+                        </marker>
+                        <marker id="arrowhead_reverse" markerWidth="10" markerHeight="7" refX="-10" refY="3.5" orient="auto"  fill="red" >
+                            <polygon points="10 0, 10 7, 0 3.5" fill="red"/>
+                        </marker>
                         <line xmlns="http://www.w3.org/2000/svg" 
                             ref={(ref) => {
                                 if (ref !== null) {
@@ -441,8 +457,9 @@ export const Graph = ({width}: GraphProps) => {
                             className="nw_edge" 
                             id="line.0.1.0" 
                             stroke="rgb(0,0,200)" 
+                            markerEnd="url(#arrowhead)"
+                            markerStart="url(#arrowhead_reverse)"
                             strokeOpacity="1" strokeWidth={"5"} x1="200" x2="600" y1="200" y2="600"/>
-                            <polygon ref={arrowRef} points={arrowState.current.points.map( ({x, y}) => `${x},${y}`).join(" ")}/>
                     </g>
                 </g>
                 <g id="nodes">
