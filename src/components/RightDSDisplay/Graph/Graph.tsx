@@ -433,94 +433,6 @@ export const Graph = ({width, graphIndex}: GraphProps) => {
         } 
     }
 
-
-    useEffect(() => {
-        if (graphSVGRef.current === null) {
-            return;
-        }
-        //Make the Graph Node Movable...will eventually take an index to indicate which node
-        if (nodes.current) {
-            for (let i = 0; i < nodes.current.length; i++) {
-                setMovableGraphNode(i);
-            }
-        }
-
-        if (edges.current && nodeStates.current) {
-            for (let i = 0; i < edges.current.length; i++) {
-                const nodeIds = edges.current[i].id.split(".");
-                //Get the indexes of the nodes connected by the edge
-                let n1: number = parseInt(nodeIds[1]);
-                let n2: number = parseInt(nodeIds[2]);
-                let x1 = Number(edges.current[i].getAttribute("x1"));
-                let x2 = Number(edges.current[i].getAttribute("x2"));
-                let y1 = Number(edges.current[i].getAttribute("y1"));
-                let y2 = Number(edges.current[i].getAttribute("y2"));
-                //Assign current values to edgeState
-                let edgeState: EdgeImperativeType = {
-                    n1Idx: n1,
-                    n2Idx: n2,
-                    edgeIdx: i,
-                    x1: x1,
-                    x2: x2,
-                    y1: y1, 
-                    y2: y2,
-                }
-
-                let lengthX = x2 - x1;
-                let lengthY = y2 - y1;
-
-                //a2 + b2 etc. Thought it was dot product, lol
-                let c = Math.sqrt(lengthX * lengthX + lengthY * lengthY);
-                if (c === 0.0) {
-                    lengthX = 0.0;
-                    lengthY = 0.0;
-                } else {
-                    //unit vector
-                    lengthX = lengthX / c;
-                    lengthY = lengthY /c;
-                }
-
-                //If the first node is after the second node, negate the length
-                lengthX = Math.abs (lengthX); lengthY = Math.abs (lengthY);
-                if (nodeStates.current[n1].node.ix > nodeStates.current[n2].node.ix) { 
-                    lengthX *= -1.0; 
-                }
-                if (nodeStates.current[n1].node.iy > nodeStates.current[n2].node.iy) { 
-                    lengthY *= -1.0; 
-                }
-
-                let px = -lengthY;
-                var py = lengthX;
-
-                let tmpx, tmpy;
-                // transform line endpoint coordinates (x1,y1) and (x2,y2) such that they are relative to the nodes when the line is horizontal (0 degrees)
-                edgeState.x1 -= nodeStates.current[n1].node.x;
-                edgeState.y1 -= nodeStates.current[n1].node.y;
-                tmpx = edgeState.x1 * lengthX + edgeState.y1 * lengthY; 
-                tmpy = edgeState.x1 * px + edgeState.y1 * py; // projection of line vector on line unit vector and perp unit vector
-                edgeState.x1 = tmpx; 
-                edgeState.y1 = tmpy;
-                edgeState.x2 -= nodeStates.current[n2].node.x;
-                edgeState.y2 -= nodeStates.current[n2].node.y;
-                tmpx = edgeState.x2 * lengthX + edgeState.y2 * lengthY; 
-                tmpy = edgeState.x2 * px + edgeState.y2 * py; // projection of line vector on line unit vector and perp unit vector
-                edgeState.x2 = tmpx; 
-                edgeState.y2 = tmpy;
-
-                //Do something with arrow, obviously need to do matrix math here
-                let halfX = 0.5 * (edgeState.x2 - edgeState.x1);
-                let halfY = 0.5 * (edgeState.y2 - edgeState.y1);
-
-                //Push the new edge state to links
-                nodeStates.current[n1].node.links.push(edgeState);
-                nodeStates.current[n2].node.links.push(edgeState);
-            }
-        }
-        
-        //TODO: Possible remove edge from dependency lsit
-    }, [graphSVGRef, graphNodes, nodes, edges, arrowRef]);
-
-
     return (
         <div>
             <svg 
@@ -530,7 +442,6 @@ export const Graph = ({width, graphIndex}: GraphProps) => {
                 className="notselectable nwlinkhovertoggle" 
                 height="900" id="svg_network_image" width={width} style={{verticalAlign: "top"}}>
                 <g id="edges">
-
                     <g xmlns="http://www.w3.org/2000/svg" className="nwlinkwrapper" id="edge.0.1">
                         <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="20" refY="3.5" orient="auto">
                             <polygon points="0 0, 10 3.5, 0 7" />
