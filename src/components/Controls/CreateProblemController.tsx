@@ -1,6 +1,5 @@
 import React from "react"
-import { Problem733Controller } from "../Controllers/Problem733"
-import {Problem417Controller} from "../Controllers/Problem417"
+import {PacificAtlanticWaterflowController, FloodFillController} from "../Controllers/GridControllers"
 import { AllPathsFromSourceToTargetController } from "../Controllers/GraphControllers/AllPathsFromSourceToTargetController"
 import { QUESTIONS_ENUM } from "../../utils/questionEnum"
 
@@ -21,9 +20,9 @@ export const CreateProblemController = ({
     animationSpeed
 }: CreateProblemControllerProps) => {
     switch(problemNumber) {
-        case 417: {
+        case QUESTIONS_ENUM.PACIFIC_ATLANTIC_WATER_FLOW: {
             return (
-                <Problem417Controller 
+                <PacificAtlanticWaterflowController 
                     animationOn={animationOn}
                     play={play}
                     pause={pause}
@@ -31,9 +30,9 @@ export const CreateProblemController = ({
                 />
             );
         }
-        case 733: {
+        case QUESTIONS_ENUM.FLOOD_FILL: {
             return (
-                <Problem733Controller
+                <FloodFillController
                     animationOn={animationOn}
                     play={play}
                     pause={pause}

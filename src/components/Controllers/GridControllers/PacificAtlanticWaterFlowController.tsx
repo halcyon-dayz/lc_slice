@@ -60,7 +60,7 @@ type P417_PROPS = {
     animationSpeed: number
 }
 
-export const Problem417Controller = ({animationOn, play, pause, animationSpeed}: P417_PROPS) => {
+export const PacificAtlanticWaterflowController = ({animationOn, play, pause, animationSpeed}: P417_PROPS) => {
     /* Access the Global State */
     const dispatch = useAppDispatch();
     //Grids

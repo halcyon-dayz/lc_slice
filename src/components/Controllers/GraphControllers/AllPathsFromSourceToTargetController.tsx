@@ -18,10 +18,10 @@ export const AllPathsFromSourceToTargetController = ({
 
     const setup = () => {
         dispatch(addGraph({}));
-        dispatch(addNode({data: 1, initX: 200, initY: 200}));
-        dispatch(addNode({data: 2, initX: 400, initY: 200}));
-        dispatch(addNode({data: 3, initX: 400, initY: 400}));
-        dispatch(addNode({data: 4, initX: 200, initY: 400}));
+        dispatch(addNode({graphIndex: 0, data: 1, initX: 200, initY: 200}));
+        dispatch(addNode({graphIndex: 0, data: 2, initX: 400, initY: 200}));
+        dispatch(addNode({graphIndex: 0, data: 3, initX: 400, initY: 400}));
+        dispatch(addNode({graphIndex: 0, data: 4, initX: 200, initY: 400}));
     }
 
     const step = () => {

@@ -19,7 +19,7 @@ import {
 import { changeProblemNumber, pushJSXToLog, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
 import { clearState } from "../controllerUtils";
 import {motion} from "framer-motion"
-import {SearchFromToLog } from "../GridControllers/logUtils";
+import {SearchFromToLog } from "./logUtils";
 //#endregion
 
 type P733_PROPS = {
@@ -29,7 +29,7 @@ type P733_PROPS = {
     animationSpeed: number
 }
 
-export const Problem733Controller = ({animationOn, play, pause, animationSpeed}: P733_PROPS) => {
+export const FloodFillController = ({animationOn, play, pause, animationSpeed}: P733_PROPS) => {
     /* Access the Global State */
     const dispatch = useAppDispatch();
     const gridCells = useAppSelector(state => state.grids[0] ? state.grids[0].cells : []);

@@ -33,7 +33,7 @@ export const DataStructureDisplay = ({rightWidth}: DSDisplayProps) => {
                 />);
             })}
             {[...Array(graphsLength)].map((graph, idx) => (
-                <Graph key={`Graph_${idx}`} width={rightWidth}/>
+                <Graph graphIndex={idx} key={`Graph_${idx}`} width={rightWidth}/>
             ))}
         </div>
     )  
