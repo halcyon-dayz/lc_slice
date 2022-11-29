@@ -2,90 +2,12 @@ import React, {useCallback, useEffect, useRef} from "react"
 import {GraphNode} from "./GraphNode"
 import {useImmer} from "use-immer"
 import { useAppDispatch, useAppSelector } from "../../../features/hooks"
-
-
-type GraphNodeStateDeclarativeType= {
-    hasMoved: boolean,
-    isInFront: boolean,
-    isBeingDragged: boolean,
-    originalEventTarget: EventTarget | null,
-    onMouseUpCallback: (this: any, event: MouseEvent) => any,
-    onMouseMoveCallback: (this: any, event: MouseEvent) => any,
-}
-
-type XY = {
-    x: number,
-    y: number
-}
-
-const RotatePolygonAngle = (angle: number, points: XY[]): XY[] => {
-    let cosAngle = Math.cos(angle);
-    let sinAngle = Math.sin(angle);
-
-    let newPoints: XY[] = [];
-    
-    for (let i = 0; i < points.length; i++) {
-        let new_x = points[i].x * cosAngle - points[i].y * sinAngle;
-        let new_y = points[i].x * sinAngle + points[i].y * cosAngle;
-        newPoints[i] = {x: new_x, y: new_y};
-    }
-    return newPoints;
-}
-
-const RotatePolygonSinCos = (cosAngle: number, sinAngle: number, points: XY[]): XY[] => {
-    let newPoints: XY[] = [];
-    for (let i = 0; i < points.length; i++) {
-        let new_x = points[i].x * cosAngle - points[i].y * sinAngle;
-        let new_y = points[i].x * sinAngle + points[i].y * cosAngle;
-        newPoints[i] = {x: new_x, y: new_y};
-    }
-    return newPoints;
-}
-
-const TranslatePolygon = (x: number, y: number, points: XY[]): XY[] => {
-    let newPoints: XY[] = [];
-    for (let i = 0; i < points.length; i++) {
-        let new_x = points[i].x + x;
-        let new_y = points[i].y + y;
-        newPoints[i] = {x: new_x, y: new_y}
-    }
-    return newPoints;
-}
-
-
-
-type NodeType = {
-    x: number,
-    y: number,
-    ix: number,
-    iy: number,
-    radius: number, 
-    links: EdgeImperativeType[],
-}
-
-type EdgeImperativeType = {
-    n1Idx: number,
-    n2Idx: number,
-    edgeIdx: number,
-    x1: number,
-    x2: number,
-    y1: number, 
-    y2: number
-}
-
-type nodeImperativeType = {
-    mouseStart: {
-        x: number,
-        y: number
-    }
-    nodeStart: {
-        x: number, 
-        y: number
-    },
-    node: NodeType
-}
-
-
+import {
+    GraphNodeStateDeclarativeType,
+    NodeDisplayType,
+    EdgeImperativeType,
+    NodeInteractiveType
+} from "./graphTypes"
 
 export type GraphProps = {
     width: number,
@@ -93,7 +15,6 @@ export type GraphProps = {
 }
 
 export const Graph = ({width, graphIndex}: GraphProps) => {
-    const dispatch = useAppDispatch();
     const graphNodes = useAppSelector(state => state.graphs[graphIndex].nodes);
     const nodeRadius = useAppSelector(state => state.graphs[graphIndex].nodeRadius);
 
@@ -101,37 +22,6 @@ export const Graph = ({width, graphIndex}: GraphProps) => {
 
     const edges = useRef<SVGLineElement[]>([]);
 
-    const arrowRef = useRef<SVGPolygonElement>(null);
-    const arrowState = useRef({
-        mesh: [
-            {
-                x: 0,
-                y: -20
-            },
-            {
-                x: -20,
-                y: 20,
-            },
-            {
-                x: 20,
-                y: 20,
-            },
-        ],
-        points: [
-            {
-                x: 0,
-                y: -20
-            },
-            {
-                x: -20,
-                y: 20,
-            },
-            {
-                x: 20,
-                y: 20,
-            },
-        ]
-    })
 
     //Ref of the entire graph
     const graphSVGRef = useRef<SVGSVGElement>(null);
@@ -139,7 +29,7 @@ export const Graph = ({width, graphIndex}: GraphProps) => {
     const nodes = useRef<SVGGElement[]>([]);
     //We separate the state of the node from its reference, which might need to be changed in the future
     let edgeIdx = 0;
-    const nodeStates = useRef<nodeImperativeType[]>(graphNodes.map((node, idx) => {
+    const nodeStates = useRef<NodeInteractiveType[]>(graphNodes.map((node, idx) => {
         return {
             mouseStart: {
                 x: 0, 
@@ -259,7 +149,7 @@ export const Graph = ({width, graphIndex}: GraphProps) => {
         }
         
         //TODO: Possible remove edge from dependency lsit
-    }, [graphSVGRef, graphNodes, nodes, edges, arrowRef]);
+    }, [graphSVGRef, graphNodes, nodes, edges]);
 
     const [dragState, updateDrag] = useImmer<GraphNodeStateDeclarativeType>({
         hasMoved : false,
@@ -339,13 +229,13 @@ export const Graph = ({width, graphIndex}: GraphProps) => {
 
         for (let i = 0; i < nodeStates.current[curNode].node.links.length; i++) {
             //Get the indexes of the nodes referred to in the current link of the current node
-            let n1 = nodeStates.current[curNode].node.links[i].n1Idx;
-            let n2 = nodeStates.current[curNode].node.links[i].n2Idx;
-            let edgeIndex = nodeStates.current[curNode].node.links[i].edgeIdx;
+            let n1: number = nodeStates.current[curNode].node.links[i].n1Idx;
+            let n2: number = nodeStates.current[curNode].node.links[i].n2Idx;
+            let edgeIndex: number = nodeStates.current[curNode].node.links[i].edgeIdx;
 
             //Get the affected nodes
-            let nodeOne = nodeStates.current[n1].node;
-            let nodeTwo = nodeStates.current[n2].node;
+            let nodeOne: NodeDisplayType = nodeStates.current[n1].node;
+            let nodeTwo: NodeDisplayType = nodeStates.current[n2].node;
             //Get their current positions
             let x1 = nodeStates.current[n1].node.x;
             let x2 = nodeStates.current[n2].node.x;
@@ -374,28 +264,14 @@ export const Graph = ({width, graphIndex}: GraphProps) => {
             //The node positions won't be updated dynamically
             if (edges.current[edgeIndex]) {
                 //Set edge position to Node1 position + unitVector * old position
-                nodeStates.current[curNode].node.links[i].x1 = newX1;
-                nodeStates.current[curNode].node.links[i].x2 = newX2;
-                nodeStates.current[curNode].node.links[i].y1 = newY1;
-                nodeStates.current[curNode].node.links[i].y2 = newY2;
+                //nodeStates.current[curNode].node.links[i].x1 = newX1;
+                //nodeStates.current[curNode].node.links[i].x2 = newX2;
+                //nodeStates.current[curNode].node.links[i].y1 = newY1;
+                //nodeStates.current[curNode].node.links[i].y2 = newY2;
                 edges.current[edgeIndex].setAttribute("x1", (newX1).toString());
                 edges.current[edgeIndex].setAttribute("y1", (newY1).toString());
                 edges.current[edgeIndex].setAttribute("x2", (newX2).toString());
                 edges.current[edgeIndex].setAttribute("y2", (newY2).toString());
-            }
-
-            //Arrows at ends of lines
-            let arrowRightX = newX1 + (newX2 - newX1) * 0.9
-            let arrowRightY = newY1 + (newY2 - newY1) * 0.9;
-
-            //Using expensive math we don't need
-            let angle = Math.atan2((newY2 - newY1), (newX2 - newX1));
-
-            if (arrowRef.current) {
-                let meshRotated = RotatePolygonAngle(angle, arrowState.current.mesh);
-                let meshTranslated = TranslatePolygon(arrowRightX, arrowRightY, meshRotated);
-                console.log(meshTranslated);
-                arrowState.current.points = meshTranslated;
             }
 
         }
@@ -440,28 +316,33 @@ export const Graph = ({width, graphIndex}: GraphProps) => {
                 xmlns="http://www.w3.org/2000/svg" 
                 xmlnsXlink={"http://www.w3.org/1999/xlink"} 
                 className="notselectable nwlinkhovertoggle" 
-                height="900" id="svg_network_image" width={width} style={{verticalAlign: "top"}}>
+                height="900" id="svg_network_image" width={width} style={{verticalAlign: "top"}}
+            >
                 <g id="edges">
-                    <g xmlns="http://www.w3.org/2000/svg" className="nwlinkwrapper" id="edge.0.1">
-                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="20" refY="3.5" orient="auto">
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="20" refY="3.5" orient="auto">
                             <polygon points="0 0, 10 3.5, 0 7" />
-                        </marker>
-                        <marker id="arrowhead_reverse" markerWidth="10" markerHeight="7" refX="-10" refY="3.5" orient="auto"  fill="red" >
-                            <polygon points="10 0, 10 7, 0 3.5" fill="red"/>
-                        </marker>
-                        <line xmlns="http://www.w3.org/2000/svg" 
-                            ref={(ref) => {
-                                if (ref !== null) {
-                                    edges.current.push(ref)
-                                }
-                            }}
-                            className="nw_edge" 
-                            id="line.0.1.0" 
-                            stroke="rgb(0,0,200)" 
-                            markerEnd="url(#arrowhead)"
-                            markerStart="url(#arrowhead_reverse)"
-                            strokeOpacity="1" strokeWidth={"5"} x1="200" x2="600" y1="200" y2="600"/>
-                    </g>
+                    </marker>
+                    <marker id="arrowhead_reverse" markerWidth="10" markerHeight="7" refX="-10" refY="3.5" orient="auto"  fill="red" >
+                        <polygon points="10 0, 10 7, 0 3.5" fill="black"/>
+                    </marker>
+                    {/*TODO: THIS METHOD ONLY WORKS FOR SINGLE DIRECTION LINES*/}
+                    {graphNodes.map((node, nodeIdx) => (
+                        node.links.map((link, linkIdx) => (
+                            <line key={`GRAPH_${graphIndex}_LINE_FROM_NODE_${nodeIdx}_TO_${link}`}xmlns="http://www.w3.org/2000/svg" 
+                                ref={(ref) => {
+                                    if (ref !== null) {
+                                        edges.current.push(ref)
+                                    }
+                                }}
+                                className="nw_edge" 
+                                id={`line.${nodeIdx}.${link}.0` }
+                                stroke="rgb(0,0,200)" 
+                                markerEnd="url(#arrowhead)"
+                                markerStart="url(#arrowhead_reverse)"
+                                strokeOpacity="1" strokeWidth={"5"} x1={node.initX} x2={graphNodes[link].initX} y1={node.initY} y2={graphNodes[link].initY}/>
+                        ))
+                    ))}
+
                 </g>
                 <g id="nodes">
                     <defs>
@@ -477,7 +358,8 @@ export const Graph = ({width, graphIndex}: GraphProps) => {
                     
 
                     {graphNodes.map((node, idx) => (
-                        <GraphNode 
+                        <GraphNode key={node.name}
+                            graphIndex={graphIndex}
                             nodeId={idx}
                             startX={node.initX}
                             startY={node.initY}
