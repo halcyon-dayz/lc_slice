@@ -1,0 +1,62 @@
+scalar PositiveFloat
+
+scalar EmailAddress
+
+scalar PositiveInt
+
+scalar NonNegativeInt
+
+scalar UUID
+
+type User {
+  id: ID!
+  firstName: String!
+  lastName: String!,
+  name: String!
+  age: PositiveFloat
+  email: EmailAddress,
+  posts: [Post]
+}
+
+type Post {
+  id: ID!
+  title: String!
+  body: String!
+  authorID: ID!
+  published: Boolean!
+  views: NonNegativeInt
+  author: User
+}
+
+type Grid {
+  gridId: ID!
+  label: String
+  width: PositiveInt!
+  height: PositiveInt!
+  problemNumber: PositiveInt!
+  interpretAs: String!
+  data: [[Int]]
+}
+
+type ProblemInfo {
+  problemId: UUID!
+  problemNumber: PositiveInt!
+  title: String!
+  description: String!
+  numExamples: PositiveInt!
+  hasGraphs: Boolean!
+  hasGrids: Boolean!
+  hasArrays: Boolean!
+  example(index: Int): Example
+}
+
+type Example {
+  grids: [Grid]
+}
+
+type Query {
+  users: [User]
+  posts: [Post]
+  grids: [Grid]
+  problem(number: Int): ProblemInfo
+}

@@ -19,6 +19,7 @@
     "bootstrap": "^5.2.2",
     "framer-motion": "^7.6.7",
     "gh-pages": "^4.0.0",
+    "graphql": "^16.6.0",
     "immer": "^9.0.16",
     "interact.js": "^1.2.8",
     "interactjs": "^1.10.17",
