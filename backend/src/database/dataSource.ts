@@ -1,6 +1,7 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-import { Grids, ProblemInfo} from "./entities"
+import { Grids } from "./entities/grids.js"
+import { ProblemInfo } from "./entities/problemInfo.js"
 import { psqlPassword, psqlUsername, psqlDatabase} from "./envVars.js"
 
 

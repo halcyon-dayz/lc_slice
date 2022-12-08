@@ -60,3 +60,18 @@ export const createGridOnDatabase = ({
   ${data.length},
   '${label}'))`;
 }
+
+type UpdateExamplesProps = {
+  tableName: string,
+  problemNumber: number
+}
+
+export const updateExamples = ({
+  tableName,
+  problemNumber
+}: UpdateExamplesProps) => {
+  return `CREATE TEMPORARY SEQUENCE updt MINVALUE 0 START 0;
+  UPDATE ${tableName} set "fromExample"=nextVal('updt') 
+  WHERE "problemNumber"=${problemNumber}
+  `
+}

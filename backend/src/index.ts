@@ -2,7 +2,7 @@ import { ApolloServer } from '@apollo/server';
 import {expressMiddleware} from "@apollo/server/express4"
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { readFileSync } from 'fs';
-import { Post, Resolvers, User } from '__generated__/resolvers-types';
+import { Post, Resolvers, User, Grid} from '__generated__/resolvers-types';
 import http from 'http'
 import cors from "cors"
 import express from "express"
@@ -15,11 +15,12 @@ import {
   resolvers as scalarResolvers,
   mocks as scalarMocks,
 } from 'graphql-scalars';
-import { AppDataSource } from "./database/dataSource.js"
-import { Grids } from './database/entities/grids.js'
-import localDatabase from './localDatabase.js';
-import { ProblemInfo } from 'database/entities/problemInfo.js';
 
+//NOTE: Node.js does not allow directory imports
+import { AppDataSource } from "./database/dataSource.js"
+import localDatabase from './localDatabase.js';
+import { Grids } from './database/entities/grids.js';
+import { ProblemInfo } from './database/entities/problemInfo.js';
 /* Use imports below to add individual typedefs, resolvers, and mocks for 
 each graphql-scalar custom scalar.
 import {

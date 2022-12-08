@@ -1,5 +1,12 @@
 import {Entity, PrimaryGeneratedColumn, Column} from "typeorm"
 
+
+enum GridInterpreter {
+  NUMBER = "NUMBER",
+  BOOLEAN = "BOOLEAN",
+  NORMALIZED = "NORMALIZED"
+}
+
 @Entity({name: "grids"})
 export class Grids {
     @PrimaryGeneratedColumn("uuid")
@@ -8,11 +15,11 @@ export class Grids {
     @Column("int")
     problemNumber: number
 
-    @Column("smallint")
-    width: number
+    @Column("int")
+    fromExample: number
 
-    @Column("smallint")
-    height: number
+    @Column("int")
+    exampleIndex: number
 
     @Column({length: 255})
     label: string
@@ -20,6 +27,10 @@ export class Grids {
     @Column("int", {array: true})
     data: number[][]
 
-    @Column({length: 255})
-    interpretAs: string
+    @Column({
+      type: "enum",
+      enum: GridInterpreter,
+      default: GridInterpreter.NUMBER
+    })
+    interpretAs: GridInterpreter
 }
