@@ -47,7 +47,6 @@ type ProblemInfo {
   hasGraphs: Boolean!
   hasGrids: Boolean!
   hasArrays: Boolean!
-  example(index: Int): Example
 }
 
 type Example {

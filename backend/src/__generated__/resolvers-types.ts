@@ -48,7 +48,6 @@ export type Post = {
 export type ProblemInfo = {
   __typename?: 'ProblemInfo';
   description: Scalars['String'];
-  example?: Maybe<Example>;
   hasArrays: Scalars['Boolean'];
   hasGraphs: Scalars['Boolean'];
   hasGrids: Scalars['Boolean'];
@@ -56,11 +55,6 @@ export type ProblemInfo = {
   problemId: Scalars['UUID'];
   problemNumber: Scalars['PositiveInt'];
   title: Scalars['String'];
-};
-
-
-export type ProblemInfoExampleArgs = {
-  index?: InputMaybe<Scalars['Int']>;
 };
 
 export type Query = {
@@ -237,7 +231,6 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type ProblemInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProblemInfo'] = ResolversParentTypes['ProblemInfo']> = {
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  example?: Resolver<Maybe<ResolversTypes['Example']>, ParentType, ContextType, Partial<ProblemInfoExampleArgs>>;
   hasArrays?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hasGraphs?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hasGrids?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;

@@ -18,6 +18,7 @@ import {
 import { AppDataSource } from "./database/dataSource.js"
 import { Grids } from './database/entities/grids.js'
 import localDatabase from './localDatabase.js';
+import { ProblemInfo } from 'database/entities/problemInfo.js';
 
 /* Use imports below to add individual typedefs, resolvers, and mocks for 
 each graphql-scalar custom scalar.
@@ -69,6 +70,14 @@ const resolvers: Resolvers = {
     posts: getPosts,
     grids: (parent, args, contextValue: MyContext, info) => {
       return contextValue.dataSource.manager.find(Grids);
+    },
+    problem: (parent, args, contextValue: MyContext, info) => {
+      const {number} = args;
+      return contextValue.dataSource.getRepository(ProblemInfo).findOne({
+        where: {
+          problemNumber: number
+        },
+      })
     }
   },
   User: {
@@ -78,6 +87,7 @@ const resolvers: Resolvers = {
   Post: {
     author: getAuthorOfPost
   }
+
 }
 
 //Create schema and mocked schema

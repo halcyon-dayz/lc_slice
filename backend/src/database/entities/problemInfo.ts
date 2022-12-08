@@ -5,7 +5,7 @@ export class ProblemInfo {
     @PrimaryGeneratedColumn("uuid")
     problemId: string
 
-    @Column("int")
+    @Column("int", {unique: true})
     problemNumber: number
 
     @Column()
