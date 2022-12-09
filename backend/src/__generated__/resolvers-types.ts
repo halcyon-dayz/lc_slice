@@ -37,19 +37,33 @@ export type Grid = {
   exampleIndex: Scalars['NonNegativeInt'];
   fromExample: Scalars['NonNegativeInt'];
   gridId: Scalars['ID'];
+  height: Scalars['PositiveInt'];
   interpretAs: Scalars['String'];
   label?: Maybe<Scalars['String']>;
   problemNumber: Scalars['PositiveInt'];
+  width: Scalars['PositiveInt'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
   addProblem?: Maybe<ProblemInfo>;
+  updateDescription?: Maybe<Scalars['String']>;
+  updateTitle?: Maybe<Scalars['String']>;
 };
 
 
 export type MutationAddProblemArgs = {
   input: AddProblemInput;
+};
+
+
+export type MutationUpdateDescriptionArgs = {
+  input: UpdateDescriptionInput;
+};
+
+
+export type MutationUpdateTitleArgs = {
+  input: UpdateTitleInput;
 };
 
 export type Post = {
@@ -86,6 +100,16 @@ export type Query = {
 
 export type QueryProblemArgs = {
   number?: InputMaybe<Scalars['Int']>;
+};
+
+export type UpdateDescriptionInput = {
+  newDescription: Scalars['String'];
+  problemNumber: Scalars['PositiveInt'];
+};
+
+export type UpdateTitleInput = {
+  newTitle: Scalars['String'];
+  problemNumber: Scalars['PositiveInt'];
 };
 
 export type User = {
@@ -190,6 +214,8 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   UUID: ResolverTypeWrapper<Scalars['UUID']>;
+  UpdateDescriptionInput: UpdateDescriptionInput;
+  UpdateTitleInput: UpdateTitleInput;
   User: ResolverTypeWrapper<User>;
   ValidTypes: ValidTypes;
 };
@@ -212,6 +238,8 @@ export type ResolversParentTypes = {
   Query: {};
   String: Scalars['String'];
   UUID: Scalars['UUID'];
+  UpdateDescriptionInput: UpdateDescriptionInput;
+  UpdateTitleInput: UpdateTitleInput;
   User: User;
 };
 
@@ -229,14 +257,18 @@ export type GridResolvers<ContextType = any, ParentType extends ResolversParentT
   exampleIndex?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>;
   fromExample?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>;
   gridId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  height?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
   interpretAs?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   problemNumber?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
+  width?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addProblem?: Resolver<Maybe<ResolversTypes['ProblemInfo']>, ParentType, ContextType, RequireFields<MutationAddProblemArgs, 'input'>>;
+  updateDescription?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationUpdateDescriptionArgs, 'input'>>;
+  updateTitle?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationUpdateTitleArgs, 'input'>>;
 };
 
 export interface NonNegativeIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['NonNegativeInt'], any> {

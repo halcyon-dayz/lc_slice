@@ -33,4 +33,7 @@ export class GridORM {
       default: GridInterpreter.NUMBER
     })
     interpretAs: GridInterpreter
+
+    width: number
+    height: number
 }

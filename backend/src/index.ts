@@ -59,6 +59,14 @@ const getAuthorOfPost = ({authorID}: Post): User | undefined => {
   return localDatabase.users.get(parseInt(authorID));
 }
 
+const getGridWidth = ({data}: Grid) : number => {
+  return data[0].length;
+}
+
+const getGridHeight = ({data}: Grid): number => {
+  return data.length;
+}
+
 const resolvers: Resolvers = {
   Query: {
     users: getUsers,
@@ -76,10 +84,43 @@ const resolvers: Resolvers = {
     }
   },
   Mutation: {
-    addProblem: async (parent, args, contextValue, info) => {
+    addProblem: async (parent, args, contextValue: MyContext, info) => {
       const problem = createProblemInfoORM(args.input);
       await contextValue.dataSource.manager.save(problem);
       return problem;  
+    },
+    updateDescription: async (parent, args, contextValue: MyContext, info) => {
+      const {problemNumber, newDescription} = args.input
+      await contextValue.dataSource
+        .createQueryBuilder()
+        .update(ProblemInfoORM)
+        .set({description: newDescription})
+        .where("problemNumber = :problemNumber", {problemNumber: problemNumber})
+        .execute();
+        return newDescription;
+    },
+    updateTitle: async (parent, args, contextValue: MyContext, info) => {
+      const {problemNumber, newTitle} = args.input
+      await contextValue.dataSource
+        .createQueryBuilder()
+        .update(ProblemInfoORM)
+        .set({title: newTitle})
+        .where("problemNumber = :problemNumber", {problemNumber: problemNumber})
+        .execute();
+      return newTitle
+    },
+    addGrid: async (parent, args, contextValue: MyContext, info) => {
+      const {problemNumber, data} = args.input;
+      const problemRepo = await contextValue.dataSource.getRepository(ProblemInfoORM);
+
+      const problem = await problemRepo.findOne({
+        where: {
+          problemNumber: problemNumber
+        }
+      })
+      if (problem) {
+
+      }
     }
   },
   User: {
@@ -88,6 +129,10 @@ const resolvers: Resolvers = {
   },
   Post: {
     author: getAuthorOfPost
+  },
+  Grid: {
+    width: getGridWidth,
+    height: getGridHeight
   }
 }
 

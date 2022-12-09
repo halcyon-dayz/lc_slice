@@ -36,6 +36,8 @@ type Grid {
   problemNumber: PositiveInt!
   interpretAs: String!
   data: [[Int]]
+  width: PositiveInt!
+  height: PositiveInt!
 }
 
 type ProblemInfo {
@@ -70,10 +72,28 @@ enum ValidTypes {
 input AddProblemInput {
   problemNumber: PositiveInt!
   title: String!
-  description: String,
+  description: String
   dataTypes: [ValidTypes]
+}
+
+input UpdateDescriptionInput {
+  problemNumber: PositiveInt!
+  newDescription: String!
+}
+
+input UpdateTitleInput {
+  problemNumber: PositiveInt!
+  newTitle: String!
+}
+
+input AddGridInput {
+  problemNumber: PositiveInt!
+  data: [[Int]]
 }
 
 type Mutation {
   addProblem(input: AddProblemInput!): ProblemInfo
+  updateDescription(input: UpdateDescriptionInput!): String
+  updateTitle(input: UpdateTitleInput!): String
+  addGrid(input: AddGridInput!): Grid
 }

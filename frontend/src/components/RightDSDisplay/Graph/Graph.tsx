@@ -17,12 +17,8 @@ export type GraphProps = {
 export const Graph = ({width, graphIndex}: GraphProps) => {
     const graphNodes = useAppSelector(state => state.graphs[graphIndex].nodes);
     const nodeRadius = useAppSelector(state => state.graphs[graphIndex].nodeRadius);
-
     const selectedNode = useRef<number>(0);
-
     const edges = useRef<SVGLineElement[]>([]);
-
-
     //Ref of the entire graph
     const graphSVGRef = useRef<SVGSVGElement>(null);
     //Forwareded ref from GraphNodeObject
