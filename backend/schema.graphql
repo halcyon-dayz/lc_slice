@@ -69,6 +69,12 @@ enum ValidTypes {
   ARRAY
 }
 
+enum GridInterpreter {
+  NUMBER 
+  BOOLEAN 
+  NORMALIZED
+}
+
 input AddProblemInput {
   problemNumber: PositiveInt!
   title: String!
@@ -88,7 +94,10 @@ input UpdateTitleInput {
 
 input AddGridInput {
   problemNumber: PositiveInt!
-  data: [[Int]]
+  data: [[Int]]!
+  example: NonNegativeInt
+  label: String
+  interpretAs: GridInterpreter
 }
 
 type Mutation {

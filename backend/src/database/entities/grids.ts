@@ -1,13 +1,14 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm"
+import {Entity, Unique, PrimaryGeneratedColumn, Column} from "typeorm"
 
 
-enum GridInterpreter {
+export enum GridInterpreter {
   NUMBER = "NUMBER",
   BOOLEAN = "BOOLEAN",
   NORMALIZED = "NORMALIZED"
 }
 
 @Entity({name: "grids"})
+@Unique(["problemNumber", "data"])
 export class GridORM {
     @PrimaryGeneratedColumn("uuid")
     gridId: string

@@ -19,9 +19,10 @@ import {
 //NOTE: Node.js does not allow directory imports
 import { AppDataSource } from "./database/dataSource.js"
 import localDatabase from './localDatabase.js';
-import { GridORM} from './database/entities/grids.js';
+import { GridInterpreter, GridORM} from './database/entities/grids.js';
 import {ProblemInfoORM} from './database/entities/problemInfo.js';
 import { createProblemInfoORM } from './database/utils/ormUtils.js';
+import { GraphQLError } from 'graphql';
 
 
 interface MyContext {
@@ -110,7 +111,8 @@ const resolvers: Resolvers = {
       return newTitle
     },
     addGrid: async (parent, args, contextValue: MyContext, info) => {
-      const {problemNumber, data} = args.input;
+      const {problemNumber, data, example, interpretAs, label} = args.input;
+      console.log(example, label, interpretAs);
       const problemRepo = await contextValue.dataSource.getRepository(ProblemInfoORM);
 
       const problem = await problemRepo.findOne({
@@ -119,8 +121,26 @@ const resolvers: Resolvers = {
         }
       })
       if (problem) {
-
+        const grid = new GridORM();
+        grid.data = data;
+        grid.problemNumber = problemNumber
+        grid.exampleIndex = 0;
+        grid.fromExample = problem.numExamples;
+        grid.label = "Test Label";
+        grid.interpretAs = "NUMBER" as GridInterpreter;
+        await contextValue.dataSource.manager.save(grid);
+        await contextValue.dataSource
+          .createQueryBuilder()
+          .update(ProblemInfoORM)
+          .set({numExamples: problem.numExamples + 1})
+          .where(
+            "problemNumber = :problemNumber", 
+            {problemNumber: problemNumber}
+          )
+          .execute();
+        return grid;
       }
+      throw new GraphQLError('Invalid problem number');
     }
   },
   User: {

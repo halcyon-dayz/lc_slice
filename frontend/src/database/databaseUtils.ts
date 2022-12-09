@@ -5,8 +5,6 @@ enum PSQLDataType {
 
 }
 
-
-
 export const addColumnToGrids = (columnName: string, dataType: PSQLDataType): string => {
   return `ALTER TABLE grids
   ADD COLUMN ${columnName} ${dataType}`;
@@ -74,4 +72,12 @@ export const updateExamples = ({
   UPDATE ${tableName} set "fromExample"=nextVal('updt') 
   WHERE "problemNumber"=${problemNumber}
   `
+}
+
+export const deleteAllDSFromNumber = (tableName: string, problemNumber: number) => {
+  return `DELETE from ${tableName} WHERE "problemNumber"=${problemNumber}`
+}
+
+export const constrainProblemNumberAndData = (tableName: string) => {
+  return `ALTER TABLE ${tableName} ADD CONSTRAINT UNIQUE("problemNumber", "data")`
 }

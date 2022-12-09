@@ -19,6 +19,14 @@ export type Scalars = {
   UUID: string;
 };
 
+export type AddGridInput = {
+  data: Array<InputMaybe<Array<InputMaybe<Scalars['Int']>>>>;
+  example?: InputMaybe<Scalars['NonNegativeInt']>;
+  interpretAs?: InputMaybe<GridInterpreter>;
+  label?: InputMaybe<Scalars['String']>;
+  problemNumber: Scalars['PositiveInt'];
+};
+
 export type AddProblemInput = {
   dataTypes?: InputMaybe<Array<InputMaybe<ValidTypes>>>;
   description?: InputMaybe<Scalars['String']>;
@@ -44,11 +52,23 @@ export type Grid = {
   width: Scalars['PositiveInt'];
 };
 
+export enum GridInterpreter {
+  Boolean = 'BOOLEAN',
+  Normalized = 'NORMALIZED',
+  Number = 'NUMBER'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
+  addGrid?: Maybe<Grid>;
   addProblem?: Maybe<ProblemInfo>;
   updateDescription?: Maybe<Scalars['String']>;
   updateTitle?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationAddGridArgs = {
+  input: AddGridInput;
 };
 
 
@@ -198,11 +218,13 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  AddGridInput: AddGridInput;
   AddProblemInput: AddProblemInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']>;
   Example: ResolverTypeWrapper<Example>;
   Grid: ResolverTypeWrapper<Grid>;
+  GridInterpreter: GridInterpreter;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -222,6 +244,7 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  AddGridInput: AddGridInput;
   AddProblemInput: AddProblemInput;
   Boolean: Scalars['Boolean'];
   EmailAddress: Scalars['EmailAddress'];
@@ -266,6 +289,7 @@ export type GridResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  addGrid?: Resolver<Maybe<ResolversTypes['Grid']>, ParentType, ContextType, RequireFields<MutationAddGridArgs, 'input'>>;
   addProblem?: Resolver<Maybe<ResolversTypes['ProblemInfo']>, ParentType, ContextType, RequireFields<MutationAddProblemArgs, 'input'>>;
   updateDescription?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationUpdateDescriptionArgs, 'input'>>;
   updateTitle?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationUpdateTitleArgs, 'input'>>;
