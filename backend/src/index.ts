@@ -19,16 +19,10 @@ import {
 //NOTE: Node.js does not allow directory imports
 import { AppDataSource } from "./database/dataSource.js"
 import localDatabase from './localDatabase.js';
-import { Grids } from './database/entities/grids.js';
-import { ProblemInfo } from './database/entities/problemInfo.js';
-/* Use imports below to add individual typedefs, resolvers, and mocks for 
-each graphql-scalar custom scalar.
-import {
-  PositiveIntMock,
-  PositiveIntResolver,
-  PositiveIntTypeDefinition
-} from "graphql-scalars"
-*/
+import { GridORM} from './database/entities/grids.js';
+import {ProblemInfoORM} from './database/entities/problemInfo.js';
+import { createProblemInfoORM } from './database/utils/ormUtils.js';
+
 
 interface MyContext {
   dataSource: typeof AppDataSource
@@ -70,15 +64,22 @@ const resolvers: Resolvers = {
     users: getUsers,
     posts: getPosts,
     grids: (parent, args, contextValue: MyContext, info) => {
-      return contextValue.dataSource.manager.find(Grids);
-    },
+      return contextValue.dataSource.manager.find(GridORM);
+    }, 
     problem: (parent, args, contextValue: MyContext, info) => {
       const {number} = args;
-      return contextValue.dataSource.getRepository(ProblemInfo).findOne({
+      return contextValue.dataSource.getRepository(ProblemInfoORM).findOne({
         where: {
           problemNumber: number
         },
       })
+    }
+  },
+  Mutation: {
+    addProblem: async (parent, args, contextValue, info) => {
+      const problem = createProblemInfoORM(args.input);
+      await contextValue.dataSource.manager.save(problem);
+      return problem;  
     }
   },
   User: {
@@ -88,7 +89,6 @@ const resolvers: Resolvers = {
   Post: {
     author: getAuthorOfPost
   }
-
 }
 
 //Create schema and mocked schema
@@ -119,18 +119,7 @@ const server = new ApolloServer<MyContext>({
 
 await AppDataSource.initialize().then(async () => {
   console.log("Postgres TypeORM Database initialized");
-  const grid = new Grids()
-    grid.data = [
-      [1, 2, 2, 3, 5],
-      [3, 2, 3, 4, 4],
-      [2, 4, 5, 3, 1],
-      [6, 7, 1, 4, 5],
-      [5, 1, 1, 2, 4]
-    ];
-    grid.label = "Pacific Atlantic Waterflow"
-    grid.problemNumber = 417;
-    await AppDataSource.manager.save(grid);
-})
+}).catch(error => console.log(error));
 
 //Start server
 await server.start();

@@ -4,6 +4,7 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -18,6 +19,13 @@ export type Scalars = {
   UUID: string;
 };
 
+export type AddProblemInput = {
+  dataTypes?: InputMaybe<Array<InputMaybe<ValidTypes>>>;
+  description?: InputMaybe<Scalars['String']>;
+  problemNumber: Scalars['PositiveInt'];
+  title: Scalars['String'];
+};
+
 export type Example = {
   __typename?: 'Example';
   grids?: Maybe<Array<Maybe<Grid>>>;
@@ -26,12 +34,22 @@ export type Example = {
 export type Grid = {
   __typename?: 'Grid';
   data?: Maybe<Array<Maybe<Array<Maybe<Scalars['Int']>>>>>;
+  exampleIndex: Scalars['NonNegativeInt'];
+  fromExample: Scalars['NonNegativeInt'];
   gridId: Scalars['ID'];
-  height: Scalars['PositiveInt'];
   interpretAs: Scalars['String'];
   label?: Maybe<Scalars['String']>;
   problemNumber: Scalars['PositiveInt'];
-  width: Scalars['PositiveInt'];
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  addProblem?: Maybe<ProblemInfo>;
+};
+
+
+export type MutationAddProblemArgs = {
+  input: AddProblemInput;
 };
 
 export type Post = {
@@ -51,7 +69,7 @@ export type ProblemInfo = {
   hasArrays: Scalars['Boolean'];
   hasGraphs: Scalars['Boolean'];
   hasGrids: Scalars['Boolean'];
-  numExamples: Scalars['PositiveInt'];
+  numExamples: Scalars['NonNegativeInt'];
   problemId: Scalars['UUID'];
   problemNumber: Scalars['PositiveInt'];
   title: Scalars['String'];
@@ -80,6 +98,12 @@ export type User = {
   name: Scalars['String'];
   posts?: Maybe<Array<Maybe<Post>>>;
 };
+
+export enum ValidTypes {
+  Array = 'ARRAY',
+  Graph = 'GRAPH',
+  Grid = 'GRID'
+}
 
 
 
@@ -150,12 +174,14 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  AddProblemInput: AddProblemInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']>;
   Example: ResolverTypeWrapper<Example>;
   Grid: ResolverTypeWrapper<Grid>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Mutation: ResolverTypeWrapper<{}>;
   NonNegativeInt: ResolverTypeWrapper<Scalars['NonNegativeInt']>;
   PositiveFloat: ResolverTypeWrapper<Scalars['PositiveFloat']>;
   PositiveInt: ResolverTypeWrapper<Scalars['PositiveInt']>;
@@ -165,16 +191,19 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>;
   UUID: ResolverTypeWrapper<Scalars['UUID']>;
   User: ResolverTypeWrapper<User>;
+  ValidTypes: ValidTypes;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  AddProblemInput: AddProblemInput;
   Boolean: Scalars['Boolean'];
   EmailAddress: Scalars['EmailAddress'];
   Example: Example;
   Grid: Grid;
   ID: Scalars['ID'];
   Int: Scalars['Int'];
+  Mutation: {};
   NonNegativeInt: Scalars['NonNegativeInt'];
   PositiveFloat: Scalars['PositiveFloat'];
   PositiveInt: Scalars['PositiveInt'];
@@ -197,13 +226,17 @@ export type ExampleResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type GridResolvers<ContextType = any, ParentType extends ResolversParentTypes['Grid'] = ResolversParentTypes['Grid']> = {
   data?: Resolver<Maybe<Array<Maybe<Array<Maybe<ResolversTypes['Int']>>>>>, ParentType, ContextType>;
+  exampleIndex?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>;
+  fromExample?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>;
   gridId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  height?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
   interpretAs?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   problemNumber?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
-  width?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  addProblem?: Resolver<Maybe<ResolversTypes['ProblemInfo']>, ParentType, ContextType, RequireFields<MutationAddProblemArgs, 'input'>>;
 };
 
 export interface NonNegativeIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['NonNegativeInt'], any> {
@@ -234,7 +267,7 @@ export type ProblemInfoResolvers<ContextType = any, ParentType extends Resolvers
   hasArrays?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hasGraphs?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hasGrids?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  numExamples?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
+  numExamples?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>;
   problemId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   problemNumber?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -267,6 +300,7 @@ export type Resolvers<ContextType = any> = {
   EmailAddress?: GraphQLScalarType;
   Example?: ExampleResolvers<ContextType>;
   Grid?: GridResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
   NonNegativeInt?: GraphQLScalarType;
   PositiveFloat?: GraphQLScalarType;
   PositiveInt?: GraphQLScalarType;

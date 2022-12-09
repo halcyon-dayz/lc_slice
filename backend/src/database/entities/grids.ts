@@ -8,7 +8,7 @@ enum GridInterpreter {
 }
 
 @Entity({name: "grids"})
-export class Grids {
+export class GridORM {
     @PrimaryGeneratedColumn("uuid")
     gridId: string
 

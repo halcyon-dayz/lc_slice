@@ -1,7 +1,7 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-import { Grids } from "./entities/grids.js"
-import { ProblemInfo } from "./entities/problemInfo.js"
+import { GridORM} from "./entities/grids.js"
+import { ProblemInfoORM } from "./entities/problemInfo.js"
 import { psqlPassword, psqlUsername, psqlDatabase} from "./envVars.js"
 
 
@@ -12,9 +12,9 @@ export const AppDataSource = new DataSource({
     username: `${psqlUsername}`,
     password: `${psqlPassword}`,
     database: `${psqlDatabase}`,
-    synchronize: true,
+    synchronize: false,
     logging: true,
-    entities: [Grids, ProblemInfo],
+    entities: [GridORM, ProblemInfoORM],
     migrations: [],
     subscribers: [],
 })

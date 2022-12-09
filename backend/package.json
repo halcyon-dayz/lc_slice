@@ -6,9 +6,10 @@
   "type": "module",
   "scripts": {
     "generate": "graphql-codegen --config codegen.yml",
-    "compile": "npm run generate && tsc",
+    "compile": "rimraf dist && npm run generate && tsc",
     "postinstall": "npm run compile",
     "start": "npm run compile && node ./dist/index.js",
+    "startFast": "node ./dist/index.js",
     "watch": "concurrently  --names \"CodeGen,TS,Nodemon\" -c \"bgYellow,bgBlue,bgMagenta\" \"graphql-codegen --watch 'src/**/*.ts'\"  \"tsc -w \" \"nodemon ./dist/index.js \""
   },
   "keywords": [],

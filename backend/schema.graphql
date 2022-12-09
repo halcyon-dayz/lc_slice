@@ -31,8 +31,8 @@ type Post {
 type Grid {
   gridId: ID!
   label: String
-  width: PositiveInt!
-  height: PositiveInt!
+  fromExample: NonNegativeInt!
+  exampleIndex: NonNegativeInt!
   problemNumber: PositiveInt!
   interpretAs: String!
   data: [[Int]]
@@ -43,7 +43,7 @@ type ProblemInfo {
   problemNumber: PositiveInt!
   title: String!
   description: String!
-  numExamples: PositiveInt!
+  numExamples: NonNegativeInt!
   hasGraphs: Boolean!
   hasGrids: Boolean!
   hasArrays: Boolean!
@@ -58,4 +58,22 @@ type Query {
   posts: [Post]
   grids: [Grid]
   problem(number: Int): ProblemInfo
+}
+
+
+enum ValidTypes {
+  GRAPH 
+  GRID 
+  ARRAY
+}
+
+input AddProblemInput {
+  problemNumber: PositiveInt!
+  title: String!
+  description: String,
+  dataTypes: [ValidTypes]
+}
+
+type Mutation {
+  addProblem(input: AddProblemInput!): ProblemInfo
 }
