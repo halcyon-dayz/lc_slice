@@ -47,7 +47,8 @@
     "eject": "react-scripts eject",
     "predeploy": "yarn run build",
     "deploy": "gh-pages -d build",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "generate": "graphql-codegen --config codegen.yml --target=typescript --tagName=gql"
   },
   "eslintConfig": {
     "extends": [
@@ -68,6 +69,9 @@
     ]
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^2.16.1",
+    "@graphql-codegen/typescript": "2.7.3",
+    "@graphql-codegen/typescript-resolvers": "2.7.3",
     "chromedriver": "^107.0.3",
     "postinstall-postinstall": "^2.1.0",
     "ts-jest": "^29.0.3"

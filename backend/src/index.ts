@@ -153,6 +153,25 @@ const resolvers: Resolvers = {
   Grid: {
     width: getGridWidth,
     height: getGridHeight
+  },
+  ProblemInfo: {
+    grids: async (parent, args, contextValue: MyContext, info) => {
+      const {example} = args;
+      let validGrids = example !== undefined ? 
+        await contextValue.dataSource.getRepository(GridORM).find({
+          where: {
+            problemNumber: parent.problemNumber,
+            fromExample: args.example
+          }
+        }) : 
+        await contextValue.dataSource.getRepository(GridORM).find({
+          where: {
+            problemNumber: parent.problemNumber
+          }
+        })
+      ;
+      return validGrids;
+    }
   }
 }
 

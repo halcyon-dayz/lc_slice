@@ -2,6 +2,7 @@ import React from "react"
 import {PacificAtlanticWaterflowController, FloodFillController} from "../Controllers/GridControllers"
 import { AllPathsFromSourceToTargetController } from "../Controllers/GraphControllers/AllPathsFromSourceToTargetController"
 import { QUESTIONS_ENUM } from "../../utils/questionEnum"
+import { ShortestBridgeController } from "../Controllers/GridControllers/ShortestBridgeController"
 
 type CreateProblemControllerProps = {
     problemNumber: number,
@@ -29,6 +30,15 @@ export const CreateProblemController = ({
                     animationSpeed={animationSpeed} 
                 />
             );
+        }
+        case QUESTIONS_ENUM.SHORTEST_BRIDGE: {
+          return (
+            <ShortestBridgeController 
+              animationOn={animationOn}
+              play={play}
+              pause={pause}
+              animationSpeed={animationSpeed}/>
+          )
         }
         case QUESTIONS_ENUM.FLOOD_FILL: {
             return (

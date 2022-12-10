@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "generate": "graphql-codegen --config codegen.yml",
-    "compile": "rimraf dist && npm run generate && tsc",
+    "compile": "rimraf dist && npm run generate && shx cp -R ./schema.graphql ../frontend && tsc",
     "postinstall": "npm run compile",
     "start": "npm run compile && node ./dist/index.js",
     "startFast": "node ./dist/index.js",
@@ -37,6 +37,7 @@
     "@types/cors": "^2.8.13",
     "@types/node": "^18.7.18",
     "concurrently": "7.4.0",
-    "nodemon": "2.0.19"
+    "nodemon": "2.0.19",
+    "shx": "^0.3.4"
   }
 }

@@ -37,6 +37,7 @@ import { BasicController } from "../BasicController";
 import {motion} from "framer-motion"
 import { clearState} from "../controllerUtils";
 import { CellHighlighter, TextHighlighter } from "../CellHighlighter";
+import { QUESTIONS_ENUM } from "../../../utils/questionEnum";
 //#endregion
 
 //Equivalent to currentCell
@@ -80,7 +81,7 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
 
     useEffect(() => {
         if (animationOn && problemNumber === 417) {
-            setTimeout(() => clickStep417(), animationSpeed);
+            setTimeout(() => clickStep(), animationSpeed);
         }
     }, [currentCell, animationOn]);
 
@@ -100,7 +101,7 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
     }
 
 
-    const clickSetUp417 = () => {
+    const clickSetUp = () => {
         clearState(dispatch, 417);
         dispatch(copyGrids([GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_417_BOOLEAN, GRID_417_BOOLEAN]));
         let gridLabels = ["Water Flow", "Pacific", "Atlantic"];
@@ -239,9 +240,9 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
         }
     }
 
-    const clickStep417 = () => {
+    const clickStep = () => {
         if (!buildFinished) {
-            clickSetUp417();
+            clickSetUp();
         }
         const i = currentCell[0]
         const j = currentCell[1];
@@ -384,12 +385,12 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
     return (
         <BasicController
             label={"Pacific Atlantic Waterflow:"}
-            setup={clickSetUp417}
-            step={clickStep417}
+            setup={clickSetUp}
+            step={clickStep}
             pause={pause}
             play={() => {
-                if (problemNumber !== 417) {
-                    clickSetUp417();
+                if (problemNumber !== QUESTIONS_ENUM.PACIFIC_ATLANTIC_WATER_FLOW) {
+                    clickSetUp();
                 }
                 play();
             }}
