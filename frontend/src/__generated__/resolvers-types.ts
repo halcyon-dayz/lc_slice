@@ -1,10 +1,13 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
+const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -41,12 +44,12 @@ export type Example = {
 
 export type Grid = {
   __typename?: 'Grid';
-  data?: Maybe<Array<Maybe<Array<Maybe<Scalars['Int']>>>>>;
   exampleIndex: Scalars['NonNegativeInt'];
   fromExample: Scalars['NonNegativeInt'];
+  gridData?: Maybe<Array<Maybe<Array<Maybe<Scalars['Int']>>>>>;
   gridId: Scalars['ID'];
   height: Scalars['PositiveInt'];
-  interpretAs: Scalars['String'];
+  interpretAs: GridInterpreter;
   label?: Maybe<Scalars['String']>;
   problemNumber: Scalars['PositiveInt'];
   width: Scalars['PositiveInt'];
@@ -282,12 +285,12 @@ export type ExampleResolvers<ContextType = any, ParentType extends ResolversPare
 };
 
 export type GridResolvers<ContextType = any, ParentType extends ResolversParentTypes['Grid'] = ResolversParentTypes['Grid']> = {
-  data?: Resolver<Maybe<Array<Maybe<Array<Maybe<ResolversTypes['Int']>>>>>, ParentType, ContextType>;
   exampleIndex?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>;
   fromExample?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>;
+  gridData?: Resolver<Maybe<Array<Maybe<Array<Maybe<ResolversTypes['Int']>>>>>, ParentType, ContextType>;
   gridId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   height?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
-  interpretAs?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  interpretAs?: Resolver<ResolversTypes['GridInterpreter'], ParentType, ContextType>;
   label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   problemNumber?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
   width?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
@@ -374,3 +377,98 @@ export type Resolvers<ContextType = any> = {
   User?: UserResolvers<ContextType>;
 };
 
+
+export type GetGridFromProblemExampleQueryVariables = Exact<{
+  number?: InputMaybe<Scalars['Int']>;
+  example?: InputMaybe<Scalars['NonNegativeInt']>;
+}>;
+
+
+export type GetGridFromProblemExampleQuery = { __typename?: 'Query', problem?: { __typename?: 'ProblemInfo', title: string, problemId: string, numExamples: number, grids?: Array<{ __typename?: 'Grid', gridId: string, gridData?: Array<Array<number | null> | null> | null, interpretAs: GridInterpreter } | null> | null } | null };
+
+export type GetProblemNumExamplesQueryVariables = Exact<{
+  number?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type GetProblemNumExamplesQuery = { __typename?: 'Query', problem?: { __typename?: 'ProblemInfo', numExamples: number } | null };
+
+
+export const GetGridFromProblemExampleDocument = gql`
+    query GetGridFromProblemExample($number: Int, $example: NonNegativeInt) {
+  problem(number: $number) {
+    title
+    problemId
+    numExamples
+    grids(example: $example) {
+      gridId
+      gridData
+      interpretAs
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetGridFromProblemExampleQuery__
+ *
+ * To run a query within a React component, call `useGetGridFromProblemExampleQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetGridFromProblemExampleQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetGridFromProblemExampleQuery({
+ *   variables: {
+ *      number: // value for 'number'
+ *      example: // value for 'example'
+ *   },
+ * });
+ */
+export function useGetGridFromProblemExampleQuery(baseOptions?: Apollo.QueryHookOptions<GetGridFromProblemExampleQuery, GetGridFromProblemExampleQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetGridFromProblemExampleQuery, GetGridFromProblemExampleQueryVariables>(GetGridFromProblemExampleDocument, options);
+      }
+export function useGetGridFromProblemExampleLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetGridFromProblemExampleQuery, GetGridFromProblemExampleQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetGridFromProblemExampleQuery, GetGridFromProblemExampleQueryVariables>(GetGridFromProblemExampleDocument, options);
+        }
+export type GetGridFromProblemExampleQueryHookResult = ReturnType<typeof useGetGridFromProblemExampleQuery>;
+export type GetGridFromProblemExampleLazyQueryHookResult = ReturnType<typeof useGetGridFromProblemExampleLazyQuery>;
+export type GetGridFromProblemExampleQueryResult = Apollo.QueryResult<GetGridFromProblemExampleQuery, GetGridFromProblemExampleQueryVariables>;
+export const GetProblemNumExamplesDocument = gql`
+    query GetProblemNumExamples($number: Int) {
+  problem(number: $number) {
+    numExamples
+  }
+}
+    `;
+
+/**
+ * __useGetProblemNumExamplesQuery__
+ *
+ * To run a query within a React component, call `useGetProblemNumExamplesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProblemNumExamplesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProblemNumExamplesQuery({
+ *   variables: {
+ *      number: // value for 'number'
+ *   },
+ * });
+ */
+export function useGetProblemNumExamplesQuery(baseOptions?: Apollo.QueryHookOptions<GetProblemNumExamplesQuery, GetProblemNumExamplesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetProblemNumExamplesQuery, GetProblemNumExamplesQueryVariables>(GetProblemNumExamplesDocument, options);
+      }
+export function useGetProblemNumExamplesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProblemNumExamplesQuery, GetProblemNumExamplesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetProblemNumExamplesQuery, GetProblemNumExamplesQueryVariables>(GetProblemNumExamplesDocument, options);
+        }
+export type GetProblemNumExamplesQueryHookResult = ReturnType<typeof useGetProblemNumExamplesQuery>;
+export type GetProblemNumExamplesLazyQueryHookResult = ReturnType<typeof useGetProblemNumExamplesLazyQuery>;
+export type GetProblemNumExamplesQueryResult = Apollo.QueryResult<GetProblemNumExamplesQuery, GetProblemNumExamplesQueryVariables>;
