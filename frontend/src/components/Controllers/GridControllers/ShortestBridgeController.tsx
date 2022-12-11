@@ -4,21 +4,10 @@ import { copyGrids } from "../../../features/grids/gridsSlice"
 import { useAppDispatch, useAppSelector } from "../../../features/hooks"
 import { addGrid, deleteAllStructs } from "../../../features/sharedActions"
 import { QUESTIONS_ENUM } from "../../../utils/questionEnum"
+import { useGetGridFromProblemExampleLazyQuery, useGetProblemNumExamplesQuery } from "../../../__generated__/resolvers-types"
 import { BasicController } from "../BasicController"
 import {ControllerProps} from "../controllerProps"
 import { convertArrayToGrid } from "./gridControllerUtils"
-
-
-type GetGridFromProblemExampleArgs = {
-  number: number,
-  example: number
-}
-
-type GetGridFromProblemExampleReturns = {
-  
-}
-
-
 
 export const ShortestBridgeController = ({
   animationOn,
@@ -26,12 +15,17 @@ export const ShortestBridgeController = ({
   pause,
   animationSpeed
 }: ControllerProps) => {
-  const [example, setExample] = useState<number>(0);
+  /* Redux State variables */
   const dispatch = useAppDispatch();
   const grid = useAppSelector(state => state.grids[0] ? state.grids[0].cells : []);
-  const [getGrid, {loading, error, data}] = useLazyQuery(GET_GRID_FROM_PROBLEM_EXAMPLE);
+  /* Local state variables */
+  const [example, setExample] = useState<number>(0);
+  /* Client state variables */
+  const [getGrid, gridClient] = useGetGridFromProblemExampleLazyQuery();
 
+  /* Setup Function */
   const clickSetUp = async () => {
+    console.log(`setup Example: ${example}`)
     dispatch(deleteAllStructs());
     await getGrid({
       variables: {
@@ -39,21 +33,23 @@ export const ShortestBridgeController = ({
         example: example
       }
     });
-    setExample(example + 1);
   }
 
   useEffect(() => {
-    console.log(data);
-    console.log(loading);
-    if (data) {
-      const {interpretAs} = data.problem.grids[0]
-      const grid = convertArrayToGrid(data.problem.grids[0].data, interpretAs);
-      console.log(grid);
+    //TODO: This is a bad way to deal with undefined
+    if (gridClient.data && gridClient.data.problem && gridClient.data.problem.grids && gridClient.data.problem.grids[0]) {
+      const {interpretAs, gridData} = gridClient.data.problem.grids[0];
+      //TODO: This is also bad
+      const grid = convertArrayToGrid(gridData as number[][], interpretAs);
       dispatch(copyGrids([grid]));
+      console.log(example);
+      console.log(gridClient.data.problem.numExamples);
+      setExample((example + 1) % gridClient.data.problem.numExamples);
     }
-  }, [loading, data])
+  }, [gridClient]);
 
   return (
+    <div>
     <BasicController
       label={"Label For Shortest Bridge Problem"}
       play={() => console.log("Play")}
@@ -61,5 +57,7 @@ export const ShortestBridgeController = ({
       pause={() => console.log("Pause")}
       step={() => console.log("Step")}
     />
+      <div>{example}</div>
+    </div>
   )
 }
