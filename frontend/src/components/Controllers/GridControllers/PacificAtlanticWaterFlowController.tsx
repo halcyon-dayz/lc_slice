@@ -38,6 +38,7 @@ import {motion} from "framer-motion"
 import { clearState} from "../controllerUtils";
 import { CellHighlighter, TextHighlighter } from "../CellHighlighter";
 import { QUESTIONS_ENUM } from "../../../utils/questionEnum";
+import { GridCreationLog } from "./logUtils";
 //#endregion
 
 //Equivalent to currentCell
@@ -80,7 +81,7 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
     const [globals, setGlobals] = useState<P417_GLOBALS>("PACIFIC");
 
     useEffect(() => {
-        if (animationOn && problemNumber === 417) {
+        if (animationOn && problemNumber === QUESTIONS_ENUM.PACIFIC_ATLANTIC_WATER_FLOW) {
             setTimeout(() => clickStep(), animationSpeed);
         }
     }, [currentCell, animationOn]);
@@ -118,32 +119,12 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
         setBuildFinished(true);
         //Add to log
         const element: JSX.Element = (
-            <div style={{display: "flex", "flexDirection": "column", alignItems: "center"}}>
-                <div>Created three grids!</div>
-                {[...Array(3)].map((ele, idx) => (
-                    <motion.h4 key={`LOG_${gridLabels[idx]}`}
-                        whileHover={{scale: 1.4, transition: {duration: 0.2, ease: "easeOut"}}} style={{"display": "inline-block", margin: "0 0 0 0"}}
-                    onMouseEnter={() => 
-                        dispatch(changeGridCellSize({
-                            gridIndex: idx, 
-                            width: 70, 
-                            height: 70
-                        }))
-                    }
-                    onMouseLeave={() => 
-                        dispatch(changeGridCellSize({
-                            gridIndex: idx, 
-                            width: 60, 
-                            height: 60
-                        }))
-                    }   
-                >
-                    {`${idx + 1}. ${gridLabels[idx]}`}
-                </motion.h4>
-                ))}
-            </div>
-        )
-        //dispatch(clearLog())
+          <GridCreationLog
+            dispatch={dispatch}
+            numStructs={gridLabels.length}
+            labels={gridLabels}
+          />
+        );
         dispatch(pushJSXToLog({element: element}))
     }
 

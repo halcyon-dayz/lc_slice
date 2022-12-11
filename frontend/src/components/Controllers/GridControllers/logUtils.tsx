@@ -1,5 +1,35 @@
 import React from "react"
+import { DataStructureType } from "../../../utils/types";
 import { CellHighlighter } from "../CellHighlighter";
+import { changeGridCellSize } from "../../../features/grids/gridsSlice";
+import {motion} from "framer-motion"
+import { GridHighlighter } from "../GridHighlighter";
+
+
+type GridCreationLogProps = {
+  dispatch: any,
+  numStructs: number,
+  labels: string[],
+}
+
+export const GridCreationLog = ({
+  dispatch, 
+  numStructs,
+  labels
+}: GridCreationLogProps): JSX.Element => {
+  const element: JSX.Element = (
+    <div style={{display: "flex", "flexDirection": "column", alignItems: "center"}}>
+      <div>{`Created ${numStructs} ${numStructs !== 1 ? "grids" : "grid"}`}</div>
+        {[...Array(numStructs)].map((ele, idx) => (
+          <GridHighlighter dispatch={dispatch} gridIndex={idx} label={labels[idx]}/>
+        ))}
+    </div>
+  )
+  return element;
+}
+
+
+
 
 
 type SearchFromToLogProps = {
