@@ -26,5 +26,14 @@ const errorLink = onError(({
 
 export const databaseClient = new ApolloClient({
   link: from([errorLink, httpLink]),
-  cache: new InMemoryCache()
+  cache: new InMemoryCache({
+    typePolicies: {
+      ProblemInfo: {
+        "keyFields": ["problemId"]
+      },
+      Grid: {
+        "keyFields": ["gridId"]
+      }
+    }
+  })
 });
