@@ -41,9 +41,9 @@ export type Example = {
 
 export type Grid = {
   __typename?: 'Grid';
-  data?: Maybe<Array<Maybe<Array<Maybe<Scalars['Int']>>>>>;
   exampleIndex: Scalars['NonNegativeInt'];
   fromExample: Scalars['NonNegativeInt'];
+  gridData?: Maybe<Array<Maybe<Array<Maybe<Scalars['Int']>>>>>;
   gridId: Scalars['ID'];
   height: Scalars['PositiveInt'];
   interpretAs: Scalars['String'];
@@ -282,9 +282,9 @@ export type ExampleResolvers<ContextType = any, ParentType extends ResolversPare
 };
 
 export type GridResolvers<ContextType = any, ParentType extends ResolversParentTypes['Grid'] = ResolversParentTypes['Grid']> = {
-  data?: Resolver<Maybe<Array<Maybe<Array<Maybe<ResolversTypes['Int']>>>>>, ParentType, ContextType>;
   exampleIndex?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>;
   fromExample?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>;
+  gridData?: Resolver<Maybe<Array<Maybe<Array<Maybe<ResolversTypes['Int']>>>>>, ParentType, ContextType>;
   gridId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   height?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
   interpretAs?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

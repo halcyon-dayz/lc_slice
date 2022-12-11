@@ -8,7 +8,7 @@ export enum GridInterpreter {
 }
 
 @Entity({name: "grids"})
-@Unique(["problemNumber", "data"])
+@Unique(["problemNumber", "gridData"])
 export class GridORM {
     @PrimaryGeneratedColumn("uuid")
     gridId: string
@@ -26,7 +26,7 @@ export class GridORM {
     label: string
 
     @Column("int", {array: true})
-    data: number[][]
+    gridData: number[][]
 
     @Column({
       type: "enum",

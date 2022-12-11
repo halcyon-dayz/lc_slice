@@ -60,12 +60,12 @@ const getAuthorOfPost = ({authorID}: Post): User | undefined => {
   return localDatabase.users.get(parseInt(authorID));
 }
 
-const getGridWidth = ({data}: Grid) : number => {
-  return data[0].length;
+const getGridWidth = ({gridData}: Grid) : number => {
+  return gridData[0].length;
 }
 
-const getGridHeight = ({data}: Grid): number => {
-  return data.length;
+const getGridHeight = ({gridData}: Grid): number => {
+  return gridData.length;
 }
 
 const resolvers: Resolvers = {
@@ -122,7 +122,7 @@ const resolvers: Resolvers = {
       })
       if (problem) {
         const grid = new GridORM();
-        grid.data = data;
+        grid.gridData = data;
         grid.problemNumber = problemNumber
         grid.exampleIndex = 0;
         grid.fromExample = problem.numExamples;
