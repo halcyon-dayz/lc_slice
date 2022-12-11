@@ -1,6 +1,6 @@
 import { Cell, CellStatus } from "../../utils/types"
 
-interface GridIndexPL {
+export interface GridIndexPL {
     gridIndex: number,
 }
 
@@ -68,4 +68,9 @@ export type ChangeGridCellDataPayload = Omit<ChangeGridCellPayload, "status">
 export interface ChangeGridIndividualCellSizePayload extends GridIndexPL, RowColPL {
     width: number | undefined, 
     height: number | undefined,
+}
+
+export interface ChangeGridCellsStatusBasedOnDataPayload extends GridIndexPL {
+  gridIndex: number,
+  dataToStatus: Map<any, CellStatus>
 }

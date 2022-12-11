@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 //import { changeCell, changeCellSize, changeHeight, changeLabel, changeWidth, clearCells, grid } from "./grid/gridSlice";
 
 import { 
@@ -23,7 +23,14 @@ export const store = configureStore({
         totalStructs: totalStructsReducer,
         problem: problemReducer
     },
-    devTools: true, 
+    devTools: true,
+    middleware: (getDefaultMiddleware) => {
+      return getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: ['grids/changeGridCellsStatusBasedOnData']
+        }
+      })
+    }
 })
 
 //Types the specific dispatch we expect from our store

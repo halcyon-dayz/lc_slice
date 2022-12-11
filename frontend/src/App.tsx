@@ -2,8 +2,6 @@ import React, { useEffect, useState, useRef} from 'react';
 import './App.css';
 import { 
   Main,
-  NavItemProps,
-  NavItem
 } from './styles';
 
 import {Container as ResizeContainer, Bar, Section} from "react-simple-resizer"

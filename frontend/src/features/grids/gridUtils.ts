@@ -3,19 +3,6 @@ import {PayloadAction} from "@reduxjs/toolkit"
 import { Cell } from "../../utils/types";
 
 /* Grid Utility Functions */
-export const isValidIndex = (stateLength: number, index: number): boolean => {
-	if (stateLength === 0 || index >= stateLength || index < 0) {
-		return false;
-	}
-	return true;
-}
-
-export const isStateValid = (stateLength: number) => {
-	if (stateLength <= 0) {
-		return false;
-	}
-	return true;
-}
 
 export const ARRAY_2D_IS_VALID_INDEX = <T,>(arr: T[][], row: number, col: number): boolean => {
     if (row < 0 || col < 0 || row >= arr.length || col >= arr[0].length) {
@@ -213,12 +200,12 @@ export const ARRAY_2D_CONVERT_TO_CELL = <T>(arr: T[][]): Cell[][] => {
 
 /* Grid Slice Type Helpers */
 export type GridBeforeEachFunc = (state: RootState["grids"], action?: PayloadAction<any>) => boolean;
-export type GridDuringWithActionFunc = (state: RootState["grids"], action: PayloadAction<any>) => void
+export type GridDuringWithActionFunc<ActionPayload> = (state: RootState["grids"], action: PayloadAction<ActionPayload>) => void
 export type GridDuringFunc = (state: RootState["grids"]) => void;
 
 /* Grid Slice Action Creators */
-export const createGridActionSA = (beforeEach: GridBeforeEachFunc, during: GridDuringWithActionFunc) => {
-	return (state: RootState["grids"], action: PayloadAction<any>) => {
+export const createGridActionSA = <ActionPayload>(beforeEach: GridBeforeEachFunc, during: GridDuringWithActionFunc<ActionPayload>) => {
+	return (state: RootState["grids"], action: PayloadAction<ActionPayload>) => {
 		const beforeTest = beforeEach(state, action);
 		if (!beforeTest) {
 			return;

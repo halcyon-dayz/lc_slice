@@ -5,6 +5,7 @@ import {CellStatus, RootState} from "../../../utils/types"
 import "./node.css"
 import {motion} from "framer-motion"
 import { useAppSelector } from "../../../features/hooks";
+import clsx from "clsx";
 
 
 type NodeProps = {
@@ -97,6 +98,7 @@ export const NodeInner = ({cellData, cellStatus, cellWidth, cellHeight, styleWid
                 cellStatus === "MONKEY_ISLAND" ? "node_monkey_island" :
                 cellStatus === "CURRENT" ? "node_current" :
                 cellStatus === "PREV_EVALUATE" ? "node_prev_evaluate" :
+                cellStatus === "BRIDGE" ? clsx("node", "bridge") : 
                 "node"
             }
             contentEditable={true}

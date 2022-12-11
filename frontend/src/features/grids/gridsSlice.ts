@@ -19,11 +19,11 @@ import {
 } from "../sharedActions"
 
 import {
-	isValidIndex,
-	isStateValid,
 	GridBeforeEachFunc,
 	createGridActionSA
 } from "./gridUtils"
+
+import { isValidIndex, isStateValid } from "../featureUtils"
 
 import { ThunkAction} from "@reduxjs/toolkit";
 import { Action } from "@reduxjs/toolkit";
@@ -35,7 +35,7 @@ import {defaultGrid} from "../../utils/defaultData";
 
 const initialState: RootState["grids"] = [];
 
-const gridBeforeEach: GridBeforeEachFunc = (state: RootState["grids"], action?: PayloadAction<any>) => {
+const gridBeforeEach: GridBeforeEachFunc = (state: RootState["grids"], action?: PayloadAction<GridPayloads.GridIndexPL>) => {
 	return action ? ( isValidIndex(state.length, action.payload.gridIndex) ) : (isStateValid(state.length))
 }
 
@@ -154,6 +154,20 @@ const gridsSlice = createSlice({
 				}
 			}
 		),
+    changeGridCellsStatusBasedOnData: createGridActionSA<GridPayloads.ChangeGridCellsStatusBasedOnDataPayload>(
+      gridBeforeEach,
+      (state, action) => {
+        const {gridIndex, dataToStatus} = action.payload;
+        for (let i = 0; i < state[gridIndex].cells.length; i++) {
+          for (let j = 0; j < state[gridIndex].cells.length; j++) {
+            const {data, status} = state[gridIndex].cells[i][j];
+            let newStatus = dataToStatus.get(data)
+            state[gridIndex].cells[i][j].status = newStatus !== undefined ? newStatus : status;
+          }
+        }
+      }
+    ),
+
 		/**
 		 * Replace the data in each cell with default data and status values.
 		 * @param {number} gridIndex 
@@ -372,7 +386,8 @@ export const {
 	changeGridCellData,
 	clearGridRow,
 	clearGridCellsStatus,
-	changeGridIndividualCellSize
+	changeGridIndividualCellSize,
+  changeGridCellsStatusBasedOnData
 } = gridsSlice.actions
 
 export const selectAllGrids = (

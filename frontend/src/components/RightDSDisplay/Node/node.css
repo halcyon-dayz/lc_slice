@@ -127,6 +127,11 @@
     background-color: lightsalmon;
 }
 
+.bridge {
+  outline: 1px solid brown;
+  background-color: brown
+}
+
 @keyframes exploredAnimation {
     0% {
       transform: scale(0.3);

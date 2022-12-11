@@ -1,9 +1,10 @@
 import { useQuery, useLazyQuery, TypedDocumentNode, gql} from "@apollo/client"
 import React, { useEffect, useState } from "react"
-import { copyGrids } from "../../../features/grids/gridsSlice"
+import { changeGridCellStatus, copyGrids, changeGridCellsStatusBasedOnData} from "../../../features/grids/gridsSlice"
 import { useAppDispatch, useAppSelector } from "../../../features/hooks"
 import { addGrid, deleteAllStructs } from "../../../features/sharedActions"
 import { QUESTIONS_ENUM } from "../../../utils/questionEnum"
+import { CellStatus } from "../../../utils/types"
 import { useGetGridFromProblemExampleLazyQuery, useGetProblemNumExamplesQuery } from "../../../__generated__/resolvers-types"
 import { BasicController } from "../BasicController"
 import {ControllerProps} from "../controllerProps"
@@ -42,9 +43,11 @@ export const ShortestBridgeController = ({
       //TODO: This is also bad
       const grid = convertArrayToGrid(gridData as number[][], interpretAs);
       dispatch(copyGrids([grid]));
-      console.log(example);
-      console.log(gridClient.data.problem.numExamples);
       setExample((example + 1) % gridClient.data.problem.numExamples);
+      let dataToStatus = new Map<any, CellStatus>();
+      dataToStatus.set(1, "BRIDGE");
+      dataToStatus.set(0, "WATER");
+      dispatch(changeGridCellsStatusBasedOnData({gridIndex: 0, dataToStatus: dataToStatus}))
     }
   }, [gridClient]);
 

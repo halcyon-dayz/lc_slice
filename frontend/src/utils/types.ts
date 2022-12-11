@@ -5,7 +5,7 @@ import { Root } from "react-dom/client";
 
 
 export type CellStatus = "NO_DATA" | "PROCESSING" | "EXPLORED" | "LOCKED" | "UNEXPLORED" | "START" | "END" |
-"WATER" | "ISLAND" | "DEEP_OCEAN" | "MONKEY_ISLAND" | "CURRENT" | "PREV_EVALUATE"
+"WATER" | "ISLAND" | "DEEP_OCEAN" | "MONKEY_ISLAND" | "CURRENT" | "PREV_EVALUATE" | "BRIDGE"
 
 export type DataStructureType = "GRID" | "ARRAY" | "BINARY_TREE" | "GRAPH"
 

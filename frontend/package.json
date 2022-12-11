@@ -17,6 +17,7 @@
     "@types/selenium-webdriver": "^4.1.9",
     "@types/styled-components": "^5.1.26",
     "bootstrap": "^5.2.2",
+    "clsx": "^1.2.1",
     "framer-motion": "^7.6.7",
     "gh-pages": "^4.0.0",
     "graphql": "^16.6.0",
