@@ -98,6 +98,11 @@ export const ShortestBridgeController = ({
     const j = currentCell[1];
     const curTileValue = grid[i][j].data
 
+
+    if (curTileValue === 1) {
+      
+    }
+
     if (curTileValue === 0) {
       const [nextI, nextJ] = ARRAY_2D_GET_NEXT_INDEX(grid, i, j);
       dispatch(changeGridCellStatus({
