@@ -34,7 +34,7 @@ type Grid {
   fromExample: NonNegativeInt!
   exampleIndex: NonNegativeInt!
   problemNumber: PositiveInt!
-  interpretAs: GridInterpreter!
+  interpretAs: String!
   gridData: [[Int]]
   width: PositiveInt!
   height: PositiveInt!
