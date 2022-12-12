@@ -1,1 +1,1 @@
-web: yarn run startFast
+web: yarn run startHeroku
