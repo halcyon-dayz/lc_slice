@@ -7,10 +7,8 @@
   "scripts": {
     "generate": "graphql-codegen --config codegen.yml",
     "compile": "rimraf dist && npm run generate && shx cp -R ./schema.graphql ../frontend && tsc",
-    "postinstall": "npm run compile",
-    "start": "npm run compile && node ./dist/index.js",
-    "startFast": "node ./dist/index.js",
-    "startHeroku": "node ./dist/index.js",
+    "startBuild": "npm run compile && node ./dist/index.js",
+    "start": "node ./dist/index.js",
     "watch": "concurrently  --names \"CodeGen,TS,Nodemon\" -c \"bgYellow,bgBlue,bgMagenta\" \"graphql-codegen --watch 'src/**/*.ts'\"  \"tsc -w \" \"nodemon ./dist/index.js \""
   },
   "keywords": [],
