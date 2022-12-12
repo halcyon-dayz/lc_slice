@@ -27,3 +27,4 @@ frontend/.yarn/install-state.gz
 
 backend/dist
 backend/node_modules
+node_modules

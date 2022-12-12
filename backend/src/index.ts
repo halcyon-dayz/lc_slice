@@ -218,5 +218,7 @@ app.use(
   })
 )
 
-await new Promise<void>((resolve) => httpServer.listen({port: 8000}, resolve));
-console.log(`🚀 Server listening at: 8000`);
+const port = Number.parseInt(process.env.PORT) || 8000
+
+await new Promise<void>((resolve) => httpServer.listen({port: port}, resolve));
+console.log(`🚀 Server listening at: ${port}`);
