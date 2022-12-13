@@ -5,13 +5,10 @@ import {
 } from "react-redux";
 import { 
     copyGrids, 
-    selectAllGrids, 
-    changeGridLabels,
     changeGridCellStatus,
     changeGridCellData,
     changeMultiGridSameCellStatus,
     clearGridCellsStatus,
-    changeGridCellSize,
     changeGridIndividualCellSize
 } from "../../../features/grids/gridsSlice";
 import { 
@@ -30,7 +27,8 @@ import {
     GRID_417_BOOLEAN
 } from "../../../features/grids/defaultGrids";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-
+import { convertArrayToGrid } from "./gridControllerUtils";
+import { CellStatus } from "../../../utils/types";
 import "../controller.css"
 import { changeProblemNumber, clearLog, pushJSXToLog, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
 import { BasicController } from "../BasicController";
@@ -39,6 +37,7 @@ import { clearState} from "../controllerUtils";
 import { CellHighlighter, TextHighlighter } from "../CellHighlighter";
 import { QUESTIONS_ENUM } from "../../../utils/questionEnum";
 import { GridCreationLog } from "./logUtils";
+import { useGetGridFromProblemExampleLazyQuery } from "../../../__generated__/resolvers-types";
 //#endregion
 
 //Equivalent to currentCell
@@ -63,7 +62,7 @@ type P417_PROPS = {
 }
 
 export const PacificAtlanticWaterflowController = ({animationOn, play, pause, animationSpeed}: P417_PROPS) => {
-    /* Access the Global State */
+    /* Global State Variables */
     const dispatch = useAppDispatch();
     //Grids
     const waterFlowGridWidth = useAppSelector(state => state.grids[0] ? state.grids[0].width : 0);
@@ -74,11 +73,14 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
     const atlanticCells = useAppSelector(state => state.grids[2] ? state.grids[2].cells : []);
     //Problem Number
     const problemNumber = useAppSelector(selectProblemNumber);
-    /* Set local state variables */
+    /* Local State Variables */
     const [buildFinished, setBuildFinished] = useState<boolean>(false);
     const [currentCell, setCurrentCell] = useState<P417_CURRENT_CONTEXT_TYPE>([0, 0])
     const [stackContext, setStackContext] = useState<P417_STACK_CONTEXT_UNIT_TYPE[]>([]);
     const [globals, setGlobals] = useState<P417_GLOBALS>("PACIFIC");
+    const [example, setExample] = useState<number>(0);
+    /*Client State Variables */
+    const [getGrid, gridClient] = useGetGridFromProblemExampleLazyQuery();
 
     useEffect(() => {
         if (animationOn && problemNumber === QUESTIONS_ENUM.PACIFIC_ATLANTIC_WATER_FLOW) {
@@ -102,9 +104,15 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
     }
 
 
-    const clickSetUp = () => {
+    const clickSetUp = async () => {
         clearState(dispatch, 417);
-        dispatch(copyGrids([GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_417_BOOLEAN, GRID_417_BOOLEAN]));
+        await getGrid({
+          variables: {
+            number: QUESTIONS_ENUM.SHORTEST_BRIDGE,
+            example: example
+          }
+        });
+        /*dispatch(copyGrids([GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_417_BOOLEAN, GRID_417_BOOLEAN]));
         let gridLabels = ["Water Flow", "Pacific", "Atlantic"];
         dispatch(changeGridLabels(0, gridLabels));
         dispatch(changeGridCellStatus({
@@ -125,8 +133,26 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
             labels={gridLabels}
           />
         );
-        dispatch(pushJSXToLog({element: element}))
+        dispatch(pushJSXToLog({element: element})); */
     }
+
+    useEffect(() => {
+      if (gridClient.data && gridClient.data.problem && gridClient.data.problem.grids && gridClient.data.problem.grids[0]) {
+        const {interpretAs, gridData} = gridClient.data.problem.grids[0];
+        //TODO: This is also bad
+        const grid = convertArrayToGrid(gridData as number[][], interpretAs);
+        dispatch(copyGrids([grid]));
+        setExample((example + 1) % gridClient.data.problem.numExamples);
+        const element = (
+          <GridCreationLog
+            dispatch={dispatch}
+            numStructs={1}
+            labels={["Grid #1"]}
+          />
+        );
+        dispatch(pushJSXToLog({element: element}));
+      }
+    }, [gridClient])
 
     const exploreAndPushStack = (
         cell: [number, number], 
