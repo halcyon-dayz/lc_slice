@@ -91,3 +91,13 @@ export const GoBackFromToLog = ({
     </p> 
   );
 }
+
+export const LengthEdgeCaseLog = (
+  dispatch: any
+): JSX.Element => {
+  return (
+    <div>
+      Due to the grid's size, the shortest possible bridge must be of length 1.
+    </div>
+  )
+}

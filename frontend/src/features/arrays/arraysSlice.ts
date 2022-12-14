@@ -14,8 +14,6 @@ const checkArrayExists: ArrayBeforeEachFunc = (
     state: RootState["arrays"], 
     action?: PayloadAction<ArrayPLs.ArrayIndexPL>
 ) => {
-  console.log("Array State Length")
-  console.log(state.length)
 	return action ? ( isValidIndex(state.length, action.payload.arrayIndex) ) : (isStateValid(state.length));
 }
 

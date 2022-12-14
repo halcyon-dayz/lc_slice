@@ -1,31 +1,25 @@
-import { useQuery, useLazyQuery, TypedDocumentNode, gql} from "@apollo/client"
-import { current } from "immer"
+// #region Imports
 import React, { useEffect, useState } from "react"
-import { popData, pushData, pushDataAtIndex, shift } from "../../../features/arrays/arraysSlice"
-import { changeGridCellStatus, copyGrids, changeGridCellsStatusBasedOnData, floodFillFromInput, floodFillFromInputWithQueue, changeGridCell} from "../../../features/grids/gridsSlice"
-import { ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL, ARRAY_2D_GET_NEXT_INDEX } from "../../../features/grids/gridUtils"
+import { pushData, shift } from "../../../features/arrays/arraysSlice"
+import { changeGridCellStatus, clearGridCellsStatus, copyGrids, floodFillFromInputWithQueue} from "../../../features/grids/gridsSlice"
+import { ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL } from "../../../features/grids/gridUtils"
 import { useAppDispatch, useAppSelector } from "../../../features/hooks"
 import { clearLog, pushJSXToLog } from "../../../features/problemInfo/problemSlice"
-import { addArray, addGrid, deleteAllStructs } from "../../../features/sharedActions"
+import { addArray, deleteAllStructs, deleteArray } from "../../../features/sharedActions"
 import { QUESTIONS_ENUM } from "../../../utils/questionEnum"
 import { CellStatus } from "../../../utils/types"
-import { useGetGridFromProblemExampleLazyQuery, useGetProblemNumExamplesQuery } from "../../../__generated__/resolvers-types"
+import { useGetGridFromProblemExampleLazyQuery } from "../../../__generated__/resolvers-types"
 import { BasicController } from "../BasicController"
 import {ControllerProps} from "../controllerProps"
+import { clearState } from "../controllerUtils"
 import { convertArrayToGrid, createStringFromCurrentCell, iterateToNextCell, parseCurrentCellFromString } from "./gridControllerUtils"
-import { GridCreationLog } from "./logUtils"
+import { GridCreationLog, LengthEdgeCaseLog} from "./logUtils"
+
+//#endregion
 
 
 
-const LengthEdgeCaseLog = (
-  dispatch: any
-): JSX.Element => {
-  return (
-    <div>
-      Due to the grid's size, the shortest possible bridge must be of length 1.
-    </div>
-  )
-}
+
 
 type NumberCell = [number, number];
 
@@ -48,12 +42,13 @@ export const ShortestBridgeController = ({
   //Create current context, array of cells
   const [currentContext, setCurrentContext] = useState<NumberCell[]>([[0, 0]]);
   const [currentCell, setCurrentCell] = useState<NumberCell>([0, 0]);
+  const [bridgeLength, setBridgeLength] = useState<number>(0);
+  const [problemComplete, setProblemComplete] = useState<boolean>(false);
 
   /* Setup Function */
   const clickSetUp = async () => {
-    console.log(`setup Example: ${example}`)
-    dispatch(deleteAllStructs());
-    dispatch(clearLog());
+    setProblemComplete(false);
+    clearState(dispatch, QUESTIONS_ENUM.SHORTEST_BRIDGE);
     await getGrid({
       variables: {
         number: QUESTIONS_ENUM.SHORTEST_BRIDGE,
@@ -64,11 +59,8 @@ export const ShortestBridgeController = ({
 
   /* Asynchronously complete set up once data has been fetched */
   useEffect(() => {
-    console.log("Grid Client");
-    console.log(gridClient);
     //TODO: This is a bad way to deal with undefined
     if (gridClient.data && gridClient.data.problem && gridClient.data.problem.grids && gridClient.data.problem.grids[0]) {
-      console.log(gridClient.data);
       const {interpretAs, gridData} = gridClient.data.problem.grids[0];
       //TODO: This is also bad
       const grid = convertArrayToGrid(gridData as number[][], interpretAs);
@@ -92,7 +84,9 @@ export const ShortestBridgeController = ({
   //TODO: Network error checking
 
   const clickStep = () => {
-    console.log(grid);
+    if (problemComplete) {
+      return;
+    }
     //Check for Edge Cases
     if (grid.length === 2) {
       if (logLength !== 2) {
@@ -102,25 +96,38 @@ export const ShortestBridgeController = ({
     }
 
     if (queue.length !== 0) {
-      console.log("BFS FROM QUEUE")
+      //Increment bridge length
+      setBridgeLength(bridgeLength + 1);
+      const cellStringData = queue.map((ele) => ele.data);
       for (let i = 0; i < queue.length; i++) {
-        console.log(i);
-
         const cell = parseCurrentCellFromString(queue[i].data as string);
-        const bfsCells = ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(cell);
+        //BFS from current cell, no negatives
+        const bfsCells = ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(cell, grid);
+        //Parse cells found in bfs
         for (let i = 0; i < bfsCells.length; i++) {
+          const newCellString = createStringFromCurrentCell(bfsCells[i]);
+          //If the cell we found already exists in the queue, continue early
+          if (cellStringData.find((cellString) => cellString === newCellString) !== undefined) {
+            continue;
+          }
           const newRow = bfsCells[i][0];
           const newCol = bfsCells[i][1];
+          if (grid[newRow][newCol].data === 1) {
+            dispatch(clearGridCellsStatus({gridIndex: 0, defaultStatus: "UNEXPLORED"}));
+            dispatch(changeGridCellStatus({gridIndex: 0, row: newRow, col: newCol, status: "CURRENT"}));
+            dispatch(deleteArray({num: 1, arraysLength: 1}));
+            setProblemComplete(true);
+            return;
+          }
           dispatch(changeGridCellStatus({gridIndex: 0, row: bfsCells[i][0], col: bfsCells[i][1], status: "CURRENT"}));
-          const newString = createStringFromCurrentCell(bfsCells[i]);
-          dispatch(pushData({arrayIndex: 0, data: [`[${newRow}, ${newCol}]`]}));
+          dispatch(pushData({arrayIndex: 0, data: [newCellString]}));
+          cellStringData.push(newCellString);
         }
       }
       for (let i = 0; i < queue.length; i++) {
         const cell = parseCurrentCellFromString(queue[i].data as string);
         dispatch(changeGridCellStatus({gridIndex: 0, row: cell[0], col: cell[1], status: "UNEXPLORED"}));
         dispatch(shift({arrayIndex: 0}));
-
       }
       return;
     }
@@ -131,7 +138,6 @@ export const ShortestBridgeController = ({
 
 
     if (curTileValue === 1 && queue.length === 0) {
-      console.log("dfs from first Island")
       dispatch(addArray({num: 1}));
       dispatch(floodFillFromInputWithQueue(
         0,
@@ -145,7 +151,6 @@ export const ShortestBridgeController = ({
     }
 
     if (curTileValue === 0) {
-      console.log("iterate to next cell")
         //Clear current cell
       dispatch(changeGridCellStatus({
         gridIndex: 0,
@@ -154,7 +159,6 @@ export const ShortestBridgeController = ({
         status: "UNEXPLORED"
       }));
       const [nextI, nextJ] = iterateToNextCell(dispatch, grid, currentCell);
-      console.log(nextI, nextJ);
       setCurrentCell([nextI, nextJ])
       return;
     }
@@ -169,15 +173,17 @@ export const ShortestBridgeController = ({
 
 
   return (
-    <div>
     <BasicController
       label={"Label For Shortest Bridge Problem"}
-      play={() => console.log("Play")}
+      play={() => {
+        if (problemNumber !== QUESTIONS_ENUM.SHORTEST_BRIDGE) {
+          clickSetUp();
+        }
+        play();
+      }}
       setup={clickSetUp}
-      pause={() => console.log("Pause")}
+      pause={pause}
       step={clickStep}
     />
-      <div>{example}</div>
-    </div>
   )
 }

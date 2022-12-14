@@ -173,7 +173,9 @@ export const ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL = (
 		  north, east, south, west
 	  ];
   }
-  return ARRAY_2D_RETURN_VALID_INDICES(gridConstraint, [north, east, south, west]);
+  const validIndices = ARRAY_2D_RETURN_VALID_INDICES(gridConstraint, [north, east, south, west]);
+  console.log(validIndices);
+  return validIndices;
 }
 
 /* Directional Utilities */

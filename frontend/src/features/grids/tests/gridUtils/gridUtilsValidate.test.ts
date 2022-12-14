@@ -41,5 +41,12 @@ describe('gridUtilsValidation tests', () => {
       ])
     })
 
-
+    test("if ARRAY_2D_RETURN_VALID_INDICES test 2", () => {
+      const testArray: [number, number][] = [
+        [0, 0], [0, 5], [4, 0], [4, 5]
+      ]
+      expect(ARRAY_2D_RETURN_VALID_INDICES(defaultArray, testArray)).toEqual([
+        [0, 0], [0, 5], [4, 0], [4, 5]
+      ])
+    })
 })
