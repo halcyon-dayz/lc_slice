@@ -48,7 +48,7 @@ const gridsSlice = createSlice({
 	initialState, 
 	//#region Local Actions
 	reducers: {
-    changeEditable: createGridActionSA<GridPayloads.GridIndexPL>(
+    switchEditable: createGridActionSA<GridPayloads.GridIndexPL>(
       gridBeforeEach, (state, action) => {
         const {gridIndex} = action.payload;
         state[gridIndex].editable = !state[gridIndex].editable;
@@ -399,7 +399,8 @@ export const {
 	clearGridRow,
 	clearGridCellsStatus,
 	changeGridIndividualCellSize,
-  changeGridCellsStatusBasedOnData
+  changeGridCellsStatusBasedOnData,
+  switchEditable
 } = gridsSlice.actions
 
 export const selectAllGrids = (
