@@ -21,7 +21,8 @@ import {
 
 import {
 	GridBeforeEachFunc,
-	createGridActionSA
+	createGridActionSA,
+  createGridActionS
 } from "./gridUtils"
 
 import { isValidIndex, isStateValid } from "../featureUtils"
@@ -47,6 +48,12 @@ const gridsSlice = createSlice({
 	initialState, 
 	//#region Local Actions
 	reducers: {
+    changeEditable: createGridActionSA<GridPayloads.GridIndexPL>(
+      gridBeforeEach, (state, action) => {
+        const {gridIndex} = action.payload;
+        state[gridIndex].editable = !state[gridIndex].editable;
+      }
+    ),
 		/**
 		 * Changes the width of the grid, adding a new column to each row.
 		 * @param {number} gridIndex The grid in the grid list to be operated on.
@@ -289,7 +296,8 @@ const gridsSlice = createSlice({
 				   cellStyleHeight: 60,
 				   cellStyleWidth: 60,
 				   width: defaultGrid[0].length,
-				   height: defaultGrid.length
+				   height: defaultGrid.length,
+           editable: false,
 			   };
 			   state.push(newGrid);
 		   }
@@ -338,7 +346,8 @@ const gridsSlice = createSlice({
 				cellStyleHeight: 60,
 				cellStyleWidth: 60,
 				width: cells[0].length,
-				height: cells.length
+				height: cells.length,
+        editable: false,
 			};
 			state.push(newGrid);
 	   	}).addCase(addDataStructure, (
@@ -360,7 +369,8 @@ const gridsSlice = createSlice({
 				   	cellStyleHeight: 60,
 				   	cellStyleWidth: 60,
 				   	width: defaultGrid[0].length,
-				   	height: defaultGrid.length
+				   	height: defaultGrid.length,
+            editable: false,
 			   	};
 			   	state.push(newGrid);
 		   	}

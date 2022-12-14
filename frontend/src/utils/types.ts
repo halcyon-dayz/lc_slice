@@ -32,6 +32,7 @@ export type GridDS = {
     height: number,
     cellStyleWidth: number,
     cellStyleHeight: number,
+    editable: boolean,
 }
 
 
