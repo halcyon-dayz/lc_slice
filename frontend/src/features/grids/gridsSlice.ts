@@ -15,7 +15,8 @@ import {
 	CopyGridPayload,
 	addDataStructure,
 	AddDataStructurePayload,
-	deleteAllStructs
+	deleteAllStructs,
+  addArray
 } from "../sharedActions"
 
 import {
@@ -28,6 +29,7 @@ import { isValidIndex, isStateValid } from "../featureUtils"
 import { ThunkAction} from "@reduxjs/toolkit";
 import { Action } from "@reduxjs/toolkit";
 import {defaultGrid} from "../../utils/defaultData";
+import { pushData, shift } from "../arrays/arraysSlice"
 
 //#endregion
 
@@ -476,6 +478,61 @@ export const floodFill = (gridIndex: number): AppThunk => {
 		}
 		dfs(0, 0, 1, 2);
 	}
+}
+
+export const floodFillFromInput = (
+  gridIndex: number,
+  currentCell: [number, number],
+  oldValue: number, 
+  newValue: number,
+  newStatus: CellStatus,
+): AppThunk => {
+  return (
+    dispatch,
+    getState
+  ) => {
+    const dfs = (row: number, col: number, oldValue: number, newValue: number) => {
+      let grid = getState().grids[gridIndex];
+      if (row < 0 || col < 0 || row >= grid.height || col >= grid.width || grid.cells[row][col].data !== oldValue) {
+				return;
+			}
+			dispatch(changeGridCell({gridIndex: gridIndex, row: row, col: col, data: newValue, status: newStatus}));
+			dfs(row + 1, col, oldValue, newValue);
+			dfs(row - 1, col, oldValue, newValue);
+			dfs(row, col + 1, oldValue, newValue);
+			dfs(row, col - 1, oldValue, newValue);
+    }
+    dfs(currentCell[0], currentCell[1], oldValue, newValue);
+  }
+}
+
+export const floodFillFromInputWithQueue = (
+  gridIndex: number,
+  currentCell: [number, number],
+  oldValue: number, 
+  newValue: number,
+  newStatus: CellStatus,
+): AppThunk => {
+  return (
+    dispatch,
+    getState
+  ) => {
+    const dfs = (row: number, col: number, oldValue: number, newValue: number) => {
+      let grid = getState().grids[gridIndex];
+      if (row < 0 || col < 0 || row >= grid.height || col >= grid.width || grid.cells[row][col].data !== oldValue) {
+				return;
+			}
+			dispatch(changeGridCell({gridIndex: gridIndex, row: row, col: col, data: newValue, status: newStatus}));
+      dispatch(pushData({arrayIndex: 0, data: [
+        `[${row}, ${col}]`
+      ]}));
+			dfs(row + 1, col, oldValue, newValue);
+			dfs(row - 1, col, oldValue, newValue);
+			dfs(row, col + 1, oldValue, newValue);
+			dfs(row, col - 1, oldValue, newValue);
+    }
+    dfs(currentCell[0], currentCell[1], oldValue, newValue);
+  }
 }
 
 //#endregion

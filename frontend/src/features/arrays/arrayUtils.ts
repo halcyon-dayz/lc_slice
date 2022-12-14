@@ -1,14 +1,14 @@
 import { RootState } from "../../utils/types";
-import { PayloadAction } from "@reduxjs/toolkit";
+import { Action, PayloadAction } from "@reduxjs/toolkit";
 import {Cell} from "../../utils/types"
 
 export type ArrayBeforeEachFunc = (state: RootState["arrays"], action?: PayloadAction<any>) => boolean;
-export type ArrayDuringWithActionFunc = (state: RootState["arrays"], action: PayloadAction<any>) => void
+export type ArrayDuringWithActionFunc<ActionPayload> = (state: RootState["arrays"], action: PayloadAction<ActionPayload>) => void
 export type ArrayDuringFunc = (state: RootState["arrays"]) => void;
 
 /* Grid Slice Action Creators */
-export const createArrayActionSA = (beforeEach: ArrayBeforeEachFunc[], during: ArrayDuringWithActionFunc) => {
-	return (state: RootState["arrays"], action: PayloadAction<any>) => {
+export const createArrayActionSA = <ActionPayload>(beforeEach: ArrayBeforeEachFunc[], during: ArrayDuringWithActionFunc<ActionPayload>) => {
+	return (state: RootState["arrays"], action: PayloadAction<ActionPayload>) => {
         for (let i = 0; i < beforeEach.length; i++) {
 		    const beforeTest = beforeEach[i](state, action);
 		    if (!beforeTest) {

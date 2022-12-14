@@ -1,4 +1,8 @@
 import { Cell } from "../../../utils/types";
+import { ARRAY_2D_GET_NEXT_INDEX } from "../../../features/grids/gridUtils";
+import { pushJSXToLog } from "../../../features/problemInfo/problemSlice";
+import { changeGridCellStatus } from "../../../features/grids/gridsSlice";
+import { CellHighlighter } from "../CellHighlighter";
 
 export const convertArrayToGrid = (
   grid: number[][], 
@@ -35,5 +39,30 @@ export const convertArrayToFalse = (
     newData.push(arr);
   }
   return newData;
+}
 
+export const iterateToNextCell = (
+  dispatch: any, 
+  grid: Cell[][],
+  currentCell: [number, number]
+): [number, number] => {
+  const nextCell = ARRAY_2D_GET_NEXT_INDEX(grid, currentCell[0], currentCell[1]);
+  dispatch(changeGridCellStatus({
+    gridIndex: 0,
+    row: nextCell[0],
+    col: nextCell[1],
+    status: "CURRENT"
+  }));
+  return nextCell;
+}
+
+export const parseCurrentCellFromString = (cellString: string): [number, number] => {
+  return [
+    parseInt(cellString[1]),
+    parseInt(cellString[4])
+  ]
+}
+
+export const createStringFromCurrentCell = (cell: [number, number]): string => {
+  return `[${cell[0]}, ${cell[1]}]`;
 }

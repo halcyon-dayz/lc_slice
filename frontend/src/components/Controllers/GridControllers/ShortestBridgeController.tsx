@@ -1,16 +1,18 @@
 import { useQuery, useLazyQuery, TypedDocumentNode, gql} from "@apollo/client"
+import { current } from "immer"
 import React, { useEffect, useState } from "react"
-import { changeGridCellStatus, copyGrids, changeGridCellsStatusBasedOnData} from "../../../features/grids/gridsSlice"
-import { ARRAY_2D_GET_NEXT_INDEX } from "../../../features/grids/gridUtils"
+import { popData, pushData, pushDataAtIndex, shift } from "../../../features/arrays/arraysSlice"
+import { changeGridCellStatus, copyGrids, changeGridCellsStatusBasedOnData, floodFillFromInput, floodFillFromInputWithQueue, changeGridCell} from "../../../features/grids/gridsSlice"
+import { ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL, ARRAY_2D_GET_NEXT_INDEX } from "../../../features/grids/gridUtils"
 import { useAppDispatch, useAppSelector } from "../../../features/hooks"
 import { clearLog, pushJSXToLog } from "../../../features/problemInfo/problemSlice"
-import { addGrid, deleteAllStructs } from "../../../features/sharedActions"
+import { addArray, addGrid, deleteAllStructs } from "../../../features/sharedActions"
 import { QUESTIONS_ENUM } from "../../../utils/questionEnum"
 import { CellStatus } from "../../../utils/types"
 import { useGetGridFromProblemExampleLazyQuery, useGetProblemNumExamplesQuery } from "../../../__generated__/resolvers-types"
 import { BasicController } from "../BasicController"
 import {ControllerProps} from "../controllerProps"
-import { convertArrayToGrid } from "./gridControllerUtils"
+import { convertArrayToGrid, createStringFromCurrentCell, iterateToNextCell, parseCurrentCellFromString } from "./gridControllerUtils"
 import { GridCreationLog } from "./logUtils"
 
 
@@ -36,6 +38,7 @@ export const ShortestBridgeController = ({
   /* Redux State variables */
   const dispatch = useAppDispatch();
   const grid = useAppSelector(state => state.grids[0] ? state.grids[0].cells : []);
+  const queue = useAppSelector(state => state.arrays[0] ? state.arrays[0].data: []);
   const logLength = useAppSelector(state => state.problem.problemLog.length);
   const problemNumber = useAppSelector(state => state.problem.problemNumber);
   /* Local state variables */
@@ -44,7 +47,7 @@ export const ShortestBridgeController = ({
   const [getGrid, gridClient] = useGetGridFromProblemExampleLazyQuery();
   //Create current context, array of cells
   const [currentContext, setCurrentContext] = useState<NumberCell[]>([[0, 0]]);
-  const [currentCell, setCurrentCell] = useState<[number, number]>([0, 0]);
+  const [currentCell, setCurrentCell] = useState<NumberCell>([0, 0]);
 
   /* Setup Function */
   const clickSetUp = async () => {
@@ -89,6 +92,7 @@ export const ShortestBridgeController = ({
   //TODO: Network error checking
 
   const clickStep = () => {
+    console.log(grid);
     //Check for Edge Cases
     if (grid.length === 2) {
       if (logLength !== 2) {
@@ -97,32 +101,63 @@ export const ShortestBridgeController = ({
       return;
     }
 
-    const i = currentCell[0]
+    if (queue.length !== 0) {
+      console.log("BFS FROM QUEUE")
+      for (let i = 0; i < queue.length; i++) {
+        console.log(i);
+
+        const cell = parseCurrentCellFromString(queue[i].data as string);
+        const bfsCells = ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL(cell);
+        for (let i = 0; i < bfsCells.length; i++) {
+          const newRow = bfsCells[i][0];
+          const newCol = bfsCells[i][1];
+          dispatch(changeGridCellStatus({gridIndex: 0, row: bfsCells[i][0], col: bfsCells[i][1], status: "CURRENT"}));
+          const newString = createStringFromCurrentCell(bfsCells[i]);
+          dispatch(pushData({arrayIndex: 0, data: [`[${newRow}, ${newCol}]`]}));
+        }
+      }
+      for (let i = 0; i < queue.length; i++) {
+        const cell = parseCurrentCellFromString(queue[i].data as string);
+        dispatch(changeGridCellStatus({gridIndex: 0, row: cell[0], col: cell[1], status: "UNEXPLORED"}));
+        dispatch(shift({arrayIndex: 0}));
+
+      }
+      return;
+    }
+
+    const i = currentCell[0];
     const j = currentCell[1];
     const curTileValue = grid[i][j].data
 
 
-    if (curTileValue === 1) {
-      
+    if (curTileValue === 1 && queue.length === 0) {
+      console.log("dfs from first Island")
+      dispatch(addArray({num: 1}));
+      dispatch(floodFillFromInputWithQueue(
+        0,
+        currentCell,
+        1,
+        0,
+        "CURRENT"
+      ));
+      dispatch(shift({arrayIndex: 0}));
+      return;
     }
 
     if (curTileValue === 0) {
-      const [nextI, nextJ] = ARRAY_2D_GET_NEXT_INDEX(grid, i, j);
-      dispatch(changeGridCellStatus({
-          gridIndex: 0,
-          row: i,
-          col: j,
-          status: "UNEXPLORED"
-      }));
+      console.log("iterate to next cell")
+        //Clear current cell
       dispatch(changeGridCellStatus({
         gridIndex: 0,
-        row: nextI,
-        col: nextJ,
-        status: "CURRENT"
-      }))
+        row: i,
+        col: j,
+        status: "UNEXPLORED"
+      }));
+      const [nextI, nextJ] = iterateToNextCell(dispatch, grid, currentCell);
+      console.log(nextI, nextJ);
       setCurrentCell([nextI, nextJ])
+      return;
     }
-    setCurrentContext([...currentContext])
   }
 
   //If playing and the current context changes, click step again.
@@ -143,7 +178,6 @@ export const ShortestBridgeController = ({
       step={clickStep}
     />
       <div>{example}</div>
-      <div>{problemNumber}</div>
     </div>
   )
 }

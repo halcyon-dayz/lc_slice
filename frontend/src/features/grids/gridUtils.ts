@@ -11,6 +11,16 @@ export const ARRAY_2D_IS_VALID_INDEX = <T,>(arr: T[][], row: number, col: number
     return true;
 }
 
+export const ARRAY_2D_RETURN_VALID_INDICES = <T,>(arr: T[][], cells: [number, number][]): [number, number][] => {
+  const validIndices: [number, number][] = [];
+  for (let i = 0; i < cells.length; i++) {
+    if (ARRAY_2D_IS_VALID_INDEX(arr, cells[i][0], cells[i][1])) {
+      validIndices.push(cells[i]);
+    }
+  }
+  return validIndices;
+}
+
 export const ARRAY_2D_GET_NEXT_INDEX = <T,>(arr: T[][], row: number, col: number): [number, number] => {
     if (ARRAY_2D_IS_VALID_INDEX(arr, row, col) === false) {
         return [-1, -1];
@@ -143,17 +153,27 @@ export const GRID_CELL_ADD = (cells: [number, number][]): [number, number] => {
 	return [partOne, partTwo];
 }
 
+
+type ARRAY_2D_CONSTRAINT_TYPE = {
+  numRows: number,
+  numCols: number,
+}
+
 export const ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL = (
-	cell: [number, number]
+	cell: [number, number],
+  gridConstraint?: Cell[][]
 ) : [number, number][] => {
 	//North->East->South->West
 	const north = GRID_CELL_ADD([cell, [-1, 0]]);
 	const east = GRID_CELL_ADD([cell, [0, 1]]);
 	const south = GRID_CELL_ADD([cell, [1, 0]]);
 	const west = GRID_CELL_ADD([cell, [0, - 1]]);
-	return [
-		north, east, south, west
-	];
+  if (!gridConstraint) {
+	  return [
+		  north, east, south, west
+	  ];
+  }
+  return ARRAY_2D_RETURN_VALID_INDICES(gridConstraint, [north, east, south, west]);
 }
 
 /* Directional Utilities */

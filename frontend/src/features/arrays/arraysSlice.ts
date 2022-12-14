@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {CellStatus, RootState} from "../../utils/types"
 import { addArray, AddArrayPayload, copyArray, CopyArrayPayload, deleteAllStructs, deleteArray, DeleteArrayPayload} from "../sharedActions";
-import { ArrayBeforeEachFunc, createArrayActionSA, indexExistsOnArray } from "./arrayUtils";
+import { ArrayBeforeEachFunc, createArrayActionS, createArrayActionSA, indexExistsOnArray } from "./arrayUtils";
 import { isValidIndex, isStateValid} from "../featureUtils"
 import { Cell, ArrDS} from "../../utils/types";
 
@@ -14,6 +14,8 @@ const checkArrayExists: ArrayBeforeEachFunc = (
     state: RootState["arrays"], 
     action?: PayloadAction<ArrayPLs.ArrayIndexPL>
 ) => {
+  console.log("Array State Length")
+  console.log(state.length)
 	return action ? ( isValidIndex(state.length, action.payload.arrayIndex) ) : (isStateValid(state.length));
 }
 
@@ -54,7 +56,9 @@ const arraysReducerObject = {
         (state: RootState["arrays"], action: PayloadAction<ArrayPLs.PushDataPayload>) => 
     {
         const {arrayIndex, data} = action.payload;
+        console.log(data);
         const pushArray: Cell[] = data.map((D) => {
+            console.log(D);
             return {data: D, status: "UNEXPLORED"}
         })
         state[arrayIndex].width += data.length;
@@ -86,9 +90,16 @@ const arraysReducerObject = {
         }
         return;
     }),
-    addPointer: createArrayActionSA(
+    shift: createArrayActionSA<ArrayPLs.ArrayIndexPL>(
+      [checkArrayExists],
+      (state: RootState["arrays"], action) => {
+        const {arrayIndex} = action.payload;
+        return state[arrayIndex].data.shift();
+      }
+    ),
+    addPointer: createArrayActionSA<ArrayPLs.AddPointerPayload>(
         [checkArrayExists],
-        (state: RootState["arrays"], action: PayloadAction<ArrayPLs.AddPointerPayload>) => {
+        (state: RootState["arrays"], action) => {
             const {arrayIndex, location} = action.payload;
             if (location !== undefined && location > 0 && location < state[arrayIndex].data.length) {
                 state[arrayIndex].pointerLocations.push(location);
@@ -185,6 +196,7 @@ export const {
     popData,
     movePointer,
     addPointer,
+    shift
 } = arraysSlice.actions
 
 export const selectAllArrays = (state: RootState) => state.arrays;

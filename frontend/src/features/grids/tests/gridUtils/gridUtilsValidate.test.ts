@@ -1,4 +1,7 @@
-import {ARRAY_2D_IS_VALID_INDEX} from "../../gridUtils"
+import {
+  ARRAY_2D_IS_VALID_INDEX,
+  ARRAY_2D_RETURN_VALID_INDICES
+} from "../../gridUtils"
 
 const defaultArray = [
     [0,  1,  2,  3,  4,  5 ],
@@ -28,4 +31,15 @@ describe('gridUtilsValidation tests', () => {
         expect(ARRAY_2D_IS_VALID_INDEX(defaultArray, 0, defaultArray[0].length)).toBeFalsy();
         expect(ARRAY_2D_IS_VALID_INDEX(defaultArray, 0, defaultArray[0].length + 1)).toBeFalsy();
     })
+
+    test("if ARRAY_2D_RETURN_VALID_INDICES returns valid indices when passed both valid and novalid values", () => {
+      const testArray: [number, number][] = [
+        [1, 2], [3, 4], [-1, -1], [0, -1], [0, 100], [-1, 0], [100, 0],
+      ]
+      expect(ARRAY_2D_RETURN_VALID_INDICES(defaultArray, testArray)).toEqual([
+        [1, 2], [3, 4]
+      ])
+    })
+
+
 })
