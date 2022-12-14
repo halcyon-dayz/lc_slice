@@ -27,7 +27,27 @@ export const store = configureStore({
     middleware: (getDefaultMiddleware) => {
       return getDefaultMiddleware({
         serializableCheck: {
-          ignoredActions: ['grids/changeGridCellsStatusBasedOnData']
+          ignoredActions: [
+            'grids/changeGridCellsStatusBasedOnData', 
+            'grids/changeGridCellSize',
+            'problem/pushJSXToLog/'
+          ],
+          ignoredActionPaths: [
+            'payload.element.$$typeof',
+            'problem.problemLog.0.$$typeof',
+            'payload.element.type',
+            'payload.element.props.dispatch',
+            'problem.problemLog.0.type',
+            'payload.element.props.children.0.$$typeof',
+            'payload.element'
+          ],
+          ignoredPaths: [
+            'payload.element.$$typeof',
+            'problem.problemLog.0.$$typeof',
+            'problem.problemLog.0.type',
+            'problem.problemLog.0.props.dispatch',
+            'problem.problemLog'
+          ]
         }
       })
     }

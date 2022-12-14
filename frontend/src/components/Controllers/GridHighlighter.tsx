@@ -11,8 +11,8 @@ type GridHighlighterProps = {
 
 export const GridHighlighter = ({dispatch, gridIndex, label}: GridHighlighterProps) => {
   return (
-    <motion.h4 key={`LOG_${label}`}
-      whileHover={{scale: 1.4, transition: {duration: 0.2, ease: "easeOut"}}} style={{"display": "inline-block", margin: "0 0 0 0"}}
+    <motion.h5 key={`LOG_${label}`}
+      whileHover={{scale: 1.4, transition: {duration: 0.2, ease: "easeOut"}}} style={{"display": "inline-block", margin: "0 0 10 0"}}
       onMouseEnter={() => 
         dispatch(changeGridCellSize({
           gridIndex: gridIndex, 
@@ -29,6 +29,6 @@ export const GridHighlighter = ({dispatch, gridIndex, label}: GridHighlighterPro
       }   
     >
       {`${gridIndex + 1}. ${label}`}
-    </motion.h4>
+    </motion.h5>
   )
 }

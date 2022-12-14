@@ -1,8 +1,7 @@
 import { HttpLink, from, ApolloClient, InMemoryCache} from "@apollo/client";
 import {onError} from "@apollo/client/link/error"
 
-const baseUrl = "https://lcsliceserver-production.up.railway.app/";
-
+const baseUrl = "https://lcsliceserver-production.up.railway.app/graphql";
 
 const httpLink = new HttpLink({
   uri: baseUrl

@@ -321,7 +321,7 @@ export const Controls = () => {
         <hr style={{width: "100%"}}></hr>
         <div className="action_log">
             <h3 style={{marginTop: "5px"}}>Action Log</h3>
-            {problemLog.map(ele => (ele))}
+              {problemLog.map(ele => (ele))}
         </div>
     </LeftContainer>);
 }

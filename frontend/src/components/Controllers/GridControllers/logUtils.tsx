@@ -21,7 +21,7 @@ export const GridCreationLog = ({
     <div style={{display: "flex", "flexDirection": "column", alignItems: "center"}}>
       <div>{`Created ${numStructs} ${numStructs !== 1 ? "grids" : "grid"}`}</div>
         {[...Array(numStructs)].map((ele, idx) => (
-          <GridHighlighter dispatch={dispatch} gridIndex={idx} label={labels[idx]}/>
+          <GridHighlighter key={`GRID_LOG_${idx}`}dispatch={dispatch} gridIndex={idx} label={labels[idx]}/>
         ))}
     </div>
   )
@@ -69,4 +69,25 @@ export const SearchFromToLog = ({
             </p> 
         );
     }
+}
+
+type GoBackFromToLogProps = {
+  dispatch: any,
+  fromCell: [number, number],
+  toCell: [number, number]
+}
+
+export const GoBackFromToLog = ({
+  dispatch,
+  fromCell,
+  toCell
+}: GoBackFromToLogProps) => {
+  return(
+    <p>
+        <b>{`Found no valid cells in search. Popping `}</b>
+        <CellHighlighter dispatch={dispatch} cell={fromCell} />
+        <b>{` from stack and recurring back to `}</b>
+        <CellHighlighter dispatch={dispatch} cell={toCell}/>
+    </p> 
+  );
 }

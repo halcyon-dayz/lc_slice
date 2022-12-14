@@ -54,15 +54,18 @@ export const ShortestBridgeController = ({
     await getGrid({
       variables: {
         number: QUESTIONS_ENUM.SHORTEST_BRIDGE,
-        example: example
+        example: 0,
       }
     });
   }
 
   /* Asynchronously complete set up once data has been fetched */
   useEffect(() => {
+    console.log("Grid Client");
+    console.log(gridClient);
     //TODO: This is a bad way to deal with undefined
     if (gridClient.data && gridClient.data.problem && gridClient.data.problem.grids && gridClient.data.problem.grids[0]) {
+      console.log(gridClient.data);
       const {interpretAs, gridData} = gridClient.data.problem.grids[0];
       //TODO: This is also bad
       const grid = convertArrayToGrid(gridData as number[][], interpretAs);
@@ -140,6 +143,7 @@ export const ShortestBridgeController = ({
       step={clickStep}
     />
       <div>{example}</div>
+      <div>{problemNumber}</div>
     </div>
   )
 }

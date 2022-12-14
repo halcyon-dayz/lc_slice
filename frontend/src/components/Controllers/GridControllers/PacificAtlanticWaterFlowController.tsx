@@ -27,7 +27,7 @@ import {
     GRID_417_BOOLEAN
 } from "../../../features/grids/defaultGrids";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-import { convertArrayToGrid } from "./gridControllerUtils";
+import { convertArrayToFalse, convertArrayToGrid } from "./gridControllerUtils";
 import { CellStatus } from "../../../utils/types";
 import "../controller.css"
 import { changeProblemNumber, clearLog, pushJSXToLog, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
@@ -36,7 +36,7 @@ import {motion} from "framer-motion"
 import { clearState} from "../controllerUtils";
 import { CellHighlighter, TextHighlighter } from "../CellHighlighter";
 import { QUESTIONS_ENUM } from "../../../utils/questionEnum";
-import { GridCreationLog } from "./logUtils";
+import { GoBackFromToLog, GridCreationLog } from "./logUtils";
 import { useGetGridFromProblemExampleLazyQuery } from "../../../__generated__/resolvers-types";
 //#endregion
 
@@ -82,6 +82,37 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
     /*Client State Variables */
     const [getGrid, gridClient] = useGetGridFromProblemExampleLazyQuery();
 
+    const clickSetUp = async () => {
+      clearState(dispatch, 417);
+      await getGrid({
+        variables: {
+          number: QUESTIONS_ENUM.PACIFIC_ATLANTIC_WATER_FLOW,
+          example: example
+        }
+      });
+    }
+
+  useEffect(() => {
+    console.log(gridClient);
+    if (gridClient.data && gridClient.data.problem && gridClient.data.problem.grids && gridClient.data.problem.grids[0]) {
+      const {interpretAs, gridData} = gridClient.data.problem.grids[0];
+      //TODO: This is also bad
+      const grid = convertArrayToGrid(gridData as number[][], interpretAs);
+      const booleanGrid = convertArrayToFalse(gridData as any[][]);
+      dispatch(copyGrids([grid, booleanGrid, booleanGrid]));
+      setExample((example + 1) % gridClient.data.problem.numExamples);
+      const element = (
+        <GridCreationLog
+          dispatch={dispatch}
+          numStructs={3}
+          labels={["Waterflow Grid", "Pacific Grid", "Atlantic Grid"]}
+        />
+      );
+      setBuildFinished(true);
+      dispatch(pushJSXToLog({element: element}));
+    }
+  }, [gridClient])
+
     useEffect(() => {
         if (animationOn && problemNumber === QUESTIONS_ENUM.PACIFIC_ATLANTIC_WATER_FLOW) {
             setTimeout(() => clickStep(), animationSpeed);
@@ -102,57 +133,6 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
         }
         return false;
     }
-
-
-    const clickSetUp = async () => {
-        clearState(dispatch, 417);
-        await getGrid({
-          variables: {
-            number: QUESTIONS_ENUM.SHORTEST_BRIDGE,
-            example: example
-          }
-        });
-        /*dispatch(copyGrids([GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, GRID_417_BOOLEAN, GRID_417_BOOLEAN]));
-        let gridLabels = ["Water Flow", "Pacific", "Atlantic"];
-        dispatch(changeGridLabels(0, gridLabels));
-        dispatch(changeGridCellStatus({
-            gridIndex: 0,
-            row: 0,
-            col: 0,
-            status: "CURRENT",
-        }));
-        setCurrentCell([0, 0]);
-        setStackContext([]);
-        setGlobals("PACIFIC");
-        setBuildFinished(true);
-        //Add to log
-        const element: JSX.Element = (
-          <GridCreationLog
-            dispatch={dispatch}
-            numStructs={gridLabels.length}
-            labels={gridLabels}
-          />
-        );
-        dispatch(pushJSXToLog({element: element})); */
-    }
-
-    useEffect(() => {
-      if (gridClient.data && gridClient.data.problem && gridClient.data.problem.grids && gridClient.data.problem.grids[0]) {
-        const {interpretAs, gridData} = gridClient.data.problem.grids[0];
-        //TODO: This is also bad
-        const grid = convertArrayToGrid(gridData as number[][], interpretAs);
-        dispatch(copyGrids([grid]));
-        setExample((example + 1) % gridClient.data.problem.numExamples);
-        const element = (
-          <GridCreationLog
-            dispatch={dispatch}
-            numStructs={1}
-            labels={["Grid #1"]}
-          />
-        );
-        dispatch(pushJSXToLog({element: element}));
-      }
-    }, [gridClient])
 
     const exploreAndPushStack = (
         cell: [number, number], 
@@ -323,6 +303,12 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
                 status: "CURRENT"
             }))
             setStackContext(stackContext.slice(0, stackContext.length - 1));
+            const element: JSX.Element = (
+              <GoBackFromToLog dispatch={dispatch}
+              fromCell={[i, j]}
+              toCell={prevCell} />
+            );
+            dispatch(pushJSXToLog({element: element}))
             return;
         }
         const directTo = isPacific ? directToPacific : directToAtlantic
@@ -390,6 +376,7 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
     }
     
     return (
+      <>
         <BasicController
             label={"Pacific Atlantic Waterflow:"}
             setup={clickSetUp}
@@ -402,5 +389,6 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
                 play();
             }}
         />
+        </>
     );
 }

@@ -81,9 +81,9 @@ function App() {
 
   const GridProblems = constructProblemDropdown(
     [
-      "733. Flood Fill", 
-      "417. Pacific Atlantic Waterflow", 
       "21. All Paths to Cells",
+      "417. Pacific Atlantic Waterflow", 
+      "733. Flood Fill", 
       "934. Shortest Bridge"
     ],
     dispatch
@@ -123,7 +123,7 @@ function App() {
         <ResizeContainer style={{position: "relative", height: `${height}px`}}>
         <Section innerRef={leftSectionRef} style={{
           background: 'rgb(240, 240, 240)',
-          overflow: "auto",
+          overflow: 'auto'
         }} minSize={100}>
           <Controls />
         </Section>
