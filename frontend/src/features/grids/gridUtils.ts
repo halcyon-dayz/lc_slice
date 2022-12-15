@@ -159,6 +159,30 @@ type ARRAY_2D_CONSTRAINT_TYPE = {
   numCols: number,
 }
 
+type GetTwoDirectionsType = "AHEAD" | "BEHIND"
+
+export const ARRAY_2D_GET_TWO_DIRECTIONS_FROM_CELL = (
+  cell: [number, number],
+  direction: GetTwoDirectionsType,
+  gridConstraint?: Cell[][]
+): [number, number][] => {
+  const directions: [number, number][] = 
+    direction === "BEHIND" ? [
+      GRID_CELL_ADD([cell, [-1, 0]]),
+      GRID_CELL_ADD([cell, [0, -1]])
+    ] : [
+      GRID_CELL_ADD([cell, [0, 1]]),
+      GRID_CELL_ADD([cell, [1, 0]])
+    ]
+  ;
+  if (!gridConstraint) {
+    return directions;
+  }
+  const validIndices = ARRAY_2D_RETURN_VALID_INDICES(gridConstraint, directions);
+  return validIndices;
+
+}
+
 export const ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL = (
 	cell: [number, number],
   gridConstraint?: Cell[][]

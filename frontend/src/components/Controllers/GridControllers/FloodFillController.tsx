@@ -75,7 +75,7 @@ export const FloodFillController = ({animationOn, play, pause, animationSpeed}: 
       if (gridClient.data && gridClient.data.problem && gridClient.data.problem.grids && gridClient.data.problem.grids[0] ) {
         const {interpretAs, gridData, label} = gridClient.data.problem.grids[0];
         //TODO: This is also bad
-        handleServerGrid(dispatch, gridData as number[][], label as string, interpretAs as GridInterpreter);
+        handleServerGrid(dispatch, gridData as number[][], label as string | undefined, interpretAs as GridInterpreter);
         setExample((example + 1) % gridClient.data.problem.numExamples);
         dispatch(changeGridCellStatus({
           gridIndex: 0,

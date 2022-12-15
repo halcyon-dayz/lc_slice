@@ -81,10 +81,12 @@ function App() {
 
   const GridProblems = constructProblemDropdown(
     [
-      "21. All Paths to Cells",
+      "62. Unique Paths",
+      "63. Unique Paths II",
       "417. Pacific Atlantic Waterflow", 
       "733. Flood Fill", 
-      "934. Shortest Bridge"
+      "934. Shortest Bridge",
+      "980. Unique Paths III"
     ],
     dispatch
   );

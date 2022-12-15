@@ -34,6 +34,7 @@ import { CellHighlighter, TextHighlighter } from "../CellHighlighter";
 import { QUESTIONS_ENUM } from "../../../utils/questionEnum";
 import { GoBackFromToLog, GridCreationLog } from "./logUtils";
 import { useGetGridFromProblemExampleLazyQuery } from "../../../__generated__/resolvers-types";
+import { ControllerProps } from "../controllerProps";
 //#endregion
 
 //Equivalent to currentCell
@@ -57,36 +58,36 @@ type P417_PROPS = {
     animationSpeed: number
 }
 
-export const PacificAtlanticWaterflowController = ({animationOn, play, pause, animationSpeed}: P417_PROPS) => {
-    /* Global State Variables */
-    const dispatch = useAppDispatch();
-    //Grids
-    const waterFlowGridWidth = useAppSelector(state => state.grids[0] ? state.grids[0].width : 0);
-    const waterFlowGridHeight = useAppSelector(state => state.grids[0] ? state.grids[0].height : 0);
-    const waterFlowGridCells = useAppSelector(state => state.grids[0] ? state.grids[0].cells : []);
-    //Grid cells
-    const pacificCells = useAppSelector(state => state.grids[1] ? state.grids[1].cells : []);
-    const atlanticCells = useAppSelector(state => state.grids[2] ? state.grids[2].cells : []);
-    //Problem Number
-    const problemNumber = useAppSelector(selectProblemNumber);
-    /* Local State Variables */
-    const [buildFinished, setBuildFinished] = useState<boolean>(false);
-    const [currentCell, setCurrentCell] = useState<P417_CURRENT_CONTEXT_TYPE>([0, 0])
-    const [stackContext, setStackContext] = useState<P417_STACK_CONTEXT_UNIT_TYPE[]>([]);
-    const [globals, setGlobals] = useState<P417_GLOBALS>("PACIFIC");
-    const [example, setExample] = useState<number>(0);
-    /*Client State Variables */
-    const [getGrid, gridClient] = useGetGridFromProblemExampleLazyQuery();
+export const PacificAtlanticWaterflowController = ({animationOn, play, pause, animationSpeed}: ControllerProps) => {
+  /* Global State Variables */
+  const dispatch = useAppDispatch();
+  //Grids
+  const waterFlowGridWidth = useAppSelector(state => state.grids[0] ? state.grids[0].width : 0);
+  const waterFlowGridHeight = useAppSelector(state => state.grids[0] ? state.grids[0].height : 0);
+  const waterFlowGridCells = useAppSelector(state => state.grids[0] ? state.grids[0].cells : []);
+  //Grid cells
+  const pacificCells = useAppSelector(state => state.grids[1] ? state.grids[1].cells : []);
+  const atlanticCells = useAppSelector(state => state.grids[2] ? state.grids[2].cells : []);
+  //Problem Number
+  const problemNumber = useAppSelector(selectProblemNumber);
+  /* Local State Variables */
+  const [buildFinished, setBuildFinished] = useState<boolean>(false);
+  const [currentCell, setCurrentCell] = useState<P417_CURRENT_CONTEXT_TYPE>([0, 0])
+  const [stackContext, setStackContext] = useState<P417_STACK_CONTEXT_UNIT_TYPE[]>([]);
+  const [globals, setGlobals] = useState<P417_GLOBALS>("PACIFIC");
+  const [example, setExample] = useState<number>(0);
+  /*Client State Variables */
+  const [getGrid, gridClient] = useGetGridFromProblemExampleLazyQuery();
 
-    const clickSetUp = async () => {
-      clearState(dispatch, 417);
-      await getGrid({
-        variables: {
-          number: QUESTIONS_ENUM.PACIFIC_ATLANTIC_WATER_FLOW,
-          example: example
-        }
-      });
-    }
+  const clickSetUp = async () => {
+    clearState(dispatch, 417);
+    await getGrid({
+      variables: {
+        number: QUESTIONS_ENUM.PACIFIC_ATLANTIC_WATER_FLOW,
+        example: example
+      }
+    });
+  }
 
   useEffect(() => {
     console.log(gridClient);
