@@ -64,7 +64,7 @@ export const Controls = () => {
             {problemLog.map( (ele, idx) => {
               return (
                 <div key={`PROBLEM_LOG_${idx}`}>
-                    
+                    {ele}
                 </div>
               );
             })}

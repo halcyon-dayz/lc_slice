@@ -85,7 +85,7 @@ export const handleServerGrid = (
     <GridCreationLog 
       dispatch={dispatch}
       numStructs={1}
-      labels={[label ? label : "Grid #1"]}
+      labels={["Grid #1"]}
     />
   );
   dispatch(pushJSXToLog({element: element}));

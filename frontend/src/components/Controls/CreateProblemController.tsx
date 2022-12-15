@@ -3,7 +3,8 @@ import {PacificAtlanticWaterflowController, FloodFillController} from "../Contro
 import { AllPathsFromSourceToTargetController } from "../Controllers/GraphControllers/AllPathsFromSourceToTargetController"
 import { QUESTIONS_ENUM } from "../../utils/questionEnum"
 import { ShortestBridgeController } from "../Controllers/GridControllers/ShortestBridgeController"
-import { UniquePathsOne } from "../Controllers/GridControllers/UniquePathsOne"
+import { UniquePathsOne } from "../Controllers/GridControllers/UniquePaths/UniquePathsOne"
+import { UniquePathsTwo } from "../Controllers/GridControllers/UniquePaths"
 
 type CreateProblemControllerProps = {
     problemNumber: number,
@@ -31,6 +32,16 @@ export const CreateProblemController = ({
           animationSpeed={animationSpeed}
         />
       )
+    }
+    case QUESTIONS_ENUM.UNIQUE_PATHS_II: {
+      return (
+        <UniquePathsTwo
+          animationOn={animationOn}
+          play={play}
+          pause={pause}
+          animationSpeed={animationSpeed}
+        />
+      );
     }
     case QUESTIONS_ENUM.PACIFIC_ATLANTIC_WATER_FLOW: {
       return (
