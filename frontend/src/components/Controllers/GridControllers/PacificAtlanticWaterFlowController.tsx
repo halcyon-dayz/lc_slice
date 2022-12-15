@@ -97,7 +97,7 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
     if (gridClient.data && gridClient.data.problem && gridClient.data.problem.grids && gridClient.data.problem.grids[0]) {
       const {interpretAs, gridData} = gridClient.data.problem.grids[0];
       //TODO: This is also bad
-      const grid = convertArrayToGrid(gridData as number[][], interpretAs);
+      const grid = convertArrayToGrid(gridData as number[][], interpretAs as "NUMBER" | "BOOLEAN" | "NORMALIZED");
       const booleanGrid = convertArrayToFalse(gridData as any[][]);
       dispatch(copyGrids([grid, booleanGrid, booleanGrid]));
       setExample((example + 1) % gridClient.data.problem.numExamples);

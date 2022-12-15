@@ -49,7 +49,7 @@ export type Grid = {
   gridData?: Maybe<Array<Maybe<Array<Maybe<Scalars['Int']>>>>>;
   gridId: Scalars['ID'];
   height: Scalars['PositiveInt'];
-  interpretAs: GridInterpreter;
+  interpretAs: Scalars['String'];
   label?: Maybe<Scalars['String']>;
   problemNumber: Scalars['PositiveInt'];
   width: Scalars['PositiveInt'];
@@ -290,7 +290,7 @@ export type GridResolvers<ContextType = any, ParentType extends ResolversParentT
   gridData?: Resolver<Maybe<Array<Maybe<Array<Maybe<ResolversTypes['Int']>>>>>, ParentType, ContextType>;
   gridId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   height?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
-  interpretAs?: Resolver<ResolversTypes['GridInterpreter'], ParentType, ContextType>;
+  interpretAs?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   problemNumber?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
   width?: Resolver<ResolversTypes['PositiveInt'], ParentType, ContextType>;
@@ -384,7 +384,7 @@ export type GetGridFromProblemExampleQueryVariables = Exact<{
 }>;
 
 
-export type GetGridFromProblemExampleQuery = { __typename?: 'Query', problem?: { __typename?: 'ProblemInfo', title: string, problemId: string, numExamples: number, grids?: Array<{ __typename?: 'Grid', gridId: string, gridData?: Array<Array<number | null> | null> | null, interpretAs: GridInterpreter } | null> | null } | null };
+export type GetGridFromProblemExampleQuery = { __typename?: 'Query', problem?: { __typename?: 'ProblemInfo', title: string, problemId: string, numExamples: number, grids?: Array<{ __typename?: 'Grid', gridId: string, gridData?: Array<Array<number | null> | null> | null, interpretAs: string, label?: string | null } | null> | null } | null };
 
 export type GetProblemNumExamplesQueryVariables = Exact<{
   number?: InputMaybe<Scalars['Int']>;
@@ -404,6 +404,7 @@ export const GetGridFromProblemExampleDocument = gql`
       gridId
       gridData
       interpretAs
+      label
     }
   }
 }

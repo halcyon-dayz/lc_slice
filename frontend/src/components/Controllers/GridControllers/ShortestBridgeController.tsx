@@ -17,10 +17,6 @@ import { GridCreationLog, LengthEdgeCaseLog} from "./logUtils"
 
 //#endregion
 
-
-
-
-
 type NumberCell = [number, number];
 
 export const ShortestBridgeController = ({
@@ -48,6 +44,7 @@ export const ShortestBridgeController = ({
   /* Setup Function */
   const clickSetUp = async () => {
     setProblemComplete(false);
+    setBridgeLength(0);
     clearState(dispatch, QUESTIONS_ENUM.SHORTEST_BRIDGE);
     await getGrid({
       variables: {
@@ -61,9 +58,9 @@ export const ShortestBridgeController = ({
   useEffect(() => {
     //TODO: This is a bad way to deal with undefined
     if (gridClient.data && gridClient.data.problem && gridClient.data.problem.grids && gridClient.data.problem.grids[0]) {
-      const {interpretAs, gridData} = gridClient.data.problem.grids[0];
+      const {interpretAs, gridData, label} = gridClient.data.problem.grids[0];
       //TODO: This is also bad
-      const grid = convertArrayToGrid(gridData as number[][], interpretAs);
+      const grid = convertArrayToGrid(gridData as number[][], interpretAs as "NUMBER" | "BOOLEAN" | "NORMALIZED");
       dispatch(copyGrids([grid]));
       setExample((example + 1) % gridClient.data.problem.numExamples);
       let dataToStatus = new Map<any, CellStatus>();
@@ -74,7 +71,9 @@ export const ShortestBridgeController = ({
         <GridCreationLog
           dispatch={dispatch}
           numStructs={1}
-          labels={["Grid #1"]}
+          labels={[
+            label ? label : "Grids #1"
+          ]}
         />
       );
       dispatch(pushJSXToLog({element: element}));
@@ -117,6 +116,13 @@ export const ShortestBridgeController = ({
             dispatch(changeGridCellStatus({gridIndex: 0, row: newRow, col: newCol, status: "CURRENT"}));
             dispatch(deleteArray({num: 1, arraysLength: 1}));
             setProblemComplete(true);
+            const element: JSX.Element = (
+              <p>
+                {`Second island found! Length of shortest bridge is `}
+                <b>{bridgeLength}</b>
+              </p>
+            )
+            dispatch(pushJSXToLog({element: element}));
             return;
           }
           dispatch(changeGridCellStatus({gridIndex: 0, row: bfsCells[i][0], col: bfsCells[i][1], status: "CURRENT"}));
@@ -129,6 +135,12 @@ export const ShortestBridgeController = ({
         dispatch(changeGridCellStatus({gridIndex: 0, row: cell[0], col: cell[1], status: "UNEXPLORED"}));
         dispatch(shift({arrayIndex: 0}));
       }
+      const element: JSX.Element = (
+        <p>
+          Breath first search from cells in queue and increment length of bridge.
+        </p>
+      )
+      dispatch(pushJSXToLog({element: element}));
       return;
     }
 
@@ -147,6 +159,12 @@ export const ShortestBridgeController = ({
         "CURRENT"
       ));
       dispatch(shift({arrayIndex: 0}));
+      const element: JSX.Element = (
+        <p>
+          Flood Fill first island and push its cells into queue.
+        </p>
+      );
+      dispatch(pushJSXToLog({element: element}));
       return;
     }
 
@@ -159,7 +177,9 @@ export const ShortestBridgeController = ({
         status: "UNEXPLORED"
       }));
       const [nextI, nextJ] = iterateToNextCell(dispatch, grid, currentCell);
-      setCurrentCell([nextI, nextJ])
+      setCurrentCell([nextI, nextJ]);
+      const element = (<p>Iterate through grid to find the first island.</p>);
+      dispatch(pushJSXToLog({element: element}));
       return;
     }
   }

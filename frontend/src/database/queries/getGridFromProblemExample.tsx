@@ -10,6 +10,7 @@ export const GET_GRID_FROM_PROBLEM_EXAMPLE = gql`
         gridId
         gridData
         interpretAs
+        label
       }
     }
   }
