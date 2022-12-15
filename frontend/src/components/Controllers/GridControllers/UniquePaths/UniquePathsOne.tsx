@@ -98,7 +98,7 @@ export const UniquePathsOne = ({animationOn, play, pause, animationSpeed}: Contr
     }));
     let element: JSX.Element = (
       <p>
-        {`Added values above and to the left to cell`}
+        {`Added values above and to the left of cell`}
         <CellHighlighter dispatch={dispatch} cell={currentCell}/>
       </p>
     )
