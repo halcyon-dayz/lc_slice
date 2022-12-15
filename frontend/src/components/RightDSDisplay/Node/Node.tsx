@@ -6,7 +6,6 @@ import "./node.css"
 import {motion} from "framer-motion"
 import { useAppSelector } from "../../../features/hooks";
 import clsx from "clsx";
-import { isEditable } from "@testing-library/user-event/dist/types/utils";
 
 
 type NodeProps = {
@@ -70,7 +69,16 @@ type NodeInnerProps = {
     onEditData: (e: React.FormEvent) => void
     isEditable: boolean,
 }
-export const NodeInner = ({cellData, cellStatus, cellWidth, cellHeight, styleWidth, styleHeight, onEditData}: NodeInnerProps) => {
+export const NodeInner = ({
+  cellData, 
+  cellStatus, 
+  cellWidth, 
+  cellHeight, 
+  styleWidth, 
+  styleHeight, 
+  onEditData, 
+  isEditable
+}: NodeInnerProps) => {
     const variants = {
         normal: {width: 60, height: 60},
         change: {
@@ -114,7 +122,14 @@ export const NodeInner = ({cellData, cellStatus, cellWidth, cellHeight, styleWid
 
 }
 
-export const Node = ({gridIndex, rowIdx, colIdx, styleWidth, styleHeight, isEditable}: NodeProps) => {
+export const Node = ({
+  gridIndex, 
+  rowIdx, 
+  colIdx, 
+  styleWidth, 
+  styleHeight, 
+  isEditable
+}: NodeProps) => {
     //TODO: Select individual cells
     const cellData = useAppSelector(state => 
         state.grids[gridIndex].cells[rowIdx][colIdx].data
