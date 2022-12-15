@@ -16,6 +16,7 @@ export const Grid = ({gridIndex}: GridProps) => {
     const gridLabel = useAppSelector(state => state.grids[gridIndex].label);
     const cellWidth = useAppSelector(state => state.grids[gridIndex].cellStyleWidth);
     const cellHeight = useAppSelector(state => state.grids[gridIndex].cellStyleHeight);
+    const isEditable = useAppSelector(state => state.grids[gridIndex].editable);
 
     return (
         <div className="grid">
@@ -30,6 +31,7 @@ export const Grid = ({gridIndex}: GridProps) => {
                             colIdx={nodeIdx}
                             styleWidth={cellWidth}
                             styleHeight={cellHeight}
+                            isEditable={isEditable}
                         />
                     ))}
                 </div>

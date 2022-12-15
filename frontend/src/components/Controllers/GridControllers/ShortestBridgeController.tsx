@@ -4,10 +4,9 @@ import { pushData, shift } from "../../../features/arrays/arraysSlice"
 import { changeGridCellStatus, clearGridCellsStatus, copyGrids, floodFillFromInputWithQueue} from "../../../features/grids/gridsSlice"
 import { ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL } from "../../../features/grids/gridUtils"
 import { useAppDispatch, useAppSelector } from "../../../features/hooks"
-import { clearLog, pushJSXToLog } from "../../../features/problemInfo/problemSlice"
-import { addArray, deleteAllStructs, deleteArray } from "../../../features/sharedActions"
+import { pushJSXToLog } from "../../../features/problemInfo/problemSlice"
+import { addArray, deleteArray } from "../../../features/sharedActions"
 import { QUESTIONS_ENUM } from "../../../utils/questionEnum"
-import { CellStatus } from "../../../utils/types"
 import { useGetGridFromProblemExampleLazyQuery } from "../../../__generated__/resolvers-types"
 import { BasicController } from "../BasicController"
 import {ControllerProps} from "../controllerProps"
@@ -49,7 +48,7 @@ export const ShortestBridgeController = ({
     await getGrid({
       variables: {
         number: QUESTIONS_ENUM.SHORTEST_BRIDGE,
-        example: 0,
+        example: example,
       }
     });
   }
@@ -63,9 +62,6 @@ export const ShortestBridgeController = ({
       const grid = convertArrayToGrid(gridData as number[][], interpretAs as "NUMBER" | "BOOLEAN" | "NORMALIZED");
       dispatch(copyGrids([grid]));
       setExample((example + 1) % gridClient.data.problem.numExamples);
-      let dataToStatus = new Map<any, CellStatus>();
-      dataToStatus.set(1, "BRIDGE");
-      dataToStatus.set(0, "WATER");
       dispatch(changeGridCellStatus({gridIndex: 0, row: 0, col: 0, status: "CURRENT"}));
       const element = (
         <GridCreationLog

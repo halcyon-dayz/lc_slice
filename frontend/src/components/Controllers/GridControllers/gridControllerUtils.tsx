@@ -3,6 +3,10 @@ import { ARRAY_2D_GET_NEXT_INDEX } from "../../../features/grids/gridUtils";
 import { pushJSXToLog } from "../../../features/problemInfo/problemSlice";
 import { changeGridCellStatus } from "../../../features/grids/gridsSlice";
 import { CellHighlighter } from "../CellHighlighter";
+import { GridInterpreter } from "../../../__generated__/resolvers-types";
+import { copyGrids } from "../../../features/grids/gridsSlice";
+import { GridCreationLog } from "./logUtils";
+
 
 export const convertArrayToGrid = (
   grid: number[][], 
@@ -65,4 +69,23 @@ export const parseCurrentCellFromString = (cellString: string): [number, number]
 
 export const createStringFromCurrentCell = (cell: [number, number]): string => {
   return `[${cell[0]}, ${cell[1]}]`;
+}
+
+
+export const handleServerGrid = (
+  dispatch: any, 
+  gridData: number[][],
+  label?: string,
+  interpretAs?: GridInterpreter,
+) => {
+  const convertedGrid = convertArrayToGrid(gridData as number[][], interpretAs ? interpretAs : "NUMBER");
+  dispatch(copyGrids([convertedGrid]));
+  const element: JSX.Element = (
+    <GridCreationLog 
+      dispatch={dispatch}
+      numStructs={1}
+      labels={[label ? label : "Grid #1"]}
+    />
+  );
+  dispatch(pushJSXToLog({element: element}));
 }

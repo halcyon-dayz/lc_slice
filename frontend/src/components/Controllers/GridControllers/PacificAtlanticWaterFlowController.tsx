@@ -22,10 +22,6 @@ import {
     deleteAllStructs,
     deleteGrid
 } from "../../../features/sharedActions";
-import { 
-    GRID_417_PACIFIC_ATLANTIC_WATER_FLOW, 
-    GRID_417_BOOLEAN
-} from "../../../features/grids/defaultGrids";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 import { convertArrayToFalse, convertArrayToGrid } from "./gridControllerUtils";
 import { CellStatus } from "../../../utils/types";

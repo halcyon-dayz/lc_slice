@@ -4,22 +4,21 @@ import {
      useSelector 
 } from "react-redux";
 
-import { selectAllGrids, changeGridCell, changeGridCellStatus, changeGridCellSize, changeGridCellData} from "../../../features/grids/gridsSlice";
+import {changeGridCellStatus, changeGridCellData} from "../../../features/grids/gridsSlice";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-import { RootState } from "../../../utils/types";
-import { GRID_733_FLOOD_FILL } from "../../../features/grids/defaultGrids";
 
 import "../controller.css"
-import { copyGrid, deleteAllStructs} from "../../../features/sharedActions";
 import {
     ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL,
     DirectionString,
     GRID_CELL_INDEX_HAS_DATA,
 } from "../../../features/grids/gridUtils"
-import { changeProblemNumber, pushJSXToLog, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
+import { pushJSXToLog, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
 import { clearState } from "../controllerUtils";
-import {motion} from "framer-motion"
 import {SearchFromToLog } from "./logUtils";
+import { QUESTIONS_ENUM } from "../../../utils/questionEnum";
+import { GridInterpreter, useGetGridFromProblemExampleLazyQuery } from "../../../__generated__/resolvers-types";
+import { handleServerGrid } from "./gridControllerUtils";
 //#endregion
 
 type P733_PROPS = {
@@ -40,6 +39,8 @@ export const FloodFillController = ({animationOn, play, pause, animationSpeed}: 
     const [currentCell, setCurrentCell] = useState<[number, number]>([0, 0]);
     const [stack, setStack] = useState<[number, number][]>([]);
     const [isEnd, setIsEnd] = useState<boolean>(false);
+    const [example, setExample] = useState<number>(0);
+    const [getGrid, gridClient] = useGetGridFromProblemExampleLazyQuery();
 
     useEffect(() => {
         if (animationOn && problemNumber === 733) {
@@ -57,51 +58,36 @@ export const FloodFillController = ({animationOn, play, pause, animationSpeed}: 
     }
 
     /* Problem Functions */
-    const clickSetUp733 = () => {
-        //Stop any animations
-        pause();
-        //Delete all structs
-        clearState(dispatch, 733);
-        //dispatch(deleteAllStructs());
-        //Change Problem Number
-        //dispatch(changeProblemNumber({problemNumber: 733}));
-        dispatch(copyGrid({cells: GRID_733_FLOOD_FILL}));
-        dispatch(changeGridCellStatus({
-            gridIndex: 0,
-            row: 0, 
-            col: 0, 
-            status: "CURRENT"
-        }))
-        setCurrentCell([0,0]);
-        const element: JSX.Element = (
-            <div style={{display: "flex", "flexDirection": "column", alignItems: "center"}}>
-                <div>Created a grid!</div>
-                <motion.h4 
-                    whileHover={{scale: 1.4, transition: {duration: 0.2, ease: "easeOut"}}} style={{"display": "inline-block", margin: "0 0 0 0"}}
-                    onMouseEnter={() => 
-                        dispatch(changeGridCellSize({
-                            gridIndex: 0, 
-                            width: 70, 
-                            height: 70
-                        }))
-                    }
-                    onMouseLeave={() => 
-                        dispatch(changeGridCellSize({
-                            gridIndex: 0, 
-                            width: 60, 
-                            height: 60
-                    }))
-                    }   
-                >
-                    {`Flood Fill Grid`}
-                </motion.h4>
-            </div>
-        );
-        //dispatch(clearLog())
-        dispatch(pushJSXToLog({element: element}))
-        setIsEnd(false);
+    const clickSetUp733 = async () => {
+      //Stop any animations
+      pause();
+      //Delete all structs
+      clearState(dispatch, 733);
+      await getGrid({
+        variables: {
+          number: QUESTIONS_ENUM.FLOOD_FILL,
+          example: 0,
+        }
+      });
     }
 
+    useEffect(() => {
+      if (gridClient.data && gridClient.data.problem && gridClient.data.problem.grids && gridClient.data.problem.grids[0] ) {
+        const {interpretAs, gridData, label} = gridClient.data.problem.grids[0];
+        //TODO: This is also bad
+        handleServerGrid(dispatch, gridData as number[][], label as string, interpretAs as GridInterpreter);
+        setExample((example + 1) % gridClient.data.problem.numExamples);
+        dispatch(changeGridCellStatus({
+          gridIndex: 0,
+          row: 0, 
+          col: 0, 
+          status: "CURRENT"
+        }))
+        setCurrentCell([0,0]);
+        setIsEnd(false);
+      }
+    }, [gridClient])
+      
     const dfsCellIsValid = (cell: [number, number]): boolean => {
         return GRID_CELL_INDEX_HAS_DATA(gridCells, cell[0], cell[1], toReplace);
     }

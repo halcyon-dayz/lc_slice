@@ -103,7 +103,7 @@ function App() {
       <div id="navBarDiv">
         <Navbar bg="primary" variant="dark">
           <Container style={{"width": "100%", "marginLeft": "0px"}}>
-            <Navbar.Brand href="#home">LC_SLICE</Navbar.Brand>
+            <Navbar.Brand href="#home">LC_VISUAL_SLICE</Navbar.Brand>
             <Nav className="me-auto">
               <NavDropdown title="Grid Problems">
                 {GridProblems.map((problem, idx) => (
