@@ -78,6 +78,8 @@ export const handleServerGrid = (
   interpretAs?: GridInterpreter,
 ) => {
   const convertedGrid = convertArrayToGrid(gridData as number[][], interpretAs ? interpretAs : "NUMBER");
+  console.log(convertedGrid);
+  console.log("converted grid")
   dispatch(copyGrids([convertedGrid]));
   const element: JSX.Element = (
     <GridCreationLog 

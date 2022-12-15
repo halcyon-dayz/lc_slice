@@ -134,8 +134,9 @@ export const Node = ({
     if (rowIdx < 0 || colIdx < 0) {
       console.log("Row or Column is passed in as negative on a node");
     }
-    console.log(gridIndex);
-    const cellData = useAppSelector(state => state.grids[gridIndex].cells[rowIdx][colIdx].data);
+    console.log(rowIdx, colIdx);
+    const cellData = useAppSelector(state => state.grids[gridIndex].cells[rowIdx][colIdx] ? 
+      state.grids[gridIndex].cells[rowIdx][colIdx].data : 0);
     const cellStatus = useAppSelector(state => state.grids[gridIndex].cells[rowIdx][colIdx].status);
     /* const cellData = useAppSelector(state => state.grids[gridIndex] ? 
         state.grids[gridIndex].cells[rowIdx][colIdx].data : 0);

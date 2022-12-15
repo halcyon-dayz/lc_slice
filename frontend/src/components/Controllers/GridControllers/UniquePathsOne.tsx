@@ -36,6 +36,7 @@ export const UniquePathsOne = ({animationOn, play, pause, animationSpeed}: Contr
   useEffect(() => {
     if (gridClient.data && gridClient.data.problem && gridClient.data.problem.grids && gridClient.data.problem.grids[0]) {
       const {interpretAs, gridData, label} = gridClient.data.problem.grids[0];
+      console.log("Grid Data")
       handleServerGrid(dispatch, gridData as number[][], label as string, interpretAs as GridInterpreter);
       setExample((example + 1) % gridClient.data.problem.numExamples);
       const element = (

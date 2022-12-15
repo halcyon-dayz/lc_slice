@@ -10,8 +10,8 @@ type GridProps = {
 }
 
 export const Grid = ({gridIndex}: GridProps) => {
-    const gridRowLength = useAppSelector(state => state.grids[gridIndex].width);
-    const gridColumnLength = useAppSelector(state => state.grids[gridIndex].height);
+    const gridRowLength = useAppSelector(state => state.grids[gridIndex].height);
+    const gridColumnLength = useAppSelector(state => state.grids[gridIndex].width);
     const gridLabel = useAppSelector(state => state.grids[gridIndex].label);
     const cellWidth = useAppSelector(state => state.grids[gridIndex].cellStyleWidth);
     const cellHeight = useAppSelector(state => state.grids[gridIndex].cellStyleHeight);
