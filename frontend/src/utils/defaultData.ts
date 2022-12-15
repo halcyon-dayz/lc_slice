@@ -57,9 +57,4 @@ export default defaultData
 
         return nodes in the order they were visited
 
-
-
-
-
-
 */
