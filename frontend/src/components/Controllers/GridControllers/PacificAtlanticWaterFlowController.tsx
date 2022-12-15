@@ -106,6 +106,7 @@ export const PacificAtlanticWaterflowController = ({animationOn, play, pause, an
         />
       );
       setBuildFinished(true);
+      setCurrentCell([0, 0]);
       dispatch(pushJSXToLog({element: element}));
     }
   }, [gridClient])

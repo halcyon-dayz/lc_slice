@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useMemo} from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useDispatch } from "react-redux";
 import {changeGridCell} from "../../../features/grids/gridsSlice";
-import {CellStatus, RootState} from "../../../utils/types"
+import {CellStatus} from "../../../utils/types"
 import "./node.css"
 import {motion} from "framer-motion"
 import { useAppSelector } from "../../../features/hooks";
@@ -131,12 +131,18 @@ export const Node = ({
   isEditable
 }: NodeProps) => {
     //TODO: Select individual cells
-    const cellData = useAppSelector(state => 
-        state.grids[gridIndex].cells[rowIdx][colIdx].data
-    );
-    const cellStatus = useAppSelector(state =>  
-        state.grids[gridIndex].cells[rowIdx][colIdx].status
-    );
+    if (rowIdx < 0 || colIdx < 0) {
+      console.log("Row or Column is passed in as negative on a node");
+    }
+    console.log(gridIndex);
+    const cellData = useAppSelector(state => state.grids[gridIndex].cells[rowIdx][colIdx].data);
+    const cellStatus = useAppSelector(state => state.grids[gridIndex].cells[rowIdx][colIdx].status);
+    /* const cellData = useAppSelector(state => state.grids[gridIndex] ? 
+        state.grids[gridIndex].cells[rowIdx][colIdx].data : 0);
+    const cellStatus = useAppSelector(state => state.grids[gridIndex] ?
+        state.grids[gridIndex].cells[rowIdx][colIdx].status : "UNEXPLORED"
+    ); */
+
     const cellWidth: number | undefined = useAppSelector(state => state.grids[gridIndex].cells[rowIdx][colIdx].width)
     const cellHeight: number | undefined = useAppSelector(state => state.grids[gridIndex].cells[rowIdx][colIdx].height);
     const dispatch = useDispatch();

@@ -8,6 +8,7 @@ import { handleServerGrid } from "./gridControllerUtils";
 import { changeGridCell, changeGridCellData, changeGridCellStatus } from "../../../features/grids/gridsSlice";
 import { BasicController } from "../BasicController";
 import { ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL, ARRAY_2D_GET_NEXT_INDEX, ARRAY_2D_GET_TWO_DIRECTIONS_FROM_CELL } from "../../../features/grids/gridUtils";
+import { GridCreationLog } from "./logUtils";
 
 export const UniquePathsOne = ({animationOn, play, pause, animationSpeed}: ControllerProps) => {
   /* Global State Variables */
@@ -35,8 +36,15 @@ export const UniquePathsOne = ({animationOn, play, pause, animationSpeed}: Contr
   useEffect(() => {
     if (gridClient.data && gridClient.data.problem && gridClient.data.problem.grids && gridClient.data.problem.grids[0]) {
       const {interpretAs, gridData, label} = gridClient.data.problem.grids[0];
-      handleServerGrid(dispatch, gridData as number[][], label as string | undefined, interpretAs as GridInterpreter);
+      handleServerGrid(dispatch, gridData as number[][], label as string, interpretAs as GridInterpreter);
       setExample((example + 1) % gridClient.data.problem.numExamples);
+      const element = (
+        <GridCreationLog
+          dispatch={dispatch}
+          numStructs={3}
+          labels={["Waterflow Grid", "Pacific Grid", "Atlantic Grid"]}
+        />
+      );
       dispatch(changeGridCellStatus({gridIndex: 0, row: 0, col: 0, status: "CURRENT"}));
       setCurrentCell([0, 0]);
       setComplete(false);
