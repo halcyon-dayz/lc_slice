@@ -37,3 +37,15 @@
     transform: translateY(0px);
   }
 }
+
+.left_section {
+  background: rgb(240, 240, 240);
+  overflow: auto;
+}
+
+.right_section {
+  background: rgb(240, 240, 240);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}

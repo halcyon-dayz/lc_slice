@@ -4,6 +4,7 @@ import {
   Main,
 } from './styles';
 
+
 import {Container as ResizeContainer, Bar, Section} from "react-simple-resizer"
 import { Controls } from './components/Controls'
 import { useDispatch } from 'react-redux';
@@ -14,11 +15,14 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { clearState } from './components/Controllers/controllerUtils';
 import { DataStructureDisplay } from './components/RightDSDisplay';
+import FormControl from '@mui/material/FormControl';
+import { AppBar, InputLabel, Menu, MenuItem, Select, SelectChangeEvent} from '@mui/material';
 
 
 type ProblemDropdownType = {
   title: string,
   action: () => void,
+  problemNumber: number,
 }
 
 const constructProblemDropdown = (
@@ -29,6 +33,7 @@ const constructProblemDropdown = (
     let number = parseInt(problem.split(".")[0]);
     return {
       title: problem, 
+      problemNumber: number,
       action: () => {
         clearState(dispatch, number);
       }
@@ -58,6 +63,7 @@ function App() {
   const [rightWidth, setRightWidth] = useState<number>(0);
   //Need this to prevent scroll on each save
   const [logLength, setLogLength] = useState<number>(0);
+  const [currentProblem, setCurrentProblem] = useState<string>('');
 
   //# Ref Values #/
   const leftSectionRef = useRef<HTMLDivElement>(null);
@@ -99,49 +105,69 @@ function App() {
     dispatch
   );
 
+  const handleProblemChange = (event: SelectChangeEvent) => {
+    console.log(event.target.value);
+    setCurrentProblem(event.target.value);
+    let num = parseInt(event.target.value.split(".")[0]);
+    clearState(dispatch, num);
+  }
+
   return (
     <div className="App">
-      <div id="navBarDiv">
-        <Navbar bg="primary" variant="dark">
-          <Container style={{"width": "100%", "marginLeft": "0px"}}>
-            <Navbar.Brand href="#home">LC_VISUAL_SLICE</Navbar.Brand>
-            <Nav className="me-auto">
-              <NavDropdown title="Grid Problems">
-                {GridProblems.map((problem, idx) => (
-                  <NavDropdown.Item key={problem.title} onClick={problem.action}>{problem.title}</NavDropdown.Item>
-                ))}
-              </NavDropdown>
-              <NavDropdown title="Graph Problems">
-                {GraphProblems.map((problem, idx) => (
-                  <NavDropdown.Item key={problem.title} onClick={problem.action}>{problem.title}</NavDropdown.Item>
-                ))}
-              </NavDropdown>
-            </Nav>
-          </Container>
-        </Navbar>
+      <div id="navBarDiv" style={{"display": "flex", "backgroundColor": "#e6e6ff"}}>
+        <AppBar style={{"display": "flex", "flexDirection": "row"}}>
+          <FormControl sx={{m: 1, minWidth: 200}} style={{"backgroundColor": "#e6e6ff", "color": "white"}}>
+            <InputLabel id="grid_dropdown_select">Grid Problems</InputLabel>
+            <Select labelId="grid_dropdown_select"
+              id="grid_dropdown"
+              value={currentProblem}
+              label="Grid Problems"
+              onChange={handleProblemChange}
+            >
+              {GridProblems.map((problem, idx) => (
+                <MenuItem value={problem.problemNumber}>{problem.title}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{m: 1, minWidth: 200}}>
+            <InputLabel id="grid_dropdown_select">Grid Problems</InputLabel>
+            <Select labelId="grid_dropdown_select"
+              id="grid_dropdown"
+              value={currentProblem}
+              label="Graph Problems"
+              onChange={handleProblemChange}
+            >
+              {GraphProblems.map((problem, idx) => (
+                <MenuItem value={problem.problemNumber}>{problem.title}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </AppBar>
       </div>
       <Main> {/*sdfsdfsfs*/}
         <ResizeContainer style={{position: "relative", height: `${height}px`}}>
-        <Section innerRef={leftSectionRef} style={{
-          background: 'rgb(240, 240, 240)',
-          overflow: 'auto'
-        }} minSize={100}>
-          <Controls />
-        </Section>
-        <Bar size={10} style={{ background: '#738228', cursor: 'col-resize' }} />
-        <Section innerRef={rightSectionRef} 
-          onSizeChanged={() => {
-            if (rightSectionRef.current) {
-              setRightWidth(rightSectionRef.current?.clientWidth);
-            }
-          }}
-        style={{ 
-          background: 'rgb(240, 240, 240)', 
-          overflow: "auto",
-          }} minSize={100}
-        >
-          <DataStructureDisplay rightWidth={rightWidth}/>
-        </Section>
+          <Section 
+            innerRef={leftSectionRef} 
+            className={"left_section"} 
+            minSize={100}
+          >
+            <Controls />
+          </Section>
+          <Bar size={10} style={{ background: '#738228', cursor: 'col-resize' }} />
+          <Section innerRef={rightSectionRef} 
+            onSizeChanged={() => {
+              if (rightSectionRef.current) {
+                setRightWidth(rightSectionRef.current?.clientWidth);
+              }
+            }}
+            style={{ 
+              background: 'rgb(240, 240, 240)', 
+              overflow: "auto",
+            }} 
+            minSize={100}
+          >
+            <DataStructureDisplay rightWidth={rightWidth}/>
+          </Section>
         </ResizeContainer>
       </Main>    
     </div>

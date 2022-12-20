@@ -5,6 +5,9 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.7.2",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/material": "^5.11.1",
     "@reduxjs/toolkit": "^1.9.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -70,6 +73,8 @@
     ]
   },
   "devDependencies": {
+    "@babel/register": "^7.18.9",
+    "@cucumber/cucumber": "^8.9.1",
     "@graphql-codegen/cli": "^2.16.1",
     "@graphql-codegen/typescript": "2.7.3",
     "@graphql-codegen/typescript-operations": "^2.5.10",
@@ -77,6 +82,7 @@
     "@graphql-codegen/typescript-resolvers": "2.7.3",
     "chromedriver": "^107.0.3",
     "postinstall-postinstall": "^2.1.0",
+    "puppeteer": "^19.4.1",
     "ts-jest": "^29.0.3"
   },
   "packageManager": "yarn@3.2.4",

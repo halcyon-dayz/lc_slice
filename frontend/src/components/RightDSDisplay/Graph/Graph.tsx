@@ -307,6 +307,7 @@ export const Graph = ({width, graphIndex}: GraphProps) => {
 
     return (
         <div>
+          Drag the Nodes in the Display.
             <svg 
                 ref={graphSVGRef} 
                 xmlns="http://www.w3.org/2000/svg" 

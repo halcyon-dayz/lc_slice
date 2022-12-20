@@ -1,7 +1,6 @@
 .left_section {
     background: rgb(240, 240, 240);
-    display: flex;
-    flex-direction: column;
+    overflow: auto;
 }
 
 .right_section {
@@ -10,4 +9,5 @@
     align-items: center;
     flex-direction: column;
 }
+
 
