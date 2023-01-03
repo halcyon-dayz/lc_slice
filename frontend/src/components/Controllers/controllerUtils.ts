@@ -9,11 +9,6 @@ import {useEffect} from "react"
  * @param dispatch Dispatch function.
  * @param problemNumber Number of new problem.
  */
-export const clearState = (dispatch: any, problemNumber: number) => {
-    dispatch(deleteAllStructs());
-    dispatch(changeProblemNumber({problemNumber: problemNumber}));
-    dispatch(clearLog());
-}
 
 export type ANIMATION_PROPS = {
     animationOn: boolean,

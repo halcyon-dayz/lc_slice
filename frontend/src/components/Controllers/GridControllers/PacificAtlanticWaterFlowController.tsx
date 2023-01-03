@@ -29,7 +29,7 @@ import "../controller.css"
 import { changeProblemNumber, clearLog, pushJSXToLog, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
 import { BasicController } from "../BasicController";
 import {motion} from "framer-motion"
-import { clearState} from "../controllerUtils";
+import { clearState } from "../../../utils/clearState";
 import { CellHighlighter, TextHighlighter } from "../CellHighlighter";
 import { QUESTIONS_ENUM } from "../../../utils/questionEnum";
 import { GoBackFromToLog, GridCreationLog } from "./logUtils";

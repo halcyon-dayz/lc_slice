@@ -10,7 +10,7 @@ import { QUESTIONS_ENUM } from "../../../utils/questionEnum"
 import { useGetGridFromProblemExampleLazyQuery } from "../../../__generated__/resolvers-types"
 import { BasicController } from "../BasicController"
 import {ControllerProps} from "../controllerProps"
-import { clearState } from "../controllerUtils"
+import { clearState } from "../../../utils/clearState"
 import { convertArrayToGrid, createStringFromCurrentCell, iterateToNextCell, parseCurrentCellFromString } from "./gridControllerUtils"
 import { GridCreationLog, LengthEdgeCaseLog} from "./logUtils"
 

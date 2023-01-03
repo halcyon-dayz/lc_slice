@@ -17,7 +17,7 @@ import {Cell} from "../../../../utils/types"
 import {selectProblemNumber } from "../../../../features/problemInfo/problemSlice";
 import { BasicController } from "../../BasicController";
 import {GRID_CELL_INDEX_HAS_DATA, ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL, GRID_CELL_INDEX_GET_DATA, ARRAY_2D_GET_NEXT_INDEX} from "../../../../features/grids/gridUtils"
-import { clearState } from "../../controllerUtils";
+import { clearState } from "../../../../utils/clearState";
     
     
 type P695_CONTEXT = [number, number][]

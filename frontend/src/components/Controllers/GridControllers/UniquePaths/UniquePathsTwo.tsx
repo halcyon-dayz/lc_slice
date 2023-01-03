@@ -3,7 +3,7 @@ import React, {useState, useEffect} from "react"
 import { ControllerProps } from "../../controllerProps";
 import { useGetGridFromProblemExampleLazyQuery } from "../../../../__generated__/resolvers-types";
 import { BasicController } from "../../BasicController";
-import { clearState } from "../../controllerUtils";
+import { clearState } from "../../../../utils/clearState";
 import { QUESTIONS_ENUM } from "../../../../utils/questionEnum";
 import { handleServerGrid } from "../gridControllerUtils";
 import { changeGridCellData, changeGridCellStatus } from "../../../../features/grids/gridsSlice";

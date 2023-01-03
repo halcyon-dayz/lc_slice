@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react"
 import { ControllerProps } from "../../controllerProps";
 import { useAppDispatch, useAppSelector } from "../../../../features/hooks";
-import { clearState } from "../../controllerUtils";
+import { clearState } from "../../../../utils/clearState";
 import { QUESTIONS_ENUM } from "../../../../utils/questionEnum";
 import { GridInterpreter, useGetGridFromProblemExampleLazyQuery } from "../../../../__generated__/resolvers-types";
 import { handleServerGrid } from "../gridControllerUtils";

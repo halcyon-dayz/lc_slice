@@ -14,7 +14,7 @@ import {
     GRID_CELL_INDEX_HAS_DATA,
 } from "../../../features/grids/gridUtils"
 import { pushJSXToLog, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
-import { clearState } from "../controllerUtils";
+import { clearState } from "../../../utils/clearState";
 import {SearchFromToLog } from "./logUtils";
 import { QUESTIONS_ENUM } from "../../../utils/questionEnum";
 import { GridInterpreter, useGetGridFromProblemExampleLazyQuery } from "../../../__generated__/resolvers-types";
