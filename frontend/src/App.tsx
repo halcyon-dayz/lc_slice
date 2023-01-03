@@ -4,48 +4,16 @@ import {
   Main,
 } from './styles';
 
-
 import {Container as ResizeContainer, Bar, Section} from "react-simple-resizer"
 import { Controls } from './components/Controls'
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from './features/hooks';
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
-import { clearState } from './components/Controllers/controllerUtils';
+import { clearState } from './utils/clearState';
 import { DataStructureDisplay } from './components/RightDSDisplay';
 import FormControl from '@mui/material/FormControl';
-import { AppBar, InputLabel, Menu, MenuItem, Select, SelectChangeEvent} from '@mui/material';
-
-
-type ProblemDropdownType = {
-  title: string,
-  action: () => void,
-  problemNumber: number,
-}
-
-const constructProblemDropdown = (
-  problems: string[], 
-  dispatch: any
-): ProblemDropdownType[] => {
-  return problems.map((problem, idx) => {
-    let number = parseInt(problem.split(".")[0]);
-    return {
-      title: problem, 
-      problemNumber: number,
-      action: () => {
-        clearState(dispatch, number);
-      }
-    }
-  })
-}
-
-
-type Coordinate = {
-  x: number,
-  y: number
-}
+import {InputLabel, MenuItem, Select, SelectChangeEvent} from '@mui/material';
+import {ProblemDropdownType, constructProblemDropdown} from './components/Header/headerUtils';
 
 
 /**
@@ -114,14 +82,14 @@ function App() {
 
   return (
     <div className="App">
-      <div id="navBarDiv" style={{"display": "flex", "backgroundColor": "#e6e6ff"}}>
-        <AppBar style={{"display": "flex", "flexDirection": "row"}}>
-          <FormControl sx={{m: 1, minWidth: 200}} style={{"backgroundColor": "#e6e6ff", "color": "white"}}>
+      <div id="navBarDiv">
+        <Navbar style={{"backgroundColor": "rgb(0, 30, 60)"}}>
+          <FormControl sx={{m: 1, minWidth: 200}} className="problems_form_control">
             <InputLabel id="grid_dropdown_select">Grid Problems</InputLabel>
             <Select labelId="grid_dropdown_select"
               id="grid_dropdown"
               value={currentProblem}
-              label="Grid Problems"
+              label={"Grid Problems"}
               onChange={handleProblemChange}
             >
               {GridProblems.map((problem, idx) => (
@@ -129,12 +97,12 @@ function App() {
               ))}
             </Select>
           </FormControl>
-          <FormControl sx={{m: 1, minWidth: 200}}>
-            <InputLabel id="grid_dropdown_select">Grid Problems</InputLabel>
+          <FormControl sx={{m: 1, minWidth: 200}} className="problems_form_control">
+            <InputLabel id="graph_dropdown_select">Grid Problems</InputLabel>
             <Select labelId="grid_dropdown_select"
-              id="grid_dropdown"
+              id="graph_dropdown"
               value={currentProblem}
-              label="Graph Problems"
+              label={"Graph Problems"}
               onChange={handleProblemChange}
             >
               {GraphProblems.map((problem, idx) => (
@@ -142,7 +110,7 @@ function App() {
               ))}
             </Select>
           </FormControl>
-        </AppBar>
+        </Navbar>
       </div>
       <Main> {/*sdfsdfsfs*/}
         <ResizeContainer style={{position: "relative", height: `${height}px`}}>
