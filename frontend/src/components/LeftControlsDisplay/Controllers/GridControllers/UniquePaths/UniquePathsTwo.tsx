@@ -1,16 +1,16 @@
-import { useAppDispatch, useAppSelector } from "../../../../features/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../../features/hooks";
 import React, {useState, useEffect} from "react"
-import { ControllerProps } from "../../controllerProps";
-import { useGetGridFromProblemExampleLazyQuery } from "../../../../__generated__/resolvers-types";
+import { ControllerProps } from "../../controllerUtils";
+import { useGetGridFromProblemExampleLazyQuery } from "../../../../../__generated__/resolvers-types";
 import { BasicController } from "../../BasicController";
-import { clearState } from "../../../../utils/clearState";
-import { QUESTIONS_ENUM } from "../../../../utils/questionEnum";
+import { clearState } from "../../../../../utils/clearState";
+import { QUESTIONS_ENUM } from "../../../../../utils/questionEnum";
 import { handleServerGrid } from "../gridControllerUtils";
-import { changeGridCellData, changeGridCellStatus } from "../../../../features/grids/gridsSlice";
-import { GridInterpreter } from "../../../../__generated__/resolvers-types";
+import { changeGridCellData, changeGridCellStatus } from "../../../../../features/grids/gridsSlice";
+import { GridInterpreter } from "../../../../../__generated__/resolvers-types";
 import { UniquePathsInitialCellSetup } from "./uniquePathsHelpers";
-import { ARRAY_2D_GET_NEXT_INDEX, ARRAY_2D_GET_TWO_DIRECTIONS_FROM_CELL } from "../../../../features/grids/gridUtils";
-import { pushJSXToLog } from "../../../../features/problemInfo/problemSlice";
+import { ARRAY_2D_GET_NEXT_INDEX, ARRAY_2D_GET_TWO_DIRECTIONS_FROM_CELL } from "../../../../../features/grids/gridUtils";
+import { pushJSXToLog } from "../../../../../features/problemInfo/problemSlice";
 import { CellHighlighter } from "../../CellHighlighter";
 
 

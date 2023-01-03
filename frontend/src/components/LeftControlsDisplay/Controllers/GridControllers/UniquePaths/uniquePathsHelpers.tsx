@@ -1,7 +1,7 @@
-import { ARRAY_2D_GET_NEXT_INDEX, ARRAY_2D_GET_TWO_DIRECTIONS_FROM_CELL} from "../../../../features/grids/gridUtils";
-import { changeGridCellData, changeGridCellStatus} from "../../../../features/grids/gridsSlice";
-import { pushJSXToLog } from "../../../../features/problemInfo/problemSlice";
-import { Cell } from "../../../../utils/types";
+import { ARRAY_2D_GET_NEXT_INDEX, ARRAY_2D_GET_TWO_DIRECTIONS_FROM_CELL} from "../../../../../features/grids/gridUtils";
+import { changeGridCellData, changeGridCellStatus} from "../../../../../features/grids/gridsSlice";
+import { pushJSXToLog } from "../../../../../features/problemInfo/problemSlice";
+import { Cell } from "../../../../../utils/types";
 
 /**
  * Set up the first cell in a Unique Paths Problem and return the nextcell

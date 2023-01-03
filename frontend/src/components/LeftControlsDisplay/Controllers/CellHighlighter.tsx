@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react"
 import {motion} from "framer-motion"
-import { changeGridIndividualCellSize } from "../../features/grids/gridsSlice"
-import { Cell } from "../../utils/types"
+import { changeGridIndividualCellSize } from "../../../features/grids/gridsSlice"
+import { Cell } from "../../../utils/types"
 
 type CellHighlighterProps = {
     dispatch: any,

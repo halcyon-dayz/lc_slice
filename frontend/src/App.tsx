@@ -5,7 +5,7 @@ import {
 } from './styles';
 
 import {Container as ResizeContainer, Bar, Section} from "react-simple-resizer"
-import { Controls } from './components/Controls'
+import { Controls } from './components/LeftControlsDisplay/Controls'
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from './features/hooks';
 import Navbar from 'react-bootstrap/Navbar';
@@ -13,8 +13,28 @@ import { clearState } from './utils/clearState';
 import { DataStructureDisplay } from './components/RightDSDisplay';
 import FormControl from '@mui/material/FormControl';
 import {InputLabel, MenuItem, Select, SelectChangeEvent} from '@mui/material';
-import {ProblemDropdownType, constructProblemDropdown} from './components/Header/headerUtils';
 
+export type ProblemDropdownType = {
+  title: string,
+  action: () => void,
+  problemNumber: number,
+}
+
+export const constructProblemDropdown = (
+  problems: string[], 
+  dispatch: any
+): ProblemDropdownType[] => {
+  return problems.map((problem, idx) => {
+    let number = parseInt(problem.split(".")[0]);
+    return {
+      title: problem, 
+      problemNumber: number,
+      action: () => {
+        clearState(dispatch, number);
+      }
+    }
+  })
+}
 
 /**
  * Layout of the application 
@@ -31,7 +51,8 @@ function App() {
   const [rightWidth, setRightWidth] = useState<number>(0);
   //Need this to prevent scroll on each save
   const [logLength, setLogLength] = useState<number>(0);
-  const [currentProblem, setCurrentProblem] = useState<string>('');
+  const [currentGridProblem, setCurrentGridProblem] = useState<string>('');
+  const [currentGraphProblem, setCurrentGraphProblem] = useState<string>('')
 
   //# Ref Values #/
   const leftSectionRef = useRef<HTMLDivElement>(null);
@@ -73,47 +94,57 @@ function App() {
     dispatch
   );
 
-  const handleProblemChange = (event: SelectChangeEvent) => {
-    console.log(event.target.value);
-    setCurrentProblem(event.target.value);
-    let num = parseInt(event.target.value.split(".")[0]);
+  const handleGridProblemChange = (
+    event: SelectChangeEvent
+  ) => {
+    setCurrentGridProblem(event.target.value);
+    let num = parseInt(event.target.value);
+    clearState(dispatch, num);
+  }
+
+  const handleGraphProblemChange = (
+    event: SelectChangeEvent
+  ) => {
+    setCurrentGraphProblem(event.target.value);
+    let num = parseInt(event.target.value)
     clearState(dispatch, num);
   }
 
   return (
     <div className="App">
       <div id="navBarDiv">
-        <Navbar style={{"backgroundColor": "rgb(0, 30, 60)"}}>
+        <Navbar style={{"backgroundColor": "rgb(200, 200, 200)"}}>
           <FormControl sx={{m: 1, minWidth: 200}} className="problems_form_control">
             <InputLabel id="grid_dropdown_select">Grid Problems</InputLabel>
             <Select labelId="grid_dropdown_select"
+              defaultValue=''
               id="grid_dropdown"
-              value={currentProblem}
+              value={currentGridProblem}
               label={"Grid Problems"}
-              onChange={handleProblemChange}
+              onChange={handleGridProblemChange}
             >
               {GridProblems.map((problem, idx) => (
-                <MenuItem value={problem.problemNumber}>{problem.title}</MenuItem>
+                <MenuItem key={problem.title} value={problem.problemNumber}>{problem.title}</MenuItem>
               ))}
             </Select>
           </FormControl>
           <FormControl sx={{m: 1, minWidth: 200}} className="problems_form_control">
-            <InputLabel id="graph_dropdown_select">Grid Problems</InputLabel>
-            <Select labelId="grid_dropdown_select"
+            <InputLabel id="graph_dropdown_select">Graph Problems</InputLabel>
+            <Select labelId="graph_dropdown_select"
               id="graph_dropdown"
-              value={currentProblem}
+              value={currentGraphProblem}
               label={"Graph Problems"}
-              onChange={handleProblemChange}
+              onChange={handleGraphProblemChange}
             >
               {GraphProblems.map((problem, idx) => (
-                <MenuItem value={problem.problemNumber}>{problem.title}</MenuItem>
+                <MenuItem key={problem.title} value={problem.problemNumber}>{problem.title}</MenuItem>
               ))}
             </Select>
           </FormControl>
         </Navbar>
       </div>
       <Main> {/*sdfsdfsfs*/}
-        <ResizeContainer style={{position: "relative", height: `${height}px`}}>
+        <ResizeContainer style={{overflow: "auto", position: "relative", height: `${height}px`}}>
           <Section 
             innerRef={leftSectionRef} 
             className={"left_section"} 

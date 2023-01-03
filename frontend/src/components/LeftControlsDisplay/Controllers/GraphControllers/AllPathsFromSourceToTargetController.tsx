@@ -1,10 +1,10 @@
-import { addNode } from "../../../features/graphs/graphsSlice";
-import { useAppDispatch, useAppSelector } from "../../../features/hooks"
-import { clearLog, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
-import { addGraph, deleteAllStructs } from "../../../features/sharedActions";
+import { addNode } from "../../../../features/graphs/graphsSlice";
+import { useAppDispatch, useAppSelector } from "../../../../features/hooks"
+import { clearLog, selectProblemNumber } from "../../../../features/problemInfo/problemSlice";
+import { addGraph, deleteAllStructs } from "../../../../features/sharedActions";
 import { BasicController } from "../BasicController";
 import { ANIMATION_PROPS } from "../controllerUtils"
-import { QUESTIONS_ENUM } from "../../../utils/questionEnum";
+import { QUESTIONS_ENUM } from "../../../../utils/questionEnum";
 
 export const AllPathsFromSourceToTargetController = ({
     animationOn,

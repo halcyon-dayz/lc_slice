@@ -1,7 +1,7 @@
 import React from "react"
-import { DataStructureType } from "../../../utils/types";
+import { DataStructureType } from "../../../../utils/types";
 import { CellHighlighter } from "../CellHighlighter";
-import { changeGridCellSize } from "../../../features/grids/gridsSlice";
+import { changeGridCellSize } from "../../../../features/grids/gridsSlice";
 import {motion} from "framer-motion"
 import { GridHighlighter } from "../GridHighlighter";
 

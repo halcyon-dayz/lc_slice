@@ -1,23 +1,22 @@
 import React, {useState, useEffect} from "react"
-import { useAppDispatch, useAppSelector } from "../../../../features/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../../features/hooks";
 import { 
     deleteGrid, 
     copyGrid, 
     deleteAllStructs 
-} from "../../../../features/sharedActions";
+} from "../../../../../features/sharedActions";
 import { 
     changeGridCell, 
-    changeGridCellData, 
     changeGridCellStatus 
-} from "../../../../features/grids/gridsSlice";
+} from "../../../../../features/grids/gridsSlice";
 import { 
     DEFAULT_ISLANDS_GRIDS 
 } from "./IslandsGrids";
-import {Cell} from "../../../../utils/types"
-import {selectProblemNumber } from "../../../../features/problemInfo/problemSlice";
+import {Cell} from "../../../../../utils/types"
+import {selectProblemNumber } from "../../../../../features/problemInfo/problemSlice";
 import { BasicController } from "../../BasicController";
-import {GRID_CELL_INDEX_HAS_DATA, ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL, GRID_CELL_INDEX_GET_DATA, ARRAY_2D_GET_NEXT_INDEX} from "../../../../features/grids/gridUtils"
-import { clearState } from "../../../../utils/clearState";
+import {GRID_CELL_INDEX_HAS_DATA, ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL, GRID_CELL_INDEX_GET_DATA, ARRAY_2D_GET_NEXT_INDEX} from "../../../../../features/grids/gridUtils"
+import { clearState } from "../../../../../utils/clearState";
     
     
 type P695_CONTEXT = [number, number][]

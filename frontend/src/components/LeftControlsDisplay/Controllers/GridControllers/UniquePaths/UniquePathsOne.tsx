@@ -1,15 +1,15 @@
 import React, {useState, useEffect} from "react"
-import { ControllerProps } from "../../controllerProps";
-import { useAppDispatch, useAppSelector } from "../../../../features/hooks";
-import { clearState } from "../../../../utils/clearState";
-import { QUESTIONS_ENUM } from "../../../../utils/questionEnum";
-import { GridInterpreter, useGetGridFromProblemExampleLazyQuery } from "../../../../__generated__/resolvers-types";
+import { ControllerProps } from "../../controllerUtils";
+import { useAppDispatch, useAppSelector } from "../../../../../features/hooks";
+import { clearState } from "../../../../../utils/clearState";
+import { QUESTIONS_ENUM } from "../../../../../utils/questionEnum";
+import { GridInterpreter, useGetGridFromProblemExampleLazyQuery } from "../../../../../__generated__/resolvers-types";
 import { handleServerGrid } from "../gridControllerUtils";
-import { changeGridCell, changeGridCellData, changeGridCellStatus } from "../../../../features/grids/gridsSlice";
+import { changeGridCell, changeGridCellData, changeGridCellStatus } from "../../../../../features/grids/gridsSlice";
 import { BasicController } from "../../BasicController";
-import { ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL, ARRAY_2D_GET_NEXT_INDEX, ARRAY_2D_GET_TWO_DIRECTIONS_FROM_CELL } from "../../../../features/grids/gridUtils";
+import { ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL, ARRAY_2D_GET_NEXT_INDEX, ARRAY_2D_GET_TWO_DIRECTIONS_FROM_CELL } from "../../../../../features/grids/gridUtils";
 import { GridCreationLog } from "../logUtils";
-import { pushJSXToLog } from "../../../../features/problemInfo/problemSlice";
+import { pushJSXToLog } from "../../../../../features/problemInfo/problemSlice";
 import { CellHighlighter } from "../../CellHighlighter";
 import { UniquePathsInitialCellSetup } from "./uniquePathsHelpers";
 

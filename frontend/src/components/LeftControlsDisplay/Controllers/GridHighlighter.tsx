@@ -1,6 +1,6 @@
 import React from "react"
 import {motion} from "framer-motion"
-import { changeGridCellSize } from "../../features/grids/gridsSlice"
+import { changeGridCellSize } from "../../../features/grids/gridsSlice"
 
 type GridHighlighterProps = {
   dispatch: any,

@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react"
 import { useQuery } from "@apollo/client"
 import { convertArrayToGrid } from "./gridControllerUtils";
-import { useGetGridFromProblemExampleLazyQuery } from "../../../__generated__/resolvers-types";
-import { useAppDispatch } from "../../../features/hooks";
-import { copyGrids } from "../../../features/grids/gridsSlice";
+import { useGetGridFromProblemExampleLazyQuery } from "../../../../__generated__/resolvers-types";
+import { useAppDispatch } from "../../../../features/hooks";
+import { copyGrids } from "../../../../features/grids/gridsSlice";
 import { GridCreationLog } from "./logUtils";
-import { pushJSXToLog } from "../../../features/problemInfo/problemSlice";
+import { pushJSXToLog } from "../../../../features/problemInfo/problemSlice";
 
 export const useGetGridFromProblem = (gridIndex: number) => {
   const dispatch = useAppDispatch();

@@ -1,9 +1,9 @@
-import { Cell } from "../../../utils/types";
-import { ARRAY_2D_GET_NEXT_INDEX } from "../../../features/grids/gridUtils";
-import { pushJSXToLog } from "../../../features/problemInfo/problemSlice";
-import { changeGridCellStatus } from "../../../features/grids/gridsSlice";
-import { GridInterpreter } from "../../../__generated__/resolvers-types";
-import { copyGrids } from "../../../features/grids/gridsSlice";
+import { Cell } from "../../../../utils/types";
+import { ARRAY_2D_GET_NEXT_INDEX } from "../../../../features/grids/gridUtils";
+import { pushJSXToLog } from "../../../../features/problemInfo/problemSlice";
+import { changeGridCellStatus } from "../../../../features/grids/gridsSlice";
+import { GridInterpreter } from "../../../../__generated__/resolvers-types";
+import { copyGrids } from "../../../../features/grids/gridsSlice";
 import { GridCreationLog } from "./logUtils";
 
 

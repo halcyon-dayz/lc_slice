@@ -7,11 +7,11 @@ import {
     clearGridCells, 
     clearGridRow,
     changeGridCellSize
-} from "../../features/grids/gridsSlice";
-import { selectAllGrids } from "../../features/grids/gridsSlice";
-import { useAppDispatch, useAppSelector } from "../../features/hooks";
-import {addArray, addGrid, deleteArray, deleteGrid, addGraph} from "../../features/sharedActions"
-import {RootState} from "../../utils/types"
+} from "../../../features/grids/gridsSlice";
+import { selectAllGrids } from "../../../features/grids/gridsSlice";
+import { useAppDispatch, useAppSelector } from "../../../features/hooks";
+import {addArray, addGrid, deleteArray, deleteGrid, addGraph} from "../../../features/sharedActions"
+import {RootState} from "../../../utils/types"
 import { ControllerButtons } from "./BasicController";
 import "./controller.css"
 
