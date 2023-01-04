@@ -42,6 +42,18 @@ export const CreateProblemController = ({
         />
       );
     }
+    case QUESTIONS_ENUM.SEARCH_A_2D_MATRIX: {
+      //TODO: 
+      return (
+        <h1>Invalid problem selected!</h1>
+      )
+    }
+    case QUESTIONS_ENUM.SEARCH_A_2D_MATRIX_II: {
+      //TODO:
+      return (
+        <h1>Invalid problem selected!</h1>
+      )
+    }
     case QUESTIONS_ENUM.PACIFIC_ATLANTIC_WATER_FLOW: {
       return (
         <PacificAtlanticWaterflowController 
@@ -80,6 +92,25 @@ export const CreateProblemController = ({
           pause={pause}
           animationSpeed={animationSpeed}
         />
+      )
+    }
+
+
+    case QUESTIONS_ENUM.MINIMUM_SWAPS_TO_ARRANGE_A_BINARY_GRID: {
+      //COMPLETE!
+      return (
+        <h1>Invalid Problem selected!</h1>
+      )
+    }
+    case QUESTIONS_ENUM.DETECT_CYCLES_IN_2D_GRID: {
+      //COMPLETE!
+      return (
+        <h1>Invalid Problem Selected!</h1>
+      )
+    }
+    case QUESTIONS_ENUM.SHIFT_2D_GRID: {
+      return (
+        <h1>Invalid Problem Selected!</h1>
       )
     }
     default: {

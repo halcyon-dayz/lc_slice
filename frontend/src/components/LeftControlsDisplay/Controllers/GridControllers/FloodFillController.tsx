@@ -4,20 +4,20 @@ import {
      useSelector 
 } from "react-redux";
 
-import {changeGridCellStatus, changeGridCellData} from "../../../features/grids/gridsSlice";
-import { useAppDispatch, useAppSelector } from "../../../features/hooks";
+import {changeGridCellStatus, changeGridCellData} from "../../../../features/grids/gridsSlice";
+import { useAppDispatch, useAppSelector } from "../../../../features/hooks";
 
 import "../controller.css"
 import {
     ARRAY_2D_GET_FOUR_DIRECTIONS_FROM_CELL,
     DirectionString,
     GRID_CELL_INDEX_HAS_DATA,
-} from "../../../features/grids/gridUtils"
-import { pushJSXToLog, selectProblemNumber } from "../../../features/problemInfo/problemSlice";
-import { clearState } from "../../../utils/clearState";
+} from "../../../../features/grids/gridUtils"
+import { pushJSXToLog, selectProblemNumber } from "../../../../features/problemInfo/problemSlice";
+import { clearState } from "../../../../utils/clearState";
 import {SearchFromToLog } from "./logUtils";
-import { QUESTIONS_ENUM } from "../../../utils/questionEnum";
-import { GridInterpreter, useGetGridFromProblemExampleLazyQuery } from "../../../__generated__/resolvers-types";
+import { QUESTIONS_ENUM } from "../../../../utils/questionEnum";
+import { GridInterpreter, useGetGridFromProblemExampleLazyQuery } from "../../../../__generated__/resolvers-types";
 import { handleServerGrid } from "./gridControllerUtils";
 //#endregion
 
